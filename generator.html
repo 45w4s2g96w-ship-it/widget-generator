@@ -121,12 +121,28 @@
       </div>
 
       <div class="field">
-        <label>Source DB ID (데이터 연동 필요한 타입만)</label>
+        <label>Notion 대시보드/DB 링크 (전체 URL 붙여넣기)</label>
+        <input type="text" id="notionLink" placeholder="https://notion.so/...">
+        <button class="btn" id="analyzeLinkBtn" type="button" style="width:100%; padding:6px; margin-top:4px;">링크 분석하기</button>
+      </div>
+
+      <div class="field" id="dbSelectField" style="display:none;">
+        <label>데이터베이스 선택</label>
+        <select id="dbSelect"></select>
+      </div>
+
+      <div class="field" id="propertySelectField" style="display:none;">
+        <label>속성 선택</label>
+        <select id="propertySelect"></select>
+      </div>
+
+      <div class="field">
+        <label>Source DB ID (위에서 선택하면 자동 채워짐)</label>
         <input type="text" id="source_db_id" placeholder="비워둬도 됨">
       </div>
 
       <div class="field">
-        <label>Source Property</label>
+        <label>Source Property (위에서 선택하면 자동 채워짐)</label>
         <input type="text" id="source_property" placeholder="비워둬도 됨">
       </div>
 
@@ -299,6 +315,8 @@
       accent: document.getElementById('accent').value,
       font: `'${fontName}'`,
       type: document.getElementById('type').value,
+      source_db_id: document.getElementById('source_db_id').value || '',
+      source_property: document.getElementById('source_property').value || '',
       mode: 'live'
     };
     document.getElementById('configOutput').value = JSON.stringify(config, null, 2);
@@ -453,6 +471,66 @@ ${config}
   });
 
   document.getElementById('renderPastedBtn').addEventListener('click', renderPastedCode);
+
+  function extractNotionId(url) {
+    const clean = url.split('?')[0];
+    const matches = clean.match(/[a-f0-9]{32}/gi);
+    return matches ? matches[matches.length - 1] : null;
+  }
+
+  async function loadPropertiesFor(dbId) {
+    document.getElementById('source_db_id').value = dbId;
+    document.getElementById('status').textContent = '속성 불러오는 중...';
+    try {
+      const res = await fetch(`/api/notion-db-properties?db_id=${dbId}`);
+      const data = await res.json();
+      if (!res.ok) {
+        document.getElementById('status').textContent = '실패: ' + (data.error || res.status);
+        return;
+      }
+      const propSelect = document.getElementById('propertySelect');
+      propSelect.innerHTML = data.properties.map(p => `<option value="${p.name}">${p.name} (${p.type})</option>`).join('');
+      document.getElementById('propertySelectField').style.display = 'block';
+      document.getElementById('source_property').value = propSelect.value || '';
+      document.getElementById('status').textContent = '';
+    } catch (e) {
+      document.getElementById('status').textContent = '에러: ' + e.message;
+    }
+  }
+
+  document.getElementById('analyzeLinkBtn').addEventListener('click', async () => {
+    const url = document.getElementById('notionLink').value.trim();
+    const id = extractNotionId(url);
+    if (!id) {
+      document.getElementById('status').textContent = '링크에서 ID를 못 찾았어요. Notion 전체 URL을 붙여넣어주세요.';
+      return;
+    }
+    document.getElementById('status').textContent = '분석 중...';
+    try {
+      const res = await fetch(`/api/notion-list-databases?id=${id}`);
+      const data = await res.json();
+      if (!res.ok) {
+        document.getElementById('status').textContent = '실패: ' + (data.error || res.status);
+        return;
+      }
+      if (!data.databases || data.databases.length === 0) {
+        document.getElementById('status').textContent = '이 링크에서 데이터베이스를 못 찾았어요. (인라인 DB만 인식돼요)';
+        return;
+      }
+      const dbSelect = document.getElementById('dbSelect');
+      dbSelect.innerHTML = data.databases.map(d => `<option value="${d.id}">${d.title}</option>`).join('');
+      document.getElementById('dbSelectField').style.display = 'block';
+      document.getElementById('status').textContent = `데이터베이스 ${data.databases.length}개 찾음`;
+      loadPropertiesFor(dbSelect.value);
+    } catch (e) {
+      document.getElementById('status').textContent = '에러: ' + e.message;
+    }
+  });
+
+  document.getElementById('dbSelect').addEventListener('change', (e) => loadPropertiesFor(e.target.value));
+  document.getElementById('propertySelect').addEventListener('change', (e) => {
+    document.getElementById('source_property').value = e.target.value;
+  });
 
   updatePreview();
   setInterval(() => {
