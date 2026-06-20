@@ -1,34 +1,37 @@
-/* ===== config-loader.js =====
-   생성기의 핵심: config.json 값을 읽어서
-   1) CSS 변수(색/폰트)에 주입
-   2) 타이틀바 텍스트 세팅
-   3) config 객체를 위젯 스크립트에 반환 (notionDbId 등 위젯 로직에서 사용)
-*/
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end();
 
-async function loadWidgetConfig() {
-  const res = await fetch('./config.json');
-  const config = await res.json();
+  const { pageId, title, color, accent, font, source_db_id, source_property } = req.body;
+  if (!pageId) return res.status(400).json({ error: 'pageId required' });
 
-  // Notion Settings DB에 저장된 최신 값이 있으면 덮어쓴다 (없으면 config.json 기본값 사용)
+  const token = process.env.NOTION_TOKEN;
+
+  const richText = (value) => ({
+    rich_text: [{ text: { content: value || '' } }]
+  });
+
   try {
-    const liveRes = await fetch(`/api/get-settings?widgetId=${config.id}`);
-    if (liveRes.ok) {
-      const live = await liveRes.json();
-      Object.assign(config, live);
-    }
-  } catch (e) {
-    console.warn('Settings DB 연결 실패 — 기본값(config.json)으로 표시됨');
+    const patchRes = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Notion-Version': '2022-06-28',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        properties: {
+          title: richText(title),
+          color: richText(color),
+          accent: richText(accent),
+          font: richText(font),
+          source_db_id: richText(source_db_id),
+          source_property: richText(source_property)
+        }
+      })
+    });
+    const data = await patchRes.json();
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const root = document.documentElement.style;
-  root.setProperty('--win-color', config.color || '#1a1a1a');
-  root.setProperty('--accent', config.accent || config.color || '#9b8fc7');
-  root.setProperty('--font', config.font || "'Helvetica Neue', Arial, sans-serif");
-
-  document.title = config.title || 'Widget';
-
-  const titleEl = document.querySelector('[data-widget-title]');
-  if (titleEl) titleEl.textContent = config.title;
-
-  return config;
 }
