@@ -1,3 +1,20 @@
+// 이모지 접두사 → 그룹명 매핑
+const EMOJI_TO_GROUP = {
+  '🌤️': '아침',
+  '☀️': '종일',
+  '🌙': '저녁',
+};
+const GROUP_TO_EMOJI = Object.fromEntries(Object.entries(EMOJI_TO_GROUP).map(([e, g]) => [g, e]));
+
+function parseOption(name) {
+  for (const [emoji, group] of Object.entries(EMOJI_TO_GROUP)) {
+    if (name.startsWith(emoji)) {
+      return { group, displayName: name.slice(emoji.length) };
+    }
+  }
+  return { group: '기타', displayName: name };
+}
+
 export default async function handler(req, res) {
   const headers = {
     Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
@@ -34,15 +51,13 @@ export default async function handler(req, res) {
         ? page.properties[source_property]?.multi_select?.map((o) => o.name) || []
         : [];
 
-      // [그룹] 이름 형식으로 그룹 분류
+      // 이모지 접두사로 그룹 분류
       const groups = {};
       let total = 0;
       let completed = 0;
 
       allOptions.forEach((opt) => {
-        const match = opt.name.match(/^\[(.+?)\]\s*/);
-        const group = match ? match[1] : '기타';
-        const displayName = match ? opt.name.slice(match[0].length) : opt.name;
+        const { group, displayName } = parseOption(opt.name);
         const done = completedNames.includes(opt.name);
         if (!groups[group]) groups[group] = [];
         groups[group].push({ name: displayName, fullName: opt.name, done, id: opt.id });
@@ -65,7 +80,8 @@ export default async function handler(req, res) {
 
     try {
       const currentOptions = await fetchDbOptions(source_db_id, source_property);
-      const fullName = group ? `[${group}] ${name}` : name;
+      const emoji = GROUP_TO_EMOJI[group] || '';
+      const fullName = emoji ? `${emoji}${name}` : name;
 
       if (currentOptions.some((o) => o.name === fullName)) {
         return res.status(400).json({ error: '이미 존재하는 항목입니다.' });
