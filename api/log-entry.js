@@ -46,7 +46,8 @@ export default async function handler(req, res) {
         const time = rich[0]?.text?.content?.trim() || '';
         const bodyPart = rich.slice(1).map(r => r.text?.content || '').join('');
         const text = bodyPart.replace(/^\n/, '');
-        if (time && text) entries.push({ time, text });
+        const blockId = block.id.replace(/-/g, '');
+        if (time && text) entries.push({ time, text, blockId });
       }
 
       return res.status(200).json({ entries });
