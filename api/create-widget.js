@@ -10,7 +10,6 @@ export default async function handler(req, res) {
   const richText = (value) => ({ rich_text: [{ text: { content: value || '' } }] });
 
   try {
-    // 1. title 속성 이름 찾기
     const dbRes = await fetch(`https://api.notion.com/v1/databases/${dbId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -20,7 +19,6 @@ export default async function handler(req, res) {
     const db = await dbRes.json();
     const titleKey = Object.keys(db.properties).find((key) => db.properties[key].type === 'title');
 
-    // 2. 새 행 생성
     const createRes = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
       headers: {
@@ -32,7 +30,7 @@ export default async function handler(req, res) {
         parent: { database_id: dbId },
         properties: {
           [titleKey]: { title: [{ text: { content: id } }] },
-          title: richText(title),
+          display_title: richText(title),
           color: richText(color),
           accent: richText(accent),
           font: richText(font),
