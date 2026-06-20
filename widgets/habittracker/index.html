@@ -50,12 +50,13 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 11px;
-      color: #888;
-      letter-spacing: 0.4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.3px;
       margin-bottom: 10px;
     }
-    .ht-date .day-acc { color: var(--accent); }
+    .ht-date .day-acc { color: var(--accent); font-weight: 700; }
     .ht-date .date-text { flex: 1; }
 
     .date-nav {
@@ -138,6 +139,8 @@
       gap: 8px;
       font-size: 12px;
       line-height: 1.3;
+      cursor: pointer;
+      user-select: none;
     }
 
     .habit-item .dot {
@@ -146,7 +149,7 @@
       border-radius: 50%;
       border: 1.5px solid #bbb;
       flex-shrink: 0;
-      transition: background 0.3s, border-color 0.3s;
+      transition: background 0.2s, border-color 0.2s;
     }
 
     .habit-item.done .dot {
@@ -156,15 +159,16 @@
 
     .habit-item .label {
       color: var(--ink);
-      opacity: 0.6;
-      transition: opacity 0.3s;
+      transition: color 0.2s;
     }
 
     .habit-item.done .label {
-      opacity: 1;
+      color: #aaa;
       text-decoration: line-through;
-      text-decoration-color: var(--accent);
+      text-decoration-color: #bbb;
     }
+
+    .habit-item.toggling { opacity: 0.5; pointer-events: none; }
 
     /* ── 칭찬 스티커 ── */
     .sticker {
@@ -425,6 +429,7 @@
   <script>
     const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const GROUP_ORDER = ['아침', '종일', '저녁'];
+    const GROUP_LABELS = { '아침': 'Morning', '종일': 'All Day', '저녁': 'Evening' };
 
     let _config = null;
     let _lastData = null;
@@ -489,7 +494,7 @@
 
         const label = document.createElement('div');
         label.className = 'group-label';
-        label.textContent = groupKey;
+        label.textContent = GROUP_LABELS[groupKey] || groupKey;
         section.appendChild(label);
 
         const list = document.createElement('div');
@@ -508,12 +513,38 @@
 
           row.appendChild(dot);
           row.appendChild(lbl);
+          row.addEventListener('click', () => toggleHabit(row, item));
           list.appendChild(row);
         });
 
         section.appendChild(list);
         container.appendChild(section);
       });
+    }
+
+    async function toggleHabit(row, item) {
+      const { source_db_id, source_property } = _config;
+      const date = formatDate(getDateByOffset(_dateOffset));
+      row.classList.add('toggling');
+
+      try {
+        const res = await fetch('/api/get-habit-grouped', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ source_db_id, source_property, fullName: item.fullName, date })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        // 로컬 즉시 반영
+        item.done = data.done;
+        row.classList.toggle('done', data.done);
+        // 별/진행바 갱신
+        await loadHabits();
+      } catch (err) {
+        console.error('toggle 실패:', err.message);
+      } finally {
+        row.classList.remove('toggling');
+      }
     }
 
     async function loadHabits() {

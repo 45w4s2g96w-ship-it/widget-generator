@@ -145,5 +145,50 @@ export default async function handler(req, res) {
     }
   }
 
+  // PATCH — 오늘 페이지의 multi-select 값 토글 (체크/언체크)
+  if (req.method === 'PATCH') {
+    const { source_db_id, source_property, fullName, date } = req.body;
+    if (!source_db_id || !source_property || !fullName) {
+      return res.status(400).json({ error: 'source_db_id, source_property, fullName required' });
+    }
+
+    try {
+      const targetDate = date || new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+      const queryRes = await fetch(`https://api.notion.com/v1/databases/${source_db_id}/query`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ filter: { property: '날짜', date: { equals: targetDate } } }),
+      });
+      const queryData = await queryRes.json();
+      const page = queryData.results?.[0];
+
+      if (!page) return res.status(404).json({ error: '해당 날짜의 페이지가 없습니다.' });
+
+      const currentValues = page.properties[source_property]?.multi_select?.map((o) => o.name) || [];
+      const isDone = currentValues.includes(fullName);
+      const newValues = isDone
+        ? currentValues.filter((n) => n !== fullName)
+        : [...currentValues, fullName];
+
+      const patchRes = await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({
+          properties: {
+            [source_property]: {
+              multi_select: newValues.map((n) => ({ name: n })),
+            },
+          },
+        }),
+      });
+      const patchData = await patchRes.json();
+      if (patchData.object === 'error') throw new Error(patchData.message);
+
+      return res.status(200).json({ ok: true, done: !isDone });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
   return res.status(405).json({ error: 'Method not allowed' });
 }
