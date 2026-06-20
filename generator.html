@@ -379,7 +379,7 @@ ${config}
   document.getElementById('sendToClaudeCodeBtn').addEventListener('click', async () => {
     let message = buildClaudeMessage();
     message = message.replace('이 위젯 만들어줘.', 'widget-generator 레포에 이 위젯 만들어서 GitHub에 바로 commit & push까지 해줘.');
-    message += '\n\n작업 끝나면 GitHub에 commit & push까지 해줘.';
+    message += '\n\n작업 끝나면 GitHub main 브랜치에 직접 commit & push까지 해줘. (다른 브랜치 만들지 말고 항상 main에 바로)';
     try {
       await navigator.clipboard.writeText(message);
       document.getElementById('status').textContent = '복사 완료! Claude Code 채팅창에 붙여넣기(Ctrl+V) 하세요';
