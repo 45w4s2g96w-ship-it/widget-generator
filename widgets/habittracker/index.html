@@ -43,7 +43,13 @@
     .gear-btn:hover { opacity: 1; }
 
     /* ── 본문 ── */
-    .content { padding: 14px 16px 16px; min-height: 240px; }
+    .content {
+      padding: 14px 16px 16px;
+      height: 420px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
     /* ── 날짜 ── */
     .ht-date {
@@ -169,6 +175,15 @@
     }
 
     .habit-item.toggling { opacity: 0.5; pointer-events: none; }
+
+    /* ── 루틴 목록 스크롤 영역 ── */
+    #groups-container {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+    #groups-container::-webkit-scrollbar { width: 4px; }
+    #groups-container::-webkit-scrollbar-thumb { background: #ddd; }
 
     /* ── 칭찬 스티커 ── */
     .sticker {
@@ -374,10 +389,7 @@
     <div class="content">
       <div class="ht-date">
         <span class="date-nav" id="date-prev">&#8592;</span>
-        <span class="date-text">
-          <span id="ht-date-ymd">----.--.--</span>
-          <span class="day-acc" id="ht-date-day">(---)</span>
-        </span>
+        <span class="date-text">date: <span id="ht-date-ymd">----.--.--</span></span>
         <span class="date-nav disabled" id="date-next">&#8594;</span>
       </div>
 
@@ -449,8 +461,6 @@
     function renderDate() {
       const d = getDateByOffset(_dateOffset);
       document.getElementById('ht-date-ymd').textContent = formatDate(d);
-      document.getElementById('ht-date-day').textContent = `(${DAYS[d.getDay()]})`;
-      // 오늘이면 → 비활성화
       document.getElementById('date-next').classList.toggle('disabled', _dateOffset >= 0);
     }
 
