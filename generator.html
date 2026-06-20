@@ -73,7 +73,10 @@
 
       <div class="field">
         <label>타이틀바 텍스트</label>
-        <input type="text" id="title" placeholder="C:// HABITS">
+        <div style="display:flex; align-items:center; border:1px solid var(--border);">
+          <span style="padding:5px 0 5px 6px; font-size:12px; color:#777; white-space:nowrap;">C://</span>
+          <input type="text" id="title" placeholder="HABITS" style="border:none; padding:5px 6px;">
+        </div>
       </div>
 
       <div class="field">
@@ -243,7 +246,7 @@
     const accent = document.getElementById('accent').value || '#9b8fc7';
     const fontName = document.getElementById('font').value || 'Helvetica Neue';
     const font = `'${fontName}', 'Gothic A1', sans-serif`;
-    const title = document.getElementById('title').value || 'C:// WIDGET';
+    const title = 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase();
     const type = document.getElementById('type').value;
 
     clearTimeout(fontLoadTimer);
@@ -262,7 +265,7 @@
     const fontName = document.getElementById('font').value || 'Helvetica Neue';
     const config = {
       id: document.getElementById('widgetId').value || 'widget-id',
-      title: document.getElementById('title').value || 'C:// WIDGET',
+      title: 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase(),
       color: document.getElementById('color').value,
       accent: document.getElementById('accent').value,
       font: `'${fontName}', 'Gothic A1', sans-serif`,
@@ -294,7 +297,7 @@
     const fontName = document.getElementById('font').value || 'Helvetica Neue';
     const body = {
       id: document.getElementById('widgetId').value,
-      title: document.getElementById('title').value,
+      title: 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase(),
       color: document.getElementById('color').value,
       accent: document.getElementById('accent').value,
       font: `'${fontName}', 'Gothic A1', sans-serif`,
