@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// HABIT TRACKER</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'ChosunGu';
+      src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+    }
+
+    body { display: flex; justify-content: center; }
+
+    .window {
+      max-width: 300px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── 타이틀바 오른쪽 영역 ── */
+    .titlebar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gear-btn {
+      cursor: pointer;
+      font-size: 12px;
+      opacity: 0.75;
+      line-height: 1;
+      user-select: none;
+      transition: opacity 0.15s;
+    }
+    .gear-btn:hover { opacity: 1; }
+
+    /* ── 본문 ── */
+    .content { padding: 14px 16px 16px; min-height: 240px; }
+
+    /* ── 날짜 ── */
+    .ht-date {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 0.4px;
+      margin-bottom: 10px;
+    }
+    .ht-date .day-acc { color: var(--accent); }
+
+    /* ── 별 진행바 ── */
+    .star-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 7px;
+      flex-wrap: wrap;
+    }
+
+    .star {
+      width: 13px;
+      height: 13px;
+      display: inline-block;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .star::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #ccc;
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%,
+        68% 57%, 79% 91%,
+        50% 70%, 21% 91%,
+        32% 57%, 2% 35%,
+        39% 35%
+      );
+      transition: background 0.3s ease;
+    }
+
+    .star.filled::before { background: var(--accent); }
+
+    /* ── 완성률 ── */
+    .progress-line {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 0.3px;
+      margin-bottom: 12px;
+    }
+    .progress-line .acc { color: var(--accent); font-weight: 700; }
+
+    /* ── 그룹 섹션 ── */
+    .group-section { margin-bottom: 11px; }
+
+    .group-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #ececec;
+      padding-bottom: 3px;
+      margin-bottom: 5px;
+    }
+
+    .habit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .habit-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .habit-item .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: 1.5px solid #bbb;
+      flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .habit-item.done .dot {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .habit-item .label {
+      color: var(--ink);
+      opacity: 0.6;
+      transition: opacity 0.3s;
+    }
+
+    .habit-item.done .label {
+      opacity: 1;
+      text-decoration: line-through;
+      text-decoration-color: var(--accent);
+    }
+
+    /* ── 칭찬 스티커 ── */
+    .sticker {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 7px 10px;
+      border-radius: 2px;
+      margin-top: 4px;
+      animation: pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+    .sticker.visible { display: flex; }
+
+    .pixel-star {
+      width: 10px; height: 10px;
+      position: relative; flex-shrink: 0;
+    }
+    .pixel-star::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%,
+        68% 57%, 79% 91%,
+        50% 70%, 21% 91%,
+        32% 57%, 2% 35%,
+        39% 35%
+      );
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── 로딩 / 에러 ── */
+    .ht-msg {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    /* ══ 설정 오버레이 ══ */
+    .settings-overlay {
+      display: none;
+      position: absolute;
+      top: 25px; /* titlebar 높이 */
+      left: 0; right: 0; bottom: 0;
+      background: var(--window-bg);
+      padding: 12px 14px 14px;
+      overflow-y: auto;
+      z-index: 20;
+      min-height: 240px;
+    }
+    .settings-overlay.open { display: block; }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .settings-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--ink);
+    }
+    .settings-close {
+      cursor: pointer;
+      font-size: 10.5px;
+      color: #666;
+      border: 1px solid #ddd;
+      padding: 2px 7px;
+      line-height: 1.4;
+      user-select: none;
+    }
+    .settings-close:hover { background: #f4f4f4; }
+
+    .settings-group { margin-bottom: 11px; }
+
+    .settings-group-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #ececec;
+      padding-bottom: 3px;
+      margin-bottom: 5px;
+    }
+
+    .settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+
+    .settings-item-name {
+      font-size: 11.5px;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .delete-btn {
+      cursor: pointer;
+      font-size: 10px;
+      color: #bbb;
+      border: none;
+      background: none;
+      padding: 2px 4px;
+      line-height: 1;
+      font-family: var(--font);
+    }
+    .delete-btn:hover { color: #c00; }
+
+    .settings-empty {
+      font-size: 11px;
+      color: #bbb;
+      padding: 2px 0;
+    }
+
+    /* ── 추가 폼 ── */
+    .add-form {
+      border-top: 1px solid #ececec;
+      padding-top: 10px;
+      margin-top: 4px;
+    }
+    .add-form-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #777;
+      letter-spacing: 0.3px;
+      margin-bottom: 7px;
+    }
+    .add-row {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 6px;
+    }
+    .add-input {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 4px 6px;
+      font-size: 11px;
+      font-family: var(--font);
+      outline: none;
+      min-width: 0;
+    }
+    .add-input:focus { border-color: var(--accent); }
+
+    .add-select {
+      border: 1px solid #ccc;
+      padding: 4px 4px;
+      font-size: 11px;
+      font-family: var(--font);
+      outline: none;
+      background: #fff;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .add-select:focus { border-color: var(--accent); }
+
+    .add-btn {
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: var(--font);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .add-btn:hover { opacity: 0.85; }
+    .add-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .settings-status {
+      font-size: 10.5px;
+      color: #888;
+      min-height: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// HABIT TRACKER</span>
+      <div class="titlebar-right">
+        <span class="gear-btn" id="gear-btn" title="루틴 설정">⚙</span>
+        <span class="icons">
+          <span>_</span><span>□</span><span>×</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="content">
+      <div class="ht-date">
+        <span id="ht-date-ymd">----.--.--</span>
+        <span class="day-acc" id="ht-date-day">(---)</span>
+      </div>
+
+      <div class="star-bar" id="star-bar"></div>
+      <div class="progress-line" id="progress-line"></div>
+
+      <div id="groups-container">
+        <div class="ht-msg">loading...</div>
+      </div>
+
+      <div class="sticker" id="sticker">
+        <span class="pixel-star"></span>
+        <span>ALL DONE! GREAT JOB!</span>
+        <span class="pixel-star"></span>
+      </div>
+    </div>
+
+    <!-- 설정 오버레이 -->
+    <div class="settings-overlay" id="settings-overlay">
+      <div class="settings-header">
+        <span class="settings-title">루틴 설정</span>
+        <span class="settings-close" id="settings-close">닫기</span>
+      </div>
+
+      <div id="settings-groups"></div>
+
+      <div class="add-form">
+        <div class="add-form-title">새 루틴 추가</div>
+        <div class="add-row">
+          <input class="add-input" id="add-name" type="text" placeholder="루틴 이름" />
+          <select class="add-select" id="add-group">
+            <option value="아침">아침</option>
+            <option value="종일">종일</option>
+            <option value="저녁">저녁</option>
+          </select>
+        </div>
+        <div class="add-row">
+          <button class="add-btn" id="add-btn">추가</button>
+        </div>
+        <div class="settings-status" id="settings-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const GROUP_ORDER = ['아침', '종일', '저녁'];
+
+    let _config = null;
+    let _lastData = null;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function renderDate() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const mo = pad(now.getMonth() + 1);
+      const d = pad(now.getDate());
+      document.getElementById('ht-date-ymd').textContent = `${y}-${mo}-${d}`;
+      document.getElementById('ht-date-day').textContent = `(${DAYS[now.getDay()]})`;
+    }
+
+    function renderStars(completed, total) {
+      const bar = document.getElementById('star-bar');
+      bar.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const s = document.createElement('span');
+        s.className = 'star' + (i < completed ? ' filled' : '');
+        bar.appendChild(s);
+      }
+    }
+
+    function renderProgress(completed, total) {
+      const line = document.getElementById('progress-line');
+      const pct = total ? Math.round((completed / total) * 100) : 0;
+      line.innerHTML = `오늘의 루틴 <span class="acc">${completed}/${total}</span> (${pct}%)`;
+    }
+
+    function renderGroups(groups) {
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      // 정해진 순서 + 기타 그룹
+      const allKeys = [...GROUP_ORDER, ...Object.keys(groups).filter(k => !GROUP_ORDER.includes(k))];
+      const presentKeys = allKeys.filter(k => groups[k] && groups[k].length > 0);
+
+      if (presentKeys.length === 0) {
+        container.innerHTML = '<div class="ht-msg">등록된 루틴이 없습니다.</div>';
+        return;
+      }
+
+      presentKeys.forEach(groupKey => {
+        const items = groups[groupKey];
+
+        const section = document.createElement('div');
+        section.className = 'group-section';
+
+        const label = document.createElement('div');
+        label.className = 'group-label';
+        label.textContent = groupKey;
+        section.appendChild(label);
+
+        const list = document.createElement('div');
+        list.className = 'habit-list';
+
+        items.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'habit-item' + (item.done ? ' done' : '');
+
+          const dot = document.createElement('span');
+          dot.className = 'dot';
+
+          const lbl = document.createElement('span');
+          lbl.className = 'label';
+          lbl.textContent = item.name;
+
+          row.appendChild(dot);
+          row.appendChild(lbl);
+          list.appendChild(row);
+        });
+
+        section.appendChild(list);
+        container.appendChild(section);
+      });
+    }
+
+    async function loadHabits() {
+      const { source_db_id, source_property } = _config;
+      if (!source_db_id || !source_property) {
+        document.getElementById('groups-container').innerHTML =
+          '<div class="ht-msg">config에 source_db_id / source_property를 입력하세요.</div>';
+        renderStars(0, 0);
+        renderProgress(0, 0);
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `/api/get-habit-grouped?source_db_id=${encodeURIComponent(source_db_id)}&source_property=${encodeURIComponent(source_property)}`
+        );
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        _lastData = data;
+        renderStars(data.completed, data.total);
+        renderProgress(data.completed, data.total);
+        renderGroups(data.groups);
+
+        const sticker = document.getElementById('sticker');
+        sticker.classList.toggle('visible', data.total > 0 && data.completed === data.total);
+      } catch (err) {
+        document.getElementById('groups-container').innerHTML =
+          `<div class="ht-msg">데이터 로드 실패: ${err.message}</div>`;
+        renderStars(0, 0);
+        renderProgress(0, 0);
+      }
+    }
+
+    /* ══ 설정 모달 ══ */
+
+    function renderSettingsGroups(groups) {
+      const container = document.getElementById('settings-groups');
+      container.innerHTML = '';
+
+      const allKeys = [...GROUP_ORDER, ...Object.keys(groups).filter(k => !GROUP_ORDER.includes(k))];
+
+      allKeys.forEach(groupKey => {
+        const items = groups[groupKey] || [];
+
+        const section = document.createElement('div');
+        section.className = 'settings-group';
+
+        const label = document.createElement('div');
+        label.className = 'settings-group-label';
+        label.textContent = groupKey;
+        section.appendChild(label);
+
+        if (items.length === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'settings-empty';
+          empty.textContent = '항목 없음';
+          section.appendChild(empty);
+        } else {
+          items.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'settings-item';
+
+            const name = document.createElement('span');
+            name.className = 'settings-item-name';
+            name.textContent = item.name;
+
+            const del = document.createElement('button');
+            del.className = 'delete-btn';
+            del.textContent = '✕';
+            del.title = `"${item.name}" 삭제`;
+            del.addEventListener('click', () => deleteHabit(item.fullName));
+
+            row.appendChild(name);
+            row.appendChild(del);
+            section.appendChild(row);
+          });
+        }
+
+        container.appendChild(section);
+      });
+    }
+
+    async function openSettings() {
+      document.getElementById('settings-overlay').classList.add('open');
+      document.getElementById('settings-status').textContent = '';
+
+      if (_lastData?.groups) {
+        renderSettingsGroups(_lastData.groups);
+      } else {
+        document.getElementById('settings-groups').innerHTML = '<div class="ht-msg">로딩 중...</div>';
+        await loadHabits();
+        if (_lastData?.groups) renderSettingsGroups(_lastData.groups);
+      }
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-overlay').classList.remove('open');
+    }
+
+    async function deleteHabit(fullName) {
+      const { source_db_id, source_property } = _config;
+      const statusEl = document.getElementById('settings-status');
+      statusEl.textContent = '삭제 중...';
+
+      try {
+        const res = await fetch('/api/get-habit-grouped', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ source_db_id, source_property, fullName })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        statusEl.textContent = '✓ 삭제 완료';
+        await loadHabits();
+        if (_lastData?.groups) renderSettingsGroups(_lastData.groups);
+      } catch (err) {
+        statusEl.textContent = `오류: ${err.message}`;
+      }
+    }
+
+    async function addHabit() {
+      const nameInput = document.getElementById('add-name');
+      const name = nameInput.value.trim();
+      const group = document.getElementById('add-group').value;
+      const { source_db_id, source_property } = _config;
+      const statusEl = document.getElementById('settings-status');
+      const btn = document.getElementById('add-btn');
+
+      if (!name) {
+        statusEl.textContent = '루틴 이름을 입력하세요.';
+        return;
+      }
+
+      btn.disabled = true;
+      statusEl.textContent = '추가 중...';
+
+      try {
+        const res = await fetch('/api/get-habit-grouped', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ source_db_id, source_property, name, group })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        statusEl.textContent = '✓ 추가 완료';
+        nameInput.value = '';
+        await loadHabits();
+        if (_lastData?.groups) renderSettingsGroups(_lastData.groups);
+      } catch (err) {
+        statusEl.textContent = `오류: ${err.message}`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    /* ── Init ── */
+    async function init() {
+      renderDate();
+      _config = await loadWidgetConfig();
+      await loadHabits();
+
+      document.getElementById('gear-btn').addEventListener('click', openSettings);
+      document.getElementById('settings-close').addEventListener('click', closeSettings);
+      document.getElementById('add-btn').addEventListener('click', addHabit);
+      document.getElementById('add-name').addEventListener('keydown', e => {
+        if (e.key === 'Enter') addHabit();
+      });
+    }
+
+    init();
+    setInterval(loadHabits, 5 * 60 * 1000);
+  </script>
+</body>
+</html>

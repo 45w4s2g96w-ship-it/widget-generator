@@ -1,0 +1,11 @@
+{
+  "id": "habittracker",
+  "title": "C:// HABIT TRACKER",
+  "color": "#1a1a1a",
+  "accent": "#9b8fc7",
+  "font": "'ChosunGu'",
+  "type": "habit",
+  "source_db_id": "37451f4140c5808e9141c8804e892661",
+  "source_property": "오늘 루틴",
+  "mode": "live"
+}
