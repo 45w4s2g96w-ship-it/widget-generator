@@ -22,9 +22,10 @@
 
     .content {
       padding: 14px 16px 16px;
-      min-height: 240px;
+      height: 420px;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     .log-date {
@@ -93,6 +94,7 @@
 
     .log-list {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
