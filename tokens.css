@@ -1,0 +1,82 @@
+/* ===== tokens.css =====
+   모든 위젯이 공유하는 디자인 시스템.
+   위젯별 색/폰트는 config.json → config-loader.js가 여기 변수를 덮어씀.
+*/
+
+:root {
+  --paper: #f4f4f2;
+  --window-bg: #ffffff;
+  --ink: #111111;
+  --border: #111111;
+
+  /* 위젯별로 override 되는 기본값 (블랙 + 연보라) */
+  --win-color: #1a1a1a;
+  --accent: #9b8fc7;
+  --win-text: #ffffff;
+  --font: 'Helvetica Neue', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px;
+  background: var(--paper);
+  font-family: var(--font);
+}
+
+.window {
+  width: 100%;
+  max-width: 260px;
+  background: var(--window-bg);
+  border: 1px solid var(--border);
+}
+
+.titlebar {
+  background: var(--win-color);
+  color: var(--win-text);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  letter-spacing: 0.2px;
+}
+
+.titlebar .icons { display: flex; gap: 3px; }
+.titlebar .icons span {
+  width: 11px; height: 11px;
+  border: 1px solid var(--win-text);
+  font-size: 8px;
+  line-height: 9px;
+  text-align: center;
+}
+
+.content {
+  padding: 12px;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.meta { font-size: 10.5px; color: #777; margin-bottom: 6px; }
+
+.btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 4px 10px;
+  font-size: 10.5px;
+  font-family: var(--font);
+  cursor: pointer;
+}
+.btn:active { background: var(--win-color); color: var(--win-text); }
+
+.checkbox {
+  width: 11px; height: 11px;
+  border: 1px solid var(--ink);
+  display: inline-block;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.checkbox.done { background: var(--accent); }

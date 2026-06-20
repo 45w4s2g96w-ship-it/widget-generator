@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Clock</title>
+<link rel="stylesheet" href="../../shared/tokens.css">
+</head>
+<body>
+
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// CLOCK</span>
+      <span class="icons"><span>_</span><span>□</span><span>x</span></span>
+    </div>
+    <div class="content">
+      <div class="meta" id="clock-date">--</div>
+      <div style="font-size:26px; font-weight:700; letter-spacing:1px;" id="clock-time">--:--</div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    async function init() {
+      await loadWidgetConfig(); // generator: config.json → CSS 변수 적용
+
+      function tick() {
+        const d = new Date();
+        document.getElementById('clock-time').textContent =
+          String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        document.getElementById('clock-date').textContent =
+          d.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' });
+      }
+      tick();
+      setInterval(tick, 1000 * 30);
+    }
+    init();
+  </script>
+
+</body>
+</html>
