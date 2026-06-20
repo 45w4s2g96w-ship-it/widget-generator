@@ -18,10 +18,11 @@ export default async function handler(req, res) {
     try {
       const now = getToday();
       const today = now.toLocaleDateString('sv-SE');
-      const dow = (now.getDay() + 6) % 7;
-      const sun = new Date(now);
-      sun.setDate(now.getDate() - dow + 6);
-      const endOfWeek = sun.toLocaleDateString('sv-SE');
+
+      // 이번 주 = 오늘 포함 7일
+      const weekEnd = new Date(now);
+      weekEnd.setDate(now.getDate() + 6);
+      const endOfWeek = weekEnd.toLocaleDateString('sv-SE');
 
       const results = [];
       let cursor;
@@ -30,8 +31,8 @@ export default async function handler(req, res) {
           filter: {
             and: [
               { property: '마감일', date: { is_not_empty: true } },
-              { property: '마감일', date: { on_or_before: endOfWeek } },
               { property: '마감일', date: { on_or_after: today } },
+              { property: '마감일', date: { on_or_before: endOfWeek } },
             ],
           },
           page_size: 100,
@@ -63,7 +64,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // POST — create new todo page
   if (req.method === 'POST') {
     const { source_db_id, title, dueDate } = req.body;
     if (!source_db_id || !title) return res.status(400).json({ error: 'source_db_id, title required' });
@@ -83,20 +83,16 @@ export default async function handler(req, res) {
 
       const newDue = data.properties['마감일']?.date?.start || null;
       return res.status(200).json({
-        id: data.id,
-        title,
+        id: data.id, title,
         dueStart: newDue,
         hasTime: newDue ? newDue.includes('T') : false,
-        done: false,
-        parentIds: [],
-        childIds: [],
+        done: false, parentIds: [], childIds: [],
       });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
   }
 
-  // PATCH — update title / due date / done
   if (req.method === 'PATCH') {
     const { pageId, dueDate, title, done } = req.body;
     if (!pageId) return res.status(400).json({ error: 'pageId required' });
