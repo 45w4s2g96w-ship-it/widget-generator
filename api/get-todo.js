@@ -11,7 +11,6 @@ export default async function handler(req, res) {
     return now;
   }
 
-  // GET — fetch todos due today or this week
   if (req.method === 'GET') {
     const { source_db_id } = req.query;
     if (!source_db_id) return res.status(400).json({ error: 'source_db_id required' });
@@ -19,15 +18,13 @@ export default async function handler(req, res) {
     try {
       const now = getToday();
       const today = now.toLocaleDateString('sv-SE');
-
-      // end of current week (Sunday)
-      const dow = (now.getDay() + 6) % 7; // Mon=0
+      const dow = (now.getDay() + 6) % 7;
       const sun = new Date(now);
       sun.setDate(now.getDate() - dow + 6);
       const endOfWeek = sun.toLocaleDateString('sv-SE');
 
       const results = [];
-      let cursor = undefined;
+      let cursor;
       do {
         const body = {
           filter: {
@@ -40,7 +37,6 @@ export default async function handler(req, res) {
           page_size: 100,
         };
         if (cursor) body.start_cursor = cursor;
-
         const r = await fetch(`https://api.notion.com/v1/databases/${source_db_id}/query`, {
           method: 'POST', headers, body: JSON.stringify(body),
         });
@@ -58,7 +54,6 @@ export default async function handler(req, res) {
         const done = page.properties['완료']?.checkbox || false;
         const parentIds = (page.properties['상위 항목']?.relation || []).map(r => r.id);
         const childIds = (page.properties['하위 항목']?.relation || []).map(r => r.id);
-
         return { id: page.id, title, dueStart, hasTime, done, parentIds, childIds };
       });
 
@@ -68,21 +63,54 @@ export default async function handler(req, res) {
     }
   }
 
-  // PATCH — update due date (pin click or edit modal save)
+  // POST — create new todo page
+  if (req.method === 'POST') {
+    const { source_db_id, title, dueDate } = req.body;
+    if (!source_db_id || !title) return res.status(400).json({ error: 'source_db_id, title required' });
+
+    try {
+      const props = {
+        '이름': { title: [{ text: { content: title } }] },
+      };
+      if (dueDate) props['마감일'] = { date: { start: dueDate } };
+
+      const r = await fetch('https://api.notion.com/v1/pages', {
+        method: 'POST', headers,
+        body: JSON.stringify({ parent: { database_id: source_db_id }, properties: props }),
+      });
+      const data = await r.json();
+      if (data.object === 'error') throw new Error(data.message);
+
+      const newDue = data.properties['마감일']?.date?.start || null;
+      return res.status(200).json({
+        id: data.id,
+        title,
+        dueStart: newDue,
+        hasTime: newDue ? newDue.includes('T') : false,
+        done: false,
+        parentIds: [],
+        childIds: [],
+      });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // PATCH — update title / due date / done
   if (req.method === 'PATCH') {
-    const { pageId, dueDate, title } = req.body;
+    const { pageId, dueDate, title, done } = req.body;
     if (!pageId) return res.status(400).json({ error: 'pageId required' });
 
     try {
       const props = {};
       if (dueDate !== undefined) props['마감일'] = { date: dueDate ? { start: dueDate } : null };
       if (title !== undefined) props['이름'] = { title: [{ text: { content: title } }] };
+      if (done !== undefined) props['완료'] = { checkbox: done };
 
-      const patchRes = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
-        method: 'PATCH', headers,
-        body: JSON.stringify({ properties: props }),
+      const r = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+        method: 'PATCH', headers, body: JSON.stringify({ properties: props }),
       });
-      const data = await patchRes.json();
+      const data = await r.json();
       if (data.object === 'error') throw new Error(data.message);
       return res.status(200).json({ ok: true });
     } catch (err) {
