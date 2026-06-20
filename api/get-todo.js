@@ -53,15 +53,14 @@ export default async function handler(req, res) {
         cursor = data.has_more ? data.next_cursor : undefined;
       } while (cursor);
 
-      const pages = results.map(page => {
-        const title = page.properties['이름']?.title?.[0]?.plain_text || '(제목 없음)';
-        const dueProp = page.properties['마감일']?.date;
-        const dueStart = dueProp?.start || null;
-        const hasTime = dueStart ? dueStart.includes('T') : false;
-        const done = page.properties['완료']?.checkbox || false;
-        const memo = page.properties['메모']?.rich_text?.[0]?.plain_text || '';
-        return { id: page.id, title, dueStart, hasTime, done, memo };
-      });
+      const pages = results.map(page => ({
+        id: page.id,
+        title: page.properties['이름']?.title?.[0]?.plain_text || '(제목 없음)',
+        dueStart: page.properties['마감일']?.date?.start || null,
+        hasTime: !!(page.properties['마감일']?.date?.start?.includes('T')),
+        done: page.properties['완료']?.checkbox || false,
+        memo: page.properties['메모']?.rich_text?.[0]?.plain_text || '',
+      }));
 
       return res.status(200).json({ pages, today, endOfWeek });
     } catch (err) {
@@ -80,8 +79,6 @@ export default async function handler(req, res) {
       weekEnd.setDate(now.getDate() + 6);
       const endOfWeek = weekEnd.toLocaleDateString('sv-SE');
 
-      const quadrant = calcQuadrant(dueDate, today, endOfWeek, cfg || {});
-
       const props = {
         '이름': { title: [{ text: { content: title } }] },
         '완료': { checkbox: false },
@@ -89,6 +86,7 @@ export default async function handler(req, res) {
       };
       if (dueDate) props['마감일'] = { date: { start: dueDate } };
       if (memo) props['메모'] = { rich_text: [{ text: { content: memo } }] };
+      const quadrant = calcQuadrant(dueDate, today, endOfWeek, cfg || {});
       if (quadrant) props['사분면'] = { select: { name: quadrant } };
 
       const r = await fetch('https://api.notion.com/v1/pages', {
@@ -102,7 +100,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         id: data.id, title,
         dueStart: newDue,
-        hasTime: newDue ? newDue.includes('T') : false,
+        hasTime: !!(newDue?.includes('T')),
         done: false,
         memo: memo || '',
       });
