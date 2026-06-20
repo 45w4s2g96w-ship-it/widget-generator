@@ -11,133 +11,58 @@
       src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
       font-display: swap;
     }
-    body {
-      display: flex;
-      justify-content: center;
-      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
-    }
+    body { display: flex; justify-content: center; font-family: 'ChosunGu', 'Helvetica Neue', sans-serif; }
     .window { max-width: 320px; }
 
     .titlebar-right { display: flex; align-items: center; gap: 6px; }
-    #add-btn {
-      background: none; border: none; color: #fff;
-      font-size: 14px; line-height: 1; cursor: pointer;
-      opacity: 0.75; padding: 0;
-    }
+    #add-btn { background: none; border: none; color: #fff; font-size: 14px; line-height: 1; cursor: pointer; opacity: 0.75; padding: 0; }
     #add-btn:hover { opacity: 1; }
 
-    .content {
-      padding: 10px 12px 14px;
-      min-height: 120px; max-height: 480px;
-      overflow-y: auto; display: flex; flex-direction: column;
-    }
+    .content { padding: 10px 12px 14px; min-height: 120px; max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; }
     .content::-webkit-scrollbar { width: 3px; }
     .content::-webkit-scrollbar-thumb { background: #ddd; }
 
-    .group-label {
-      font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px;
-      color: #999; padding: 8px 0 3px;
-      border-bottom: 1px solid #eee; margin-bottom: 2px;
-    }
-    .group-label:first-child { padding-top: 2px; }
+    .todo-row { display: flex; align-items: center; gap: 5px; padding: 3px 4px 3px 2px; border-radius: 2px; }
+    .todo-row.today { background: rgba(180, 155, 215, 0.28); }
 
-    /* row: [pin] [label+toggle] [done] */
-    .todo-row {
-      display: flex; align-items: center; gap: 5px;
-      padding: 3px 4px 3px 2px;
-      border-radius: 2px;
-    }
-    /* highlight covers entire row including pin */
-    .todo-row.today {
-      background: rgba(180, 155, 215, 0.28);
-    }
-
-    .pin-btn {
-      background: none; border: none; cursor: pointer;
-      font-size: 11px; padding: 0; line-height: 1;
-      opacity: 0.28; flex-shrink: 0; filter: grayscale(1);
-      transition: opacity 0.15s;
-    }
+    .pin-btn { background: none; border: none; cursor: pointer; font-size: 11px; padding: 0; line-height: 1; opacity: 0.28; flex-shrink: 0; filter: grayscale(1); transition: opacity 0.15s; }
     .pin-btn:hover { opacity: 0.65; }
     .pin-btn.pinned { opacity: 1; filter: none; }
 
-    .todo-label {
-      flex: 1; display: flex; align-items: center; gap: 3px;
-      min-width: 0; cursor: pointer;
-    }
+    .todo-label { flex: 1; display: flex; align-items: center; gap: 3px; min-width: 0; cursor: pointer; }
     .todo-label:hover .todo-inner { text-decoration: underline; }
-
-    .todo-inner {
-      font-size: 11.5px; line-height: 1.55;
-      color: var(--ink); word-break: break-all;
-    }
+    .todo-inner { font-size: 11.5px; line-height: 1.55; color: var(--ink); word-break: break-all; }
     .todo-inner.done-text { text-decoration: line-through; color: #aaa; }
 
-    .toggle-btn {
-      background: none; border: none; cursor: pointer;
-      font-size: 13.5px; color: #bbb; padding: 0;
-      flex-shrink: 0; line-height: 1;
-    }
+    .toggle-btn { background: none; border: none; cursor: pointer; font-size: 13.5px; color: #bbb; padding: 0; flex-shrink: 0; line-height: 1; }
     .toggle-btn:hover { color: var(--ink); }
     .toggle-btn.empty { cursor: default; visibility: hidden; }
 
-    .done-btn {
-      width: 12px; height: 12px;
-      border: 1px solid #bbb; background: #fff;
-      flex-shrink: 0; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 9px; color: transparent;
-    }
+    .done-btn { width: 12px; height: 12px; border: 1px solid #bbb; background: #fff; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 9px; color: transparent; }
     .done-btn.checked { background: #bbb; color: #fff; }
 
-    /* subtasks */
     .subtask-list { display: none; padding-left: 20px; margin-bottom: 2px; }
     .subtask-list.open { display: block; }
-
-    .subtask-row {
-      display: flex; align-items: center; gap: 4px;
-      padding: 2px 4px 2px 2px; border-radius: 2px; cursor: pointer;
-    }
+    .subtask-row { display: flex; align-items: center; gap: 4px; padding: 2px 4px 2px 2px; border-radius: 2px; cursor: pointer; }
     .subtask-row.today { background: rgba(180, 155, 215, 0.28); }
     .subtask-row:hover .subtask-inner { text-decoration: underline; }
     .subtask-inner { flex: 1; font-size: 11px; color: #555; word-break: break-all; }
     .subtask-inner.done-text { text-decoration: line-through; color: #bbb; }
-    .sub-done-btn {
-      width: 10px; height: 10px; border: 1px solid #ccc;
-      background: #fff; flex-shrink: 0; cursor: pointer;
-    }
+    .sub-done-btn { width: 10px; height: 10px; border: 1px solid #ccc; background: #fff; flex-shrink: 0; cursor: pointer; }
     .sub-done-btn.checked { background: #ccc; }
 
     .empty-msg { font-size: 11px; color: #ccc; text-align: center; padding: 20px 0; }
 
-    /* modal */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.35); z-index: 100;
-      align-items: center; justify-content: center;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: #fff; border: 1px solid var(--border);
-      padding: 16px; width: 280px;
-      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
-    }
+    .modal { background: #fff; border: 1px solid var(--border); padding: 16px; width: 280px; font-family: 'ChosunGu', 'Helvetica Neue', sans-serif; }
     .modal-title { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; color: #444; margin-bottom: 12px; }
     .modal label { display: block; font-size: 10px; color: #888; margin-bottom: 3px; margin-top: 10px; }
     .modal label:first-of-type { margin-top: 0; }
-    .modal input[type="text"],
-    .modal input[type="datetime-local"] {
-      width: 100%; border: 1px solid #ddd; padding: 5px 7px;
-      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
-      font-size: 11.5px; color: var(--ink); outline: none;
-    }
+    .modal input[type="text"], .modal input[type="datetime-local"] { width: 100%; border: 1px solid #ddd; padding: 5px 7px; font-family: 'ChosunGu', 'Helvetica Neue', sans-serif; font-size: 11.5px; color: var(--ink); outline: none; }
     .modal input:focus { border-color: var(--accent); }
     .modal-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 14px; }
-    .modal-actions button {
-      border: 1px solid var(--accent); background: var(--accent); color: #fff;
-      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
-      font-size: 10.5px; padding: 4px 12px; cursor: pointer;
-    }
+    .modal-actions button { border: 1px solid var(--accent); background: var(--accent); color: #fff; font-family: 'ChosunGu', 'Helvetica Neue', sans-serif; font-size: 10.5px; padding: 4px 12px; cursor: pointer; }
     .modal-actions button:hover { filter: brightness(1.1); }
     .modal-actions button:active { filter: brightness(0.9); }
     .modal-actions button:disabled { opacity: 0.45; cursor: default; filter: none; }
@@ -178,55 +103,35 @@
 
   <script src="../../shared/config-loader.js"></script>
   <script>
-    let cfg = {};
-    let allPages = [];
-    let todayStr = '';
-    let endOfWeek = '';
-    let editingPageId = null;
-    let openToggles = new Set();
+    let cfg = {}, allPages = [], todayStr = '', endOfWeek = '';
+    let editingPageId = null, openToggles = new Set();
 
-    (async () => {
-      cfg = await loadWidgetConfig();
-      await loadTodos();
-    })();
+    (async () => { cfg = await loadWidgetConfig(); await loadTodos(); })();
 
     async function loadTodos() {
       try {
         const r = await fetch('/api/get-todo?' + new URLSearchParams({ source_db_id: cfg.source_db_id }));
         const data = await r.json();
         if (!r.ok) throw new Error(data.error);
-        allPages = data.pages;
-        todayStr = data.today;
-        endOfWeek = data.endOfWeek;
+        allPages = data.pages; todayStr = data.today; endOfWeek = data.endOfWeek;
         render();
       } catch (err) {
-        document.getElementById('todo-content').innerHTML =
-          `<div class="empty-msg">${escHtml(err.message)}</div>`;
+        document.getElementById('todo-content').innerHTML = `<div class="empty-msg">${escHtml(err.message)}</div>`;
       }
     }
 
     function dateOnly(str) { return str ? str.slice(0, 10) : ''; }
 
-    function getPeriod(page) {
-      if (!page.dueStart) return null;
-      const d = dateOnly(page.dueStart);
-      if (d === todayStr) return 'today';
-      if (d <= endOfWeek) return 'week';
-      return null;
-    }
+    function isToday(page) { return dateOnly(page.dueStart) === todayStr; }
 
     function periodLabel(page) {
-      if (dateOnly(page.dueStart) !== todayStr) return null;
-      if (page.hasTime) return `(${page.dueStart.slice(11, 16)})`;
-      return null;
+      if (!isToday(page)) return null;
+      return page.hasTime ? `(${page.dueStart.slice(11, 16)})` : null;
     }
 
-    // 새 정렬: 날짜 오름차 → 시간 있는 항목 먼저 → 종일 일정 마지막
     function byDate(a, b) {
-      const da = dateOnly(a.dueStart || '');
-      const db = dateOnly(b.dueStart || '');
+      const da = dateOnly(a.dueStart || ''), db = dateOnly(b.dueStart || '');
       if (da !== db) return da.localeCompare(db);
-      // 시간 지정 항목이 먼저, 종일 일정이 마지막
       if (a.hasTime !== b.hasTime) return a.hasTime ? -1 : 1;
       return (a.dueStart || '').localeCompare(b.dueStart || '');
     }
@@ -236,55 +141,42 @@
       const pageMap = {};
       allPages.forEach(p => { pageMap[p.id] = p; });
 
-      const topLevel = allPages.filter(p =>
-        p.parentIds.length === 0 || !p.parentIds.some(pid => pageMap[pid])
-      );
-      const todayItems = topLevel.filter(p => getPeriod(p) === 'today').sort(byDate);
-      const weekItems  = topLevel.filter(p => getPeriod(p) === 'week').sort(byDate);
+      const items = allPages
+        .filter(p => p.parentIds.length === 0 || !p.parentIds.some(pid => pageMap[pid]))
+        .sort(byDate);
 
-      if (!todayItems.length && !weekItems.length) {
+      if (!items.length) {
         content.innerHTML = '<div class="empty-msg">이번 주 마감 항목이 없어요.</div>';
         return;
       }
 
       const frag = document.createDocumentFragment();
-      [{ label: '오늘', items: todayItems }, { label: '이번 주', items: weekItems }].forEach(group => {
-        if (!group.items.length) return;
-        const lbl = document.createElement('div');
-        lbl.className = 'group-label';
-        lbl.textContent = group.label;
-        frag.appendChild(lbl);
-        group.items.forEach(page => appendRow(frag, page, pageMap));
-      });
-
+      items.forEach(page => appendRow(frag, page, pageMap));
       content.innerHTML = '';
       content.appendChild(frag);
     }
 
     function appendRow(frag, page, pageMap) {
-      const isToday = getPeriod(page) === 'today';
+      const today = isToday(page);
       const children = page.childIds.map(cid => pageMap[cid]).filter(Boolean);
       const pLabel = periodLabel(page);
 
       const row = document.createElement('div');
-      row.className = 'todo-row' + (isToday ? ' today' : '');
+      row.className = 'todo-row' + (today ? ' today' : '');
 
       const pinBtn = document.createElement('button');
-      pinBtn.className = 'pin-btn' + (isToday ? ' pinned' : '');
+      pinBtn.className = 'pin-btn' + (today ? ' pinned' : '');
       pinBtn.textContent = '📌';
       pinBtn.title = '오늘로 고정';
 
       const labelDiv = document.createElement('div');
       labelDiv.className = 'todo-label';
-
       const inner = document.createElement('span');
       inner.className = 'todo-inner' + (page.done ? ' done-text' : '');
       inner.textContent = pLabel ? `${page.title} ${pLabel}` : page.title;
-
       const toggleBtn = document.createElement('button');
       toggleBtn.className = 'toggle-btn' + (children.length ? '' : ' empty');
       toggleBtn.textContent = children.length ? (openToggles.has(page.id) ? '▾' : '▸') : '▸';
-
       labelDiv.appendChild(inner);
       labelDiv.appendChild(toggleBtn);
 
@@ -299,12 +191,11 @@
 
       const subList = document.createElement('div');
       subList.className = 'subtask-list' + (openToggles.has(page.id) ? ' open' : '');
-
       children.forEach(child => {
-        const childToday = getPeriod(child) === 'today';
+        const cToday = isToday(child);
         const cLabel = periodLabel(child);
         const subRow = document.createElement('div');
-        subRow.className = 'subtask-row' + (childToday ? ' today' : '');
+        subRow.className = 'subtask-row' + (cToday ? ' today' : '');
         const subInner = document.createElement('span');
         subInner.className = 'subtask-inner' + (child.done ? ' done-text' : '');
         subInner.textContent = cLabel ? `${child.title} ${cLabel}` : child.title;
@@ -316,7 +207,6 @@
         subRow.addEventListener('click', e => { if (subDone.contains(e.target)) return; openEditModal(child); });
         subDone.addEventListener('click', () => toggleDone(child, subDone, subInner));
       });
-
       frag.appendChild(subList);
 
       labelDiv.addEventListener('click', e => { if (toggleBtn.contains(e.target)) return; openEditModal(page); });
@@ -334,39 +224,23 @@
     async function pinToday(page, btn) {
       btn.disabled = true;
       try {
-        const r = await fetch('/api/get-todo', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pageId: page.id, dueDate: todayStr }),
-        });
+        const r = await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: page.id, dueDate: todayStr }) });
         const data = await r.json();
         if (!r.ok) throw new Error(data.error);
-        page.dueStart = todayStr;
-        page.hasTime = false;
+        page.dueStart = todayStr; page.hasTime = false;
         render();
-      } catch (err) {
-        alert('핀 저장 실패: ' + err.message);
-        btn.disabled = false;
-      }
+      } catch (err) { alert('핀 저장 실패: ' + err.message); btn.disabled = false; }
     }
 
     async function toggleDone(page, btn, textEl) {
       const newDone = !page.done;
       btn.classList.toggle('checked', newDone);
-      if ('textContent' in btn) btn.textContent = newDone ? '✓' : '';
+      if (btn.className.includes('done-btn')) btn.textContent = newDone ? '✓' : '';
       textEl.classList.toggle('done-text', newDone);
       page.done = newDone;
       try {
-        await fetch('/api/get-todo', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pageId: page.id, done: newDone }),
-        });
-      } catch {
-        page.done = !newDone;
-        btn.classList.toggle('checked', !newDone);
-        textEl.classList.toggle('done-text', !newDone);
-      }
+        await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: page.id, done: newDone }) });
+      } catch { page.done = !newDone; btn.classList.toggle('checked', !newDone); textEl.classList.toggle('done-text', !newDone); }
     }
 
     function openEditModal(page) {
@@ -374,10 +248,7 @@
       document.getElementById('modal-heading').textContent = '항목 편집';
       document.getElementById('edit-title').value = page.title;
       const dueInput = document.getElementById('edit-due');
-      if (page.dueStart) {
-        const t = page.hasTime ? page.dueStart.slice(11, 16) : '00:00';
-        dueInput.value = `${page.dueStart.slice(0, 10)}T${t}`;
-      } else { dueInput.value = ''; }
+      dueInput.value = page.dueStart ? `${page.dueStart.slice(0, 10)}T${page.hasTime ? page.dueStart.slice(11, 16) : '00:00'}` : '';
       resetModal();
     }
 
@@ -398,19 +269,15 @@
 
     document.getElementById('add-btn').addEventListener('click', openAddModal);
     document.getElementById('modal-cancel').addEventListener('click', closeModal);
-    document.getElementById('modal-overlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('modal-overlay')) closeModal();
-    });
+    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
     document.getElementById('modal-save').addEventListener('click', async () => {
       const title = document.getElementById('edit-title').value.trim();
       const dueRaw = document.getElementById('edit-due').value;
       if (!title) { setModalStatus('제목을 입력해주세요.'); return; }
-
       const saveBtn = document.getElementById('modal-save');
-      saveBtn.disabled = true;
-      setModalStatus('저장 중...');
+      saveBtn.disabled = true; setModalStatus('저장 중...');
 
       let dueDate = null, hasTime = false;
       if (dueRaw) {
@@ -421,26 +288,17 @@
 
       try {
         if (editingPageId) {
-          const r = await fetch('/api/get-todo', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pageId: editingPageId, title, dueDate }),
-          });
+          const r = await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: editingPageId, title, dueDate }) });
           const data = await r.json();
           if (!r.ok) throw new Error(data.error);
           const page = allPages.find(p => p.id === editingPageId);
           if (page) {
             page.title = title; page.dueStart = dueDate; page.hasTime = hasTime;
             const d = dueDate ? dueDate.slice(0, 10) : null;
-            if (!d || d < todayStr || d > endOfWeek)
-              allPages = allPages.filter(p => p.id !== editingPageId);
+            if (!d || d < todayStr || d > endOfWeek) allPages = allPages.filter(p => p.id !== editingPageId);
           }
         } else {
-          const r = await fetch('/api/get-todo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ source_db_id: cfg.source_db_id, title, dueDate }),
-          });
+          const r = await fetch('/api/get-todo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ source_db_id: cfg.source_db_id, title, dueDate }) });
           const newPage = await r.json();
           if (!r.ok) throw new Error(newPage.error);
           const d = newPage.dueStart ? newPage.dueStart.slice(0, 10) : null;
@@ -448,10 +306,7 @@
         }
         setModalStatus('저장됨 ✓', 'ok');
         setTimeout(() => { closeModal(); render(); }, 600);
-      } catch (err) {
-        setModalStatus(err.message);
-        saveBtn.disabled = false;
-      }
+      } catch (err) { setModalStatus(err.message); saveBtn.disabled = false; }
     });
 
     function setModalStatus(msg, type) {
@@ -459,9 +314,7 @@
       el.textContent = msg;
       el.className = 'modal-status' + (type ? ' ' + type : '');
     }
-    function escHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
+    function escHtml(str) { return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   </script>
 </body>
 </html>
