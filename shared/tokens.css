@@ -21,7 +21,7 @@
 body {
   margin: 0;
   padding: 24px;
-  background: var(--paper);
+  background: transparent;
   font-family: var(--font);
 }
 
