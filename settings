@@ -1,52 +1,160 @@
-export default async function handler(req, res) {
-  const { widgetId } = req.query;
-  if (!widgetId) return res.status(400).json({ error: 'widgetId required' });
-
-  const token = process.env.NOTION_TOKEN;
-  const dbId = process.env.SETTINGS_DB_ID;
-
-  try {
-    // 1. DB 스키마에서 '제목(title)' 속성의 실제 이름을 찾는다 (한글/영문 무관하게 동작)
-    const dbRes = await fetch(`https://api.notion.com/v1/databases/${dbId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Notion-Version': '2022-06-28'
-      }
-    });
-    const db = await dbRes.json();
-    const titleKey = Object.keys(db.properties).find(
-      (key) => db.properties[key].type === 'title'
-    );
-
-    // 2. widgetId(=제목)로 해당 행 찾기
-    const queryRes = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        filter: { property: titleKey, title: { equals: widgetId } }
-      })
-    });
-    const queryData = await queryRes.json();
-    const page = queryData.results?.[0];
-
-    if (!page) return res.status(404).json({ error: 'widget not found in settings db' });
-
-    const getText = (prop) => prop?.rich_text?.[0]?.plain_text || '';
-
-    res.status(200).json({
-      pageId: page.id,
-      title: getText(page.properties.title),
-      color: getText(page.properties.color),
-      accent: getText(page.properties.accent),
-      font: getText(page.properties.font),
-      source_db_id: getText(page.properties.source_db_id),
-      source_property: getText(page.properties.source_property)
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Widget Settings</title>
+<link rel="stylesheet" href="./shared/tokens.css">
+<style>
+  body { background: #f4f4f2; padding: 32px; }
+  .window { max-width: 320px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 11px; color: #555; margin-bottom: 3px; }
+  .field input, .field select {
+    width: 100%;
+    border: 1px solid var(--border);
+    padding: 5px 6px;
+    font-size: 12px;
+    font-family: var(--font);
   }
-}
+  .color-row { display: flex; gap: 8px; align-items: center; }
+  .color-row input[type="color"] { width: 32px; height: 26px; padding: 0; border: 1px solid var(--border); cursor: pointer; }
+  .status { font-size: 11px; margin-top: 8px; color: #777; }
+</style>
+</head>
+<body>
+
+  <div class="window">
+    <div class="titlebar">
+      <span>C:// SETTINGS</span>
+      <span class="icons"><span>_</span><span>□</span><span>x</span></span>
+    </div>
+    <div class="content">
+
+      <div class="field">
+        <label>위젯 선택</label>
+        <select id="widgetSelect">
+          <option value="clock">clock</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>타이틀바 텍스트</label>
+        <input type="text" id="title" placeholder="C:// CLOCK">
+      </div>
+
+      <div class="field">
+        <label>창 색 (color)</label>
+        <div class="color-row">
+          <input type="color" id="colorPicker" value="#1a1a1a">
+          <input type="text" id="color" placeholder="#1a1a1a">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>포인트 색 (accent)</label>
+        <div class="color-row">
+          <input type="color" id="accentPicker" value="#9b8fc7">
+          <input type="text" id="accent" placeholder="#9b8fc7">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>폰트</label>
+        <select id="font">
+          <option value="'Helvetica Neue', Arial, sans-serif">Helvetica</option>
+          <option value="'Courier New', monospace">Courier (모노)</option>
+          <option value="'Georgia', serif">Georgia (세리프)</option>
+          <option value="'Gothic A1', sans-serif">고딕A1 (한글)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Source DB ID (habit 등 데이터 연동 위젯만)</label>
+        <input type="text" id="source_db_id" placeholder="비워둬도 됨">
+      </div>
+
+      <div class="field">
+        <label>Source Property (multi-select 속성명)</label>
+        <input type="text" id="source_property" placeholder="비워둬도 됨">
+      </div>
+
+      <button class="btn" id="saveBtn" style="width:100%; padding:7px;">SAVE</button>
+      <div class="status" id="status"></div>
+
+    </div>
+  </div>
+
+<script>
+  let currentPageId = null;
+
+  async function loadSettings(widgetId) {
+    document.getElementById('status').textContent = '불러오는 중...';
+    try {
+      const res = await fetch(`/api/get-settings?widgetId=${widgetId}`);
+      if (!res.ok) {
+        document.getElementById('status').textContent = '저장된 설정 없음 (Notion DB에 행이 있는지 확인)';
+        return;
+      }
+      const data = await res.json();
+      currentPageId = data.pageId;
+      document.getElementById('title').value = data.title || '';
+      document.getElementById('color').value = data.color || '';
+      document.getElementById('colorPicker').value = data.color || '#1a1a1a';
+      document.getElementById('accent').value = data.accent || '';
+      document.getElementById('accentPicker').value = data.accent || '#9b8fc7';
+      document.getElementById('font').value = data.font || "'Helvetica Neue', Arial, sans-serif";
+      document.getElementById('source_db_id').value = data.source_db_id || '';
+      document.getElementById('source_property').value = data.source_property || '';
+      document.getElementById('status').textContent = '불러오기 완료';
+    } catch (e) {
+      document.getElementById('status').textContent = '에러: ' + e.message;
+    }
+  }
+
+  document.getElementById('widgetSelect').addEventListener('change', (e) => {
+    loadSettings(e.target.value);
+  });
+
+  document.getElementById('colorPicker').addEventListener('input', (e) => {
+    document.getElementById('color').value = e.target.value;
+  });
+  document.getElementById('accentPicker').addEventListener('input', (e) => {
+    document.getElementById('accent').value = e.target.value;
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    if (!currentPageId) {
+      document.getElementById('status').textContent = '먼저 위젯을 선택해서 불러오세요';
+      return;
+    }
+    document.getElementById('status').textContent = '저장 중...';
+    const body = {
+      pageId: currentPageId,
+      title: document.getElementById('title').value,
+      color: document.getElementById('color').value,
+      accent: document.getElementById('accent').value,
+      font: document.getElementById('font').value,
+      source_db_id: document.getElementById('source_db_id').value,
+      source_property: document.getElementById('source_property').value
+    };
+    try {
+      const res = await fetch('/api/save-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        document.getElementById('status').textContent = '저장 완료 — 위젯에 바로 반영됨';
+      } else {
+        document.getElementById('status').textContent = '저장 실패';
+      }
+    } catch (e) {
+      document.getElementById('status').textContent = '에러: ' + e.message;
+    }
+  });
+
+  loadSettings('clock');
+</script>
+
+</body>
+</html>
