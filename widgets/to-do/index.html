@@ -18,155 +18,93 @@
     }
     .window { max-width: 320px; }
 
-    /* titlebar add button */
     .titlebar-right { display: flex; align-items: center; gap: 6px; }
     #add-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 14px;
-      line-height: 1;
-      cursor: pointer;
-      opacity: 0.75;
-      padding: 0;
+      background: none; border: none; color: #fff;
+      font-size: 14px; line-height: 1; cursor: pointer;
+      opacity: 0.75; padding: 0;
     }
     #add-btn:hover { opacity: 1; }
 
     .content {
       padding: 10px 12px 14px;
-      min-height: 120px;
-      max-height: 480px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
+      min-height: 120px; max-height: 480px;
+      overflow-y: auto; display: flex; flex-direction: column;
     }
     .content::-webkit-scrollbar { width: 3px; }
     .content::-webkit-scrollbar-thumb { background: #ddd; }
 
     .group-label {
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      color: #999;
-      padding: 8px 0 3px;
-      border-bottom: 1px solid #eee;
-      margin-bottom: 2px;
+      font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px;
+      color: #999; padding: 8px 0 3px;
+      border-bottom: 1px solid #eee; margin-bottom: 2px;
     }
     .group-label:first-child { padding-top: 2px; }
 
-    /* parent row: [pin] [label+toggle] [checkbox] */
+    /* row: [pin] [label+toggle] [done] */
     .todo-row {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 0;
+      display: flex; align-items: center; gap: 5px;
+      padding: 3px 4px 3px 2px;
+      border-radius: 2px;
+    }
+    /* highlight covers entire row including pin */
+    .todo-row.today {
+      background: rgba(180, 155, 215, 0.28);
     }
 
     .pin-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 11px;
-      padding: 0;
-      line-height: 1;
-      opacity: 0.28;
-      flex-shrink: 0;
-      filter: grayscale(1);
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; padding: 0; line-height: 1;
+      opacity: 0.28; flex-shrink: 0; filter: grayscale(1);
       transition: opacity 0.15s;
     }
     .pin-btn:hover { opacity: 0.65; }
     .pin-btn.pinned { opacity: 1; filter: none; }
 
     .todo-label {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      min-width: 0;
-      cursor: pointer;
+      flex: 1; display: flex; align-items: center; gap: 3px;
+      min-width: 0; cursor: pointer;
     }
     .todo-label:hover .todo-inner { text-decoration: underline; }
 
     .todo-inner {
-      font-size: 11.5px;
-      line-height: 1.55;
-      color: var(--ink);
-      word-break: break-all;
+      font-size: 11.5px; line-height: 1.55;
+      color: var(--ink); word-break: break-all;
     }
-    .todo-inner.done-text {
-      text-decoration: line-through;
-      color: #aaa;
-    }
+    .todo-inner.done-text { text-decoration: line-through; color: #aaa; }
 
     .toggle-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 13.5px;
-      color: #bbb;
-      padding: 0;
-      flex-shrink: 0;
-      line-height: 1;
+      background: none; border: none; cursor: pointer;
+      font-size: 13.5px; color: #bbb; padding: 0;
+      flex-shrink: 0; line-height: 1;
     }
     .toggle-btn:hover { color: var(--ink); }
     .toggle-btn.empty { cursor: default; visibility: hidden; }
 
-    /* today highlight */
-    .todo-row.today .todo-inner:not(.done-text) {
-      background: rgba(180, 155, 215, 0.28);
-      border-radius: 2px;
-      padding: 0 2px;
-    }
-
-    /* checkbox */
     .done-btn {
-      width: 12px;
-      height: 12px;
-      border: 1px solid #bbb;
-      background: #fff;
-      flex-shrink: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      color: transparent;
+      width: 12px; height: 12px;
+      border: 1px solid #bbb; background: #fff;
+      flex-shrink: 0; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: transparent;
     }
-    .done-btn.checked {
-      background: #bbb;
-      color: #fff;
-    }
+    .done-btn.checked { background: #bbb; color: #fff; }
 
     /* subtasks */
     .subtask-list { display: none; padding-left: 20px; margin-bottom: 2px; }
     .subtask-list.open { display: block; }
 
     .subtask-row {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 0;
-      cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+      padding: 2px 4px 2px 2px; border-radius: 2px; cursor: pointer;
     }
+    .subtask-row.today { background: rgba(180, 155, 215, 0.28); }
     .subtask-row:hover .subtask-inner { text-decoration: underline; }
-    .subtask-inner {
-      flex: 1;
-      font-size: 11px;
-      color: #555;
-      word-break: break-all;
-    }
+    .subtask-inner { flex: 1; font-size: 11px; color: #555; word-break: break-all; }
     .subtask-inner.done-text { text-decoration: line-through; color: #bbb; }
-    .subtask-row.today .subtask-inner:not(.done-text) {
-      background: rgba(180, 155, 215, 0.28);
-      border-radius: 2px;
-      padding: 0 2px;
-    }
     .sub-done-btn {
-      width: 10px; height: 10px;
-      border: 1px solid #ccc;
-      background: #fff;
-      flex-shrink: 0;
-      cursor: pointer;
+      width: 10px; height: 10px; border: 1px solid #ccc;
+      background: #fff; flex-shrink: 0; cursor: pointer;
     }
     .sub-done-btn.checked { background: #ccc; }
 
@@ -223,7 +161,6 @@
     </div>
   </div>
 
-  <!-- edit / add modal -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <div class="modal-title" id="modal-heading">항목 편집</div>
@@ -245,7 +182,7 @@
     let allPages = [];
     let todayStr = '';
     let endOfWeek = '';
-    let editingPageId = null; // null = add mode
+    let editingPageId = null;
     let openToggles = new Set();
 
     (async () => {
@@ -278,14 +215,21 @@
       return null;
     }
 
-    // Only show time label when today + time specified
     function periodLabel(page) {
       if (dateOnly(page.dueStart) !== todayStr) return null;
       if (page.hasTime) return `(${page.dueStart.slice(11, 16)})`;
-      return null; // all-day today: no label
+      return null;
     }
 
-    function byDate(a, b) { return (a.dueStart || '').localeCompare(b.dueStart || ''); }
+    // 새 정렬: 날짜 오름차 → 시간 있는 항목 먼저 → 종일 일정 마지막
+    function byDate(a, b) {
+      const da = dateOnly(a.dueStart || '');
+      const db = dateOnly(b.dueStart || '');
+      if (da !== db) return da.localeCompare(db);
+      // 시간 지정 항목이 먼저, 종일 일정이 마지막
+      if (a.hasTime !== b.hasTime) return a.hasTime ? -1 : 1;
+      return (a.dueStart || '').localeCompare(b.dueStart || '');
+    }
 
     function render() {
       const content = document.getElementById('todo-content');
@@ -304,14 +248,12 @@
       }
 
       const frag = document.createDocumentFragment();
-
       [{ label: '오늘', items: todayItems }, { label: '이번 주', items: weekItems }].forEach(group => {
         if (!group.items.length) return;
         const lbl = document.createElement('div');
         lbl.className = 'group-label';
         lbl.textContent = group.label;
         frag.appendChild(lbl);
-
         group.items.forEach(page => appendRow(frag, page, pageMap));
       });
 
@@ -324,17 +266,14 @@
       const children = page.childIds.map(cid => pageMap[cid]).filter(Boolean);
       const pLabel = periodLabel(page);
 
-      // row: [pin] [label+toggle] [done-checkbox]
       const row = document.createElement('div');
       row.className = 'todo-row' + (isToday ? ' today' : '');
 
-      // pin
       const pinBtn = document.createElement('button');
       pinBtn.className = 'pin-btn' + (isToday ? ' pinned' : '');
       pinBtn.textContent = '📌';
       pinBtn.title = '오늘로 고정';
 
-      // label
       const labelDiv = document.createElement('div');
       labelDiv.className = 'todo-label';
 
@@ -349,7 +288,6 @@
       labelDiv.appendChild(inner);
       labelDiv.appendChild(toggleBtn);
 
-      // done checkbox
       const doneBtn = document.createElement('div');
       doneBtn.className = 'done-btn' + (page.done ? ' checked' : '');
       doneBtn.textContent = page.done ? '✓' : '';
@@ -359,42 +297,29 @@
       row.appendChild(doneBtn);
       frag.appendChild(row);
 
-      // subtask list
       const subList = document.createElement('div');
       subList.className = 'subtask-list' + (openToggles.has(page.id) ? ' open' : '');
 
       children.forEach(child => {
         const childToday = getPeriod(child) === 'today';
         const cLabel = periodLabel(child);
-
         const subRow = document.createElement('div');
         subRow.className = 'subtask-row' + (childToday ? ' today' : '');
-
         const subInner = document.createElement('span');
         subInner.className = 'subtask-inner' + (child.done ? ' done-text' : '');
         subInner.textContent = cLabel ? `${child.title} ${cLabel}` : child.title;
-
         const subDone = document.createElement('div');
         subDone.className = 'sub-done-btn' + (child.done ? ' checked' : '');
-
         subRow.appendChild(subInner);
         subRow.appendChild(subDone);
         subList.appendChild(subRow);
-
-        subRow.addEventListener('click', e => {
-          if (subDone.contains(e.target)) return;
-          openEditModal(child);
-        });
+        subRow.addEventListener('click', e => { if (subDone.contains(e.target)) return; openEditModal(child); });
         subDone.addEventListener('click', () => toggleDone(child, subDone, subInner));
       });
 
       frag.appendChild(subList);
 
-      // events
-      labelDiv.addEventListener('click', e => {
-        if (toggleBtn.contains(e.target)) return;
-        openEditModal(page);
-      });
+      labelDiv.addEventListener('click', e => { if (toggleBtn.contains(e.target)) return; openEditModal(page); });
       if (children.length) {
         toggleBtn.addEventListener('click', e => {
           e.stopPropagation();
@@ -428,8 +353,7 @@
     async function toggleDone(page, btn, textEl) {
       const newDone = !page.done;
       btn.classList.toggle('checked', newDone);
-      if (btn.textContent !== undefined && btn.className.includes('done-btn'))
-        btn.textContent = newDone ? '✓' : '';
+      if ('textContent' in btn) btn.textContent = newDone ? '✓' : '';
       textEl.classList.toggle('done-text', newDone);
       page.done = newDone;
       try {
@@ -438,15 +362,13 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ pageId: page.id, done: newDone }),
         });
-      } catch (err) {
-        // revert on failure
+      } catch {
         page.done = !newDone;
         btn.classList.toggle('checked', !newDone);
         textEl.classList.toggle('done-text', !newDone);
       }
     }
 
-    // ─ modal ─
     function openEditModal(page) {
       editingPageId = page.id;
       document.getElementById('modal-heading').textContent = '항목 편집';
@@ -479,9 +401,7 @@
     document.getElementById('modal-overlay').addEventListener('click', e => {
       if (e.target === document.getElementById('modal-overlay')) closeModal();
     });
-    function closeModal() {
-      document.getElementById('modal-overlay').classList.remove('open');
-    }
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
     document.getElementById('modal-save').addEventListener('click', async () => {
       const title = document.getElementById('edit-title').value.trim();
@@ -501,7 +421,6 @@
 
       try {
         if (editingPageId) {
-          // edit
           const r = await fetch('/api/get-todo', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -517,7 +436,6 @@
               allPages = allPages.filter(p => p.id !== editingPageId);
           }
         } else {
-          // add
           const r = await fetch('/api/get-todo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
