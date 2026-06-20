@@ -20,7 +20,12 @@
 
     .window { max-width: 300px; }
 
-    .content { padding: 12px 14px 14px; }
+    .content {
+      padding: 14px 16px 16px;
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+    }
 
     .log-date {
       font-size: 10.5px;
@@ -87,7 +92,7 @@
     }
 
     .log-list {
-      max-height: 220px;
+      flex: 1;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
