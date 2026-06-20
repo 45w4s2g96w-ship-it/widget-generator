@@ -103,9 +103,15 @@
       </div>
 
       <div class="field">
-        <label>폰트 (글씨체 보고 클릭해서 선택, 직접 입력도 가능)</label>
-        <input type="text" id="font" value="Helvetica Neue" placeholder="폰트 이름 직접 입력도 가능">
-        <div class="font-grid" id="fontGrid"></div>
+        <label>영문 폰트 (숫자/알파벳에 적용)</label>
+        <input type="text" id="latinFont" value="Helvetica Neue" placeholder="직접 입력 가능">
+        <div class="font-grid" id="latinFontGrid"></div>
+      </div>
+
+      <div class="field">
+        <label>한글 폰트 (한글 글자에 적용)</label>
+        <input type="text" id="koreanFont" value="Gothic A1" placeholder="직접 입력 가능">
+        <div class="font-grid" id="koreanFontGrid"></div>
       </div>
 
       <div class="field">
@@ -175,12 +181,15 @@
     }
   }
 
-  const FONT_LIST = [
+  const KOREAN_FONTS = [
     'Noto Sans KR','Noto Serif KR','Nanum Gothic','Nanum Myeongjo','Nanum Pen Script',
     'Nanum Brush Script','Black Han Sans','Do Hyeon','Jua','Gaegu',
     'Gowun Dodum','Gowun Batang','Hahmlet','Gothic A1','IBM Plex Sans KR',
     'Stylish','Sunflower','Single Day','East Sea Dokdo','Poor Story',
-    'Yeon Sung','Cute Font','Dokdo','Gugi','Song Myung',
+    'Yeon Sung','Cute Font','Dokdo','Gugi','Song Myung'
+  ];
+
+  const LATIN_FONTS = [
     'Inter','Work Sans','Archivo Black','Space Mono','IBM Plex Mono',
     'Bebas Neue','DM Mono','Sora','Manrope','Space Grotesk',
     'JetBrains Mono','Syne','Unbounded','Fraunces','Instrument Serif',
@@ -188,45 +197,49 @@
     'Plus Jakarta Sans','Crimson Text','Libre Baskerville','Cormorant Garamond','Public Sans'
   ];
 
-  function renderFontGrid() {
-    const grid = document.getElementById('fontGrid');
-    grid.innerHTML = FONT_LIST.map(f =>
+  function renderFontGrid(gridId, inputId, list) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = list.map(f =>
       `<div class="font-item" style="font-family:'${f}'" data-font="${f}">${f}</div>`
     ).join('');
     grid.querySelectorAll('.font-item').forEach(item => {
       item.addEventListener('click', () => {
-        document.getElementById('font').value = item.dataset.font;
+        document.getElementById(inputId).value = item.dataset.font;
         grid.querySelectorAll('.font-item').forEach(i => i.classList.remove('selected'));
         item.classList.add('selected');
         updatePreview();
       });
     });
   }
-  renderFontGrid();
+  renderFontGrid('latinFontGrid', 'latinFont', LATIN_FONTS);
+  renderFontGrid('koreanFontGrid', 'koreanFont', KOREAN_FONTS);
 
   let fontLoadTimer;
   function loadGoogleFont(fontName) {
     const familyParam = fontName.trim().replace(/\s+/g, '+');
-    let link = document.getElementById('dynamicFontLink');
-    if (!link) {
-      link = document.createElement('link');
-      link.id = 'dynamicFontLink';
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-    }
+    const linkId = 'dynamicFontLink-' + familyParam;
+    if (document.getElementById(linkId)) return;
+    const link = document.createElement('link');
+    link.id = linkId;
+    link.rel = 'stylesheet';
     link.href = `https://fonts.googleapis.com/css2?family=${familyParam}:wght@400;700;900&display=swap`;
+    document.head.appendChild(link);
   }
 
   function updatePreview() {
     const color = document.getElementById('color').value || '#1a1a1a';
     const accent = document.getElementById('accent').value || '#9b8fc7';
-    const fontName = document.getElementById('font').value || 'Helvetica Neue';
-    const font = `'${fontName}', sans-serif`;
+    const latinFont = document.getElementById('latinFont').value || 'Helvetica Neue';
+    const koreanFont = document.getElementById('koreanFont').value || 'Gothic A1';
+    const font = `'${latinFont}', '${koreanFont}', sans-serif`;
     const title = document.getElementById('title').value || 'C:// WIDGET';
     const type = document.getElementById('type').value;
 
     clearTimeout(fontLoadTimer);
-    fontLoadTimer = setTimeout(() => loadGoogleFont(fontName), 400);
+    fontLoadTimer = setTimeout(() => {
+      loadGoogleFont(latinFont);
+      loadGoogleFont(koreanFont);
+    }, 400);
 
     document.documentElement.style.setProperty('--win-color', color);
     document.documentElement.style.setProperty('--accent', accent);
@@ -238,12 +251,14 @@
   }
 
   function updateConfigOutput() {
+    const latinFont = document.getElementById('latinFont').value || 'Helvetica Neue';
+    const koreanFont = document.getElementById('koreanFont').value || 'Gothic A1';
     const config = {
       id: document.getElementById('widgetId').value || 'widget-id',
       title: document.getElementById('title').value || 'C:// WIDGET',
       color: document.getElementById('color').value,
       accent: document.getElementById('accent').value,
-      font: document.getElementById('font').value,
+      font: `'${latinFont}', '${koreanFont}', sans-serif`,
       type: document.getElementById('type').value,
       mode: 'live'
     };
@@ -257,7 +272,7 @@
   }
 
   // 입력값 바뀔 때마다 실시간 반영
-  ['widgetId','title','type','color','accent','font'].forEach(id => {
+  ['widgetId','title','type','color','accent','latinFont','koreanFont'].forEach(id => {
     document.getElementById(id).addEventListener('input', updatePreview);
   });
   document.getElementById('colorPicker').addEventListener('input', e => {
@@ -274,7 +289,7 @@
       title: document.getElementById('title').value,
       color: document.getElementById('color').value,
       accent: document.getElementById('accent').value,
-      font: document.getElementById('font').value,
+      font: `'${document.getElementById('latinFont').value || 'Helvetica Neue'}', '${document.getElementById('koreanFont').value || 'Gothic A1'}', sans-serif`,
       type: document.getElementById('type').value,
       source_db_id: document.getElementById('source_db_id').value,
       source_property: document.getElementById('source_property').value
