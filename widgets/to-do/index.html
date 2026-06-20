@@ -27,7 +27,6 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 0;
     }
     .content::-webkit-scrollbar { width: 3px; }
     .content::-webkit-scrollbar-thumb { background: #ddd; }
@@ -37,38 +36,64 @@
       font-weight: 700;
       letter-spacing: 0.6px;
       color: #999;
-      text-transform: uppercase;
       padding: 8px 0 3px;
       border-bottom: 1px solid #eee;
       margin-bottom: 2px;
     }
     .group-label:first-child { padding-top: 2px; }
 
+    /* ─ parent row ─ */
     .todo-row {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 4px;
       padding: 3px 0;
     }
-    .todo-text {
+
+    /* label area: text + period + toggle all inline */
+    .todo-label {
       flex: 1;
-      font-size: 11.5px;
-      line-height: 1.5;
-      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      min-width: 0;
       cursor: pointer;
+    }
+    .todo-label:hover .todo-text { text-decoration: underline; }
+
+    .todo-inner {
+      /* wraps text+period as one inline block for highlight */
+      display: inline;
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: var(--ink);
       word-break: break-all;
     }
-    .todo-text:hover { text-decoration: underline; }
     .todo-period {
-      font-size: 10px;
+      font-size: 10.5px;
       color: #aaa;
       white-space: nowrap;
-      flex-shrink: 0;
     }
 
-    .todo-row.today .todo-text {
-      background: linear-gradient(transparent 55%, rgba(255, 230, 0, 0.45) 55%);
-      display: inline;
+    /* toggle button sits right after label text */
+    .toggle-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13.5px;   /* 9px × 1.5 */
+      color: #bbb;
+      padding: 0;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .toggle-btn:hover { color: var(--ink); }
+    .toggle-btn.empty { cursor: default; visibility: hidden; }
+
+    /* highlight: full solid bg like Notion */
+    .todo-row.today .todo-inner {
+      background: rgba(180, 155, 215, 0.28);
+      border-radius: 2px;
+      padding: 0 2px;
     }
     .todo-row.today .todo-period { color: #c0392b; font-weight: 700; }
 
@@ -79,57 +104,45 @@
       font-size: 12px;
       padding: 0 2px;
       line-height: 1;
-      opacity: 0.35;
+      opacity: 0.3;
       flex-shrink: 0;
       filter: grayscale(1);
       transition: opacity 0.15s;
     }
-    .pin-btn:hover { opacity: 0.7; }
+    .pin-btn:hover { opacity: 0.65; }
     .pin-btn.pinned { opacity: 1; filter: none; }
 
-    .toggle-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 9px;
-      color: #bbb;
-      padding: 0;
-      flex-shrink: 0;
-      line-height: 1.6;
-      width: 12px;
-      text-align: center;
-    }
-    .toggle-btn:hover { color: var(--ink); }
-
+    /* ─ subtask ─ */
     .subtask-list {
       display: none;
-      padding-left: 16px;
+      padding-left: 14px;
       margin-bottom: 2px;
     }
     .subtask-list.open { display: block; }
 
     .subtask-row {
       display: flex;
-      align-items: baseline;
-      gap: 4px;
+      align-items: center;
+      gap: 3px;
       padding: 2px 0;
+      cursor: pointer;
     }
-    .subtask-text {
-      flex: 1;
+    .subtask-row:hover .subtask-inner { text-decoration: underline; }
+
+    .subtask-inner {
       font-size: 11px;
       color: #555;
-      cursor: pointer;
       word-break: break-all;
     }
-    .subtask-text:hover { text-decoration: underline; }
     .subtask-period {
       font-size: 9.5px;
       color: #bbb;
       white-space: nowrap;
     }
-    .subtask-row.today .subtask-text {
-      background: linear-gradient(transparent 55%, rgba(255, 230, 0, 0.45) 55%);
-      display: inline;
+    .subtask-row.today .subtask-inner {
+      background: rgba(180, 155, 215, 0.28);
+      border-radius: 2px;
+      padding: 0 2px;
     }
     .subtask-row.today .subtask-period { color: #c0392b; font-weight: 700; }
 
@@ -140,6 +153,7 @@
       padding: 20px 0;
     }
 
+    /* ─ modal ─ */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -158,7 +172,6 @@
       width: 280px;
       font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
     }
-
     .modal-title {
       font-size: 11px;
       font-weight: 700;
@@ -166,7 +179,6 @@
       color: #444;
       margin-bottom: 12px;
     }
-
     .modal label {
       display: block;
       font-size: 10px;
@@ -175,7 +187,6 @@
       margin-top: 10px;
     }
     .modal label:first-of-type { margin-top: 0; }
-
     .modal input[type="text"],
     .modal input[type="datetime-local"] {
       width: 100%;
@@ -187,14 +198,12 @@
       outline: none;
     }
     .modal input:focus { border-color: var(--accent); }
-
     .modal-actions {
       display: flex;
       gap: 6px;
       justify-content: flex-end;
       margin-top: 14px;
     }
-
     .modal-actions button {
       border: 1px solid var(--accent);
       background: var(--accent);
@@ -207,19 +216,9 @@
     .modal-actions button:hover { filter: brightness(1.1); }
     .modal-actions button:active { filter: brightness(0.9); }
     .modal-actions button:disabled { opacity: 0.45; cursor: default; filter: none; }
-    .modal-actions .cancel-btn {
-      background: #fff;
-      color: #666;
-      border-color: #ccc;
-    }
+    .modal-actions .cancel-btn { background: #fff; color: #666; border-color: #ccc; }
     .modal-actions .cancel-btn:hover { filter: none; background: #f5f5f5; }
-
-    .modal-status {
-      font-size: 10px;
-      min-height: 14px;
-      color: #c0392b;
-      margin-top: 6px;
-    }
+    .modal-status { font-size: 10px; min-height: 14px; color: #c0392b; margin-top: 6px; }
     .modal-status.ok { color: var(--accent); }
   </style>
 </head>
@@ -279,23 +278,21 @@
       }
     }
 
-    function getSeoulDate(str) { return str.slice(0, 10); }
+    function dateOnly(str) { return str ? str.slice(0, 10) : ''; }
 
     function getPeriod(page) {
       if (!page.dueStart) return null;
-      const d = getSeoulDate(page.dueStart);
+      const d = dateOnly(page.dueStart);
       if (d === todayStr) return 'today';
       if (d <= endOfWeek) return 'week';
       return null;
     }
 
+    // Returns period label string for today items only; null otherwise
     function periodLabel(page) {
-      const d = getSeoulDate(page.dueStart);
-      if (d === todayStr) {
-        if (page.hasTime) return `(${page.dueStart.slice(11, 16)})`;
-        return '(오늘)';
-      }
-      return '(이번 주)';
+      if (dateOnly(page.dueStart) !== todayStr) return null;
+      if (page.hasTime) return `(${page.dueStart.slice(11, 16)})`;
+      return '(오늘)';
     }
 
     function render() {
@@ -307,101 +304,95 @@
         p.parentIds.length === 0 || !p.parentIds.some(pid => pageMap[pid])
       );
 
-      const todayItems = topLevel.filter(p => getPeriod(p) === 'today');
-      const weekItems  = topLevel.filter(p => getPeriod(p) === 'week');
+      const todayItems = topLevel.filter(p => getPeriod(p) === 'today').sort(byDate);
+      const weekItems  = topLevel.filter(p => getPeriod(p) === 'week').sort(byDate);
 
-      if (todayItems.length === 0 && weekItems.length === 0) {
+      if (!todayItems.length && !weekItems.length) {
         content.innerHTML = '<div class="empty-msg">이번 주 마감 항목이 없어요.</div>';
         return;
       }
 
-      function byDate(a, b) {
-        return (a.dueStart || '').localeCompare(b.dueStart || '');
-      }
-      todayItems.sort(byDate);
-      weekItems.sort(byDate);
-
-      const groups = [
-        { label: '오늘', items: todayItems },
-        { label: '이번 주', items: weekItems },
-      ];
-
       const frag = document.createDocumentFragment();
 
-      groups.forEach(group => {
-        if (group.items.length === 0) return;
+      [{ label: '오늘', items: todayItems }, { label: '이번 주', items: weekItems }].forEach(group => {
+        if (!group.items.length) return;
 
-        const label = document.createElement('div');
-        label.className = 'group-label';
-        label.textContent = group.label;
-        frag.appendChild(label);
+        const lbl = document.createElement('div');
+        lbl.className = 'group-label';
+        lbl.textContent = group.label;
+        frag.appendChild(lbl);
 
         group.items.forEach(page => {
           const isToday = getPeriod(page) === 'today';
           const children = page.childIds.map(cid => pageMap[cid]).filter(Boolean);
+          const pLabel = periodLabel(page);
 
+          // ─ parent row
           const row = document.createElement('div');
           row.className = 'todo-row' + (isToday ? ' today' : '');
 
+          // clickable label area (text + period + toggle)
+          const labelDiv = document.createElement('div');
+          labelDiv.className = 'todo-label';
+
+          const inner = document.createElement('span');
+          inner.className = 'todo-inner';
+          inner.textContent = pLabel ? `${page.title} ${pLabel}` : page.title;
+
           const toggleBtn = document.createElement('button');
-          toggleBtn.className = 'toggle-btn';
-          toggleBtn.textContent = children.length > 0
+          toggleBtn.className = 'toggle-btn' + (children.length ? '' : ' empty');
+          toggleBtn.textContent = children.length
             ? (openToggles.has(page.id) ? '▾' : '▸')
-            : '';
-          if (!children.length) toggleBtn.style.cursor = 'default';
+            : '▸';
 
-          const textSpan = document.createElement('span');
-          textSpan.className = 'todo-text';
-          textSpan.textContent = page.title;
-
-          const periodSpan = document.createElement('span');
-          periodSpan.className = 'todo-period';
-          periodSpan.textContent = periodLabel(page);
+          labelDiv.appendChild(inner);
+          labelDiv.appendChild(toggleBtn);
 
           const pinBtn = document.createElement('button');
           pinBtn.className = 'pin-btn' + (isToday ? ' pinned' : '');
           pinBtn.textContent = '📌';
           pinBtn.title = '오늘로 고정';
 
-          row.appendChild(toggleBtn);
-          row.appendChild(textSpan);
-          row.appendChild(periodSpan);
+          row.appendChild(labelDiv);
           row.appendChild(pinBtn);
           frag.appendChild(row);
 
+          // ─ subtask list
           const subList = document.createElement('div');
           subList.className = 'subtask-list' + (openToggles.has(page.id) ? ' open' : '');
 
           children.forEach(child => {
             const childToday = getPeriod(child) === 'today';
+            const cLabel = periodLabel(child);
+
             const subRow = document.createElement('div');
             subRow.className = 'subtask-row' + (childToday ? ' today' : '');
 
-            const subText = document.createElement('span');
-            subText.className = 'subtask-text';
-            subText.textContent = child.title;
+            const subInner = document.createElement('span');
+            subInner.className = 'subtask-inner';
+            subInner.textContent = cLabel ? `${child.title} ${cLabel}` : child.title;
 
-            const subPeriod = document.createElement('span');
-            subPeriod.className = 'subtask-period';
-            subPeriod.textContent = child.dueStart ? periodLabel(child) : '';
-
-            subRow.appendChild(subText);
-            subRow.appendChild(subPeriod);
+            subRow.appendChild(subInner);
             subList.appendChild(subRow);
 
-            subText.addEventListener('click', () => openEditModal(child));
+            subRow.addEventListener('click', () => openEditModal(child));
           });
 
           frag.appendChild(subList);
 
-          if (children.length > 0) {
-            toggleBtn.addEventListener('click', () => {
+          // events
+          labelDiv.addEventListener('click', (e) => {
+            if (e.target === toggleBtn || toggleBtn.contains(e.target)) return;
+            openEditModal(page);
+          });
+
+          if (children.length) {
+            toggleBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
               openToggles.has(page.id) ? openToggles.delete(page.id) : openToggles.add(page.id);
               render();
             });
           }
-
-          textSpan.addEventListener('click', () => openEditModal(page));
 
           pinBtn.addEventListener('click', async () => {
             pinBtn.disabled = true;
@@ -426,6 +417,10 @@
 
       content.innerHTML = '';
       content.appendChild(frag);
+    }
+
+    function byDate(a, b) {
+      return (a.dueStart || '').localeCompare(b.dueStart || '');
     }
 
     function openEditModal(page) {
@@ -464,17 +459,11 @@
       saveBtn.disabled = true;
       setModalStatus('저장 중...');
 
-      let dueDate = null;
-      let hasTime = false;
+      let dueDate = null, hasTime = false;
       if (dueRaw) {
-        const dateOnly = dueRaw.slice(0, 10);
-        const timePart = dueRaw.slice(11, 16);
-        if (timePart && timePart !== '00:00') {
-          dueDate = `${dateOnly}T${timePart}:00+09:00`;
-          hasTime = true;
-        } else {
-          dueDate = dateOnly;
-        }
+        const d = dueRaw.slice(0, 10), t = dueRaw.slice(11, 16);
+        if (t && t !== '00:00') { dueDate = `${d}T${t}:00+09:00`; hasTime = true; }
+        else dueDate = d;
       }
 
       try {
@@ -488,14 +477,10 @@
 
         const page = allPages.find(p => p.id === editingPageId);
         if (page) {
-          page.title = title;
-          page.dueStart = dueDate;
-          page.hasTime = hasTime;
-          // remove if now outside today~endOfWeek
+          page.title = title; page.dueStart = dueDate; page.hasTime = hasTime;
           const d = dueDate ? dueDate.slice(0, 10) : null;
-          if (!d || d < todayStr || d > endOfWeek) {
+          if (!d || d < todayStr || d > endOfWeek)
             allPages = allPages.filter(p => p.id !== editingPageId);
-          }
         }
 
         setModalStatus('저장됨 ✓', 'ok');
