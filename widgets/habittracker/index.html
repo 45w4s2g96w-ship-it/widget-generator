@@ -9,9 +9,14 @@
     @font-face {
       font-family: 'ChosunGu';
       src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+      font-display: swap;
     }
 
-    body { display: flex; justify-content: center; }
+    body {
+      display: flex;
+      justify-content: center;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+    }
 
     .window {
       max-width: 300px;
@@ -42,12 +47,28 @@
 
     /* ── 날짜 ── */
     .ht-date {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-size: 11px;
       color: #888;
       letter-spacing: 0.4px;
       margin-bottom: 10px;
     }
     .ht-date .day-acc { color: var(--accent); }
+    .ht-date .date-text { flex: 1; }
+
+    .date-nav {
+      cursor: pointer;
+      color: #aaa;
+      font-size: 12px;
+      padding: 0 2px;
+      user-select: none;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .date-nav:hover { color: var(--accent); }
+    .date-nav.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
 
     /* ── 별 진행바 ── */
     .star-bar {
@@ -351,8 +372,12 @@
     <!-- 메인 콘텐츠 -->
     <div class="content">
       <div class="ht-date">
-        <span id="ht-date-ymd">----.--.--</span>
-        <span class="day-acc" id="ht-date-day">(---)</span>
+        <span class="date-nav" id="date-prev">&#8592;</span>
+        <span class="date-text">
+          <span id="ht-date-ymd">----.--.--</span>
+          <span class="day-acc" id="ht-date-day">(---)</span>
+        </span>
+        <span class="date-nav disabled" id="date-next">&#8594;</span>
       </div>
 
       <div class="star-bar" id="star-bar"></div>
@@ -404,15 +429,27 @@
     let _config = null;
     let _lastData = null;
 
+    // 오늘 기준 날짜 오프셋 (0 = 오늘, -1 = 어제, ...)
+    let _dateOffset = 0;
+
     function pad(n) { return String(n).padStart(2, '0'); }
 
+    function getDateByOffset(offset) {
+      const d = new Date();
+      d.setDate(d.getDate() + offset);
+      return d;
+    }
+
+    function formatDate(d) {
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+
     function renderDate() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const mo = pad(now.getMonth() + 1);
-      const d = pad(now.getDate());
-      document.getElementById('ht-date-ymd').textContent = `${y}-${mo}-${d}`;
-      document.getElementById('ht-date-day').textContent = `(${DAYS[now.getDay()]})`;
+      const d = getDateByOffset(_dateOffset);
+      document.getElementById('ht-date-ymd').textContent = formatDate(d);
+      document.getElementById('ht-date-day').textContent = `(${DAYS[d.getDay()]})`;
+      // 오늘이면 → 비활성화
+      document.getElementById('date-next').classList.toggle('disabled', _dateOffset >= 0);
     }
 
     function renderStars(completed, total) {
@@ -490,8 +527,9 @@
       }
 
       try {
+        const date = formatDate(getDateByOffset(_dateOffset));
         const res = await fetch(
-          `/api/get-habit-grouped?source_db_id=${encodeURIComponent(source_db_id)}&source_property=${encodeURIComponent(source_property)}`
+          `/api/get-habit-grouped?source_db_id=${encodeURIComponent(source_db_id)}&source_property=${encodeURIComponent(source_property)}&date=${date}`
         );
         const data = await res.json();
         if (data.error) throw new Error(data.error);
@@ -645,10 +683,22 @@
       document.getElementById('add-name').addEventListener('keydown', e => {
         if (e.key === 'Enter') addHabit();
       });
+
+      document.getElementById('date-prev').addEventListener('click', () => {
+        _dateOffset--;
+        renderDate();
+        loadHabits();
+      });
+      document.getElementById('date-next').addEventListener('click', () => {
+        if (_dateOffset >= 0) return;
+        _dateOffset++;
+        renderDate();
+        loadHabits();
+      });
     }
 
     init();
-    setInterval(loadHabits, 5 * 60 * 1000);
+    setInterval(() => { if (_dateOffset === 0) loadHabits(); }, 5 * 60 * 1000);
   </script>
 </body>
 </html>

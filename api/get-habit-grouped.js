@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     try {
       const allOptions = await fetchDbOptions(source_db_id, source_property);
 
-      const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+      const today = req.query.date || new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
       const queryRes = await fetch(`https://api.notion.com/v1/databases/${source_db_id}/query`, {
         method: 'POST',
         headers,
