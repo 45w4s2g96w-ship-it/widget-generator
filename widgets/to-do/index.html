@@ -44,13 +44,11 @@
     }
     .group-label:first-child { padding-top: 2px; }
 
-    /* parent todo row */
     .todo-row {
       display: flex;
       align-items: baseline;
       gap: 4px;
       padding: 3px 0;
-      cursor: default;
     }
     .todo-text {
       flex: 1;
@@ -68,14 +66,12 @@
       flex-shrink: 0;
     }
 
-    /* highlight today items */
     .todo-row.today .todo-text {
       background: linear-gradient(transparent 55%, rgba(255, 230, 0, 0.45) 55%);
       display: inline;
     }
     .todo-row.today .todo-period { color: #c0392b; font-weight: 700; }
 
-    /* pin */
     .pin-btn {
       background: none;
       border: none;
@@ -89,12 +85,8 @@
       transition: opacity 0.15s;
     }
     .pin-btn:hover { opacity: 0.7; }
-    .pin-btn.pinned {
-      opacity: 1;
-      filter: none;
-    }
+    .pin-btn.pinned { opacity: 1; filter: none; }
 
-    /* toggle arrow */
     .toggle-btn {
       background: none;
       border: none;
@@ -109,7 +101,6 @@
     }
     .toggle-btn:hover { color: var(--ink); }
 
-    /* subtask list */
     .subtask-list {
       display: none;
       padding-left: 16px;
@@ -149,7 +140,6 @@
       padding: 20px 0;
     }
 
-    /* ── edit modal ── */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -187,7 +177,6 @@
     .modal label:first-of-type { margin-top: 0; }
 
     .modal input[type="text"],
-    .modal input[type="date"],
     .modal input[type="datetime-local"] {
       width: 100%;
       border: 1px solid #ddd;
@@ -245,7 +234,6 @@
     </div>
   </div>
 
-  <!-- edit modal -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <div class="modal-title">항목 편집</div>
@@ -266,6 +254,7 @@
     let cfg = {};
     let allPages = [];
     let todayStr = '';
+    let endOfWeek = '';
     let editingPageId = null;
     let openToggles = new Set();
 
@@ -282,6 +271,7 @@
         if (!r.ok) throw new Error(data.error);
         allPages = data.pages;
         todayStr = data.today;
+        endOfWeek = data.endOfWeek;
         render();
       } catch (err) {
         document.getElementById('todo-content').innerHTML =
@@ -289,79 +279,51 @@
       }
     }
 
-    // ── date helpers ──
+    function getSeoulDate(str) { return str.slice(0, 10); }
 
-    function getSeoulDate(str) {
-      // str is ISO date string from Notion (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss+09:00)
-      return str.slice(0, 10);
-    }
-
-    function getWeekBounds(todayISO) {
-      const d = new Date(todayISO + 'T00:00:00');
-      // Monday=0 ... Sunday=6 offset
-      const dow = (d.getDay() + 6) % 7; // Mon=0
-      const mon = new Date(d); mon.setDate(d.getDate() - dow);
-      const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-      const fmt = dt => dt.toLocaleDateString('sv-SE');
-      return { weekStart: fmt(mon), weekEnd: fmt(sun) };
-    }
-
-    function getPeriod(page, todayISO) {
+    function getPeriod(page) {
       if (!page.dueStart) return null;
-      const dateOnly = getSeoulDate(page.dueStart);
-      if (dateOnly === todayISO) return 'today';
-      const { weekEnd } = getWeekBounds(todayISO);
-      if (dateOnly <= weekEnd) return 'week';
-      return 'month';
+      const d = getSeoulDate(page.dueStart);
+      if (d === todayStr) return 'today';
+      if (d <= endOfWeek) return 'week';
+      return null;
     }
 
-    function periodLabel(page, todayISO) {
-      const dateOnly = getSeoulDate(page.dueStart);
-      if (dateOnly === todayISO) {
-        if (page.hasTime) {
-          const t = page.dueStart.slice(11, 16);
-          return `(${t})`;
-        }
+    function periodLabel(page) {
+      const d = getSeoulDate(page.dueStart);
+      if (d === todayStr) {
+        if (page.hasTime) return `(${page.dueStart.slice(11, 16)})`;
         return '(오늘)';
       }
-      const { weekEnd } = getWeekBounds(todayISO);
-      if (dateOnly <= weekEnd) return '(이번 주)';
-      return '(이번 달)';
+      return '(이번 주)';
     }
-
-    // ── render ──
 
     function render() {
       const content = document.getElementById('todo-content');
-
-      // build id→page map
       const pageMap = {};
       allPages.forEach(p => { pageMap[p.id] = p; });
 
-      // separate parents (no parent) and children
-      const parents = allPages.filter(p => p.parentIds.length === 0);
-      const orphans = allPages.filter(p => p.parentIds.length > 0 &&
-        !p.parentIds.some(pid => pageMap[pid]));
-      // treat orphans (parent not in current result set) as top-level
-      const topLevel = [...parents, ...orphans];
+      const topLevel = allPages.filter(p =>
+        p.parentIds.length === 0 || !p.parentIds.some(pid => pageMap[pid])
+      );
 
-      if (topLevel.length === 0 && allPages.length === 0) {
-        content.innerHTML = '<div class="empty-msg">이번 달 마감 항목이 없어요.</div>';
+      const todayItems = topLevel.filter(p => getPeriod(p) === 'today');
+      const weekItems  = topLevel.filter(p => getPeriod(p) === 'week');
+
+      if (todayItems.length === 0 && weekItems.length === 0) {
+        content.innerHTML = '<div class="empty-msg">이번 주 마감 항목이 없어요.</div>';
         return;
       }
 
-      // sort by period then date
-      function sortKey(p) {
-        const period = getPeriod(p, todayStr);
-        const order = period === 'today' ? 0 : period === 'week' ? 1 : 2;
-        return `${order}_${p.dueStart || 'z'}`;
+      function byDate(a, b) {
+        return (a.dueStart || '').localeCompare(b.dueStart || '');
       }
-      topLevel.sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+      todayItems.sort(byDate);
+      weekItems.sort(byDate);
 
       const groups = [
-        { key: 'today', label: '오늘', items: topLevel.filter(p => getPeriod(p, todayStr) === 'today') },
-        { key: 'week',  label: '이번 주', items: topLevel.filter(p => getPeriod(p, todayStr) === 'week') },
-        { key: 'month', label: '이번 달', items: topLevel.filter(p => getPeriod(p, todayStr) === 'month') },
+        { label: '오늘', items: todayItems },
+        { label: '이번 주', items: weekItems },
       ];
 
       const frag = document.createDocumentFragment();
@@ -375,22 +337,18 @@
         frag.appendChild(label);
 
         group.items.forEach(page => {
-          const isToday = getPeriod(page, todayStr) === 'today';
+          const isToday = getPeriod(page) === 'today';
           const children = page.childIds.map(cid => pageMap[cid]).filter(Boolean);
 
-          // parent row
           const row = document.createElement('div');
           row.className = 'todo-row' + (isToday ? ' today' : '');
 
-          // toggle button (only if has children)
           const toggleBtn = document.createElement('button');
           toggleBtn.className = 'toggle-btn';
-          if (children.length > 0) {
-            toggleBtn.textContent = openToggles.has(page.id) ? '▾' : '▸';
-          } else {
-            toggleBtn.textContent = '';
-            toggleBtn.style.cursor = 'default';
-          }
+          toggleBtn.textContent = children.length > 0
+            ? (openToggles.has(page.id) ? '▾' : '▸')
+            : '';
+          if (!children.length) toggleBtn.style.cursor = 'default';
 
           const textSpan = document.createElement('span');
           textSpan.className = 'todo-text';
@@ -398,7 +356,7 @@
 
           const periodSpan = document.createElement('span');
           periodSpan.className = 'todo-period';
-          periodSpan.textContent = periodLabel(page, todayStr);
+          periodSpan.textContent = periodLabel(page);
 
           const pinBtn = document.createElement('button');
           pinBtn.className = 'pin-btn' + (isToday ? ' pinned' : '');
@@ -411,14 +369,11 @@
           row.appendChild(pinBtn);
           frag.appendChild(row);
 
-          // subtask list
           const subList = document.createElement('div');
           subList.className = 'subtask-list' + (openToggles.has(page.id) ? ' open' : '');
 
           children.forEach(child => {
-            const childPeriod = child.dueStart ? getPeriod(child, todayStr) : null;
-            const childToday = childPeriod === 'today';
-
+            const childToday = getPeriod(child) === 'today';
             const subRow = document.createElement('div');
             subRow.className = 'subtask-row' + (childToday ? ' today' : '');
 
@@ -428,7 +383,7 @@
 
             const subPeriod = document.createElement('span');
             subPeriod.className = 'subtask-period';
-            subPeriod.textContent = child.dueStart ? periodLabel(child, todayStr) : '';
+            subPeriod.textContent = child.dueStart ? periodLabel(child) : '';
 
             subRow.appendChild(subText);
             subRow.appendChild(subPeriod);
@@ -439,11 +394,9 @@
 
           frag.appendChild(subList);
 
-          // events
           if (children.length > 0) {
             toggleBtn.addEventListener('click', () => {
-              if (openToggles.has(page.id)) openToggles.delete(page.id);
-              else openToggles.add(page.id);
+              openToggles.has(page.id) ? openToggles.delete(page.id) : openToggles.add(page.id);
               render();
             });
           }
@@ -460,7 +413,6 @@
               });
               const data = await r.json();
               if (!r.ok) throw new Error(data.error);
-              // update local state
               page.dueStart = todayStr;
               page.hasTime = false;
               render();
@@ -476,23 +428,16 @@
       content.appendChild(frag);
     }
 
-    // ── edit modal ──
-
     function openEditModal(page) {
       editingPageId = page.id;
       document.getElementById('edit-title').value = page.title;
-
       const dueInput = document.getElementById('edit-due');
       if (page.dueStart) {
-        if (page.hasTime) {
-          dueInput.value = page.dueStart.slice(0, 16);
-        } else {
-          dueInput.value = page.dueStart.slice(0, 10) + 'T00:00';
-        }
+        const timePart = page.hasTime ? page.dueStart.slice(11, 16) : '00:00';
+        dueInput.value = `${page.dueStart.slice(0, 10)}T${timePart}`;
       } else {
         dueInput.value = '';
       }
-
       document.getElementById('modal-status').textContent = '';
       document.getElementById('modal-status').className = 'modal-status';
       document.getElementById('modal-save').disabled = false;
@@ -500,7 +445,7 @@
     }
 
     document.getElementById('modal-cancel').addEventListener('click', closeModal);
-    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    document.getElementById('modal-overlay').addEventListener('click', e => {
       if (e.target === document.getElementById('modal-overlay')) closeModal();
     });
 
@@ -513,16 +458,12 @@
       if (!editingPageId) return;
       const title = document.getElementById('edit-title').value.trim();
       const dueRaw = document.getElementById('edit-due').value;
-      if (!title) {
-        setModalStatus('제목을 입력해주세요.', '');
-        return;
-      }
+      if (!title) { setModalStatus('제목을 입력해주세요.'); return; }
 
       const saveBtn = document.getElementById('modal-save');
       saveBtn.disabled = true;
       setModalStatus('저장 중...');
 
-      // convert datetime-local to ISO with seconds
       let dueDate = null;
       let hasTime = false;
       if (dueRaw) {
@@ -545,28 +486,22 @@
         const data = await r.json();
         if (!r.ok) throw new Error(data.error);
 
-        // update local state
         const page = allPages.find(p => p.id === editingPageId);
         if (page) {
           page.title = title;
           page.dueStart = dueDate;
           page.hasTime = hasTime;
-          // if new due is beyond this month or null, remove from list
-          const now = new Date(todayStr + 'T00:00:00');
-          const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-            .toLocaleDateString('sv-SE');
-          if (!dueDate || dueDate.slice(0, 10) > endOfMonth) {
+          // remove if now outside today~endOfWeek
+          const d = dueDate ? dueDate.slice(0, 10) : null;
+          if (!d || d < todayStr || d > endOfWeek) {
             allPages = allPages.filter(p => p.id !== editingPageId);
           }
         }
 
         setModalStatus('저장됨 ✓', 'ok');
-        setTimeout(() => {
-          closeModal();
-          render();
-        }, 600);
+        setTimeout(() => { closeModal(); render(); }, 600);
       } catch (err) {
-        setModalStatus(err.message, '');
+        setModalStatus(err.message);
         saveBtn.disabled = false;
       }
     });
@@ -578,10 +513,7 @@
     }
 
     function escHtml(str) {
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
   </script>
 </body>

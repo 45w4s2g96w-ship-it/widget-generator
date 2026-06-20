@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return now;
   }
 
-  // GET — fetch todos with due dates (today / this week / this month)
+  // GET — fetch todos due today or this week
   if (req.method === 'GET') {
     const { source_db_id } = req.query;
     if (!source_db_id) return res.status(400).json({ error: 'source_db_id required' });
@@ -19,8 +19,12 @@ export default async function handler(req, res) {
     try {
       const now = getToday();
       const today = now.toLocaleDateString('sv-SE');
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-        .toLocaleDateString('sv-SE');
+
+      // end of current week (Sunday)
+      const dow = (now.getDay() + 6) % 7; // Mon=0
+      const sun = new Date(now);
+      sun.setDate(now.getDate() - dow + 6);
+      const endOfWeek = sun.toLocaleDateString('sv-SE');
 
       const results = [];
       let cursor = undefined;
@@ -29,7 +33,7 @@ export default async function handler(req, res) {
           filter: {
             and: [
               { property: '마감일', date: { is_not_empty: true } },
-              { property: '마감일', date: { on_or_before: endOfMonth } },
+              { property: '마감일', date: { on_or_before: endOfWeek } },
               { property: '마감일', date: { on_or_after: today } },
             ],
           },
@@ -58,7 +62,7 @@ export default async function handler(req, res) {
         return { id: page.id, title, dueStart, hasTime, done, parentIds, childIds };
       });
 
-      return res.status(200).json({ pages, today });
+      return res.status(200).json({ pages, today, endOfWeek });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
