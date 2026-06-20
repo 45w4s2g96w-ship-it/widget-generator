@@ -22,7 +22,6 @@
 
     .content { padding: 12px 14px 14px; }
 
-    /* ── 날짜 헤더 ── */
     .log-date {
       font-size: 10.5px;
       color: #888;
@@ -31,7 +30,6 @@
     }
     .log-date span { color: var(--accent); font-weight: 700; }
 
-    /* ── 입력 영역 ── */
     .input-row {
       display: flex;
       gap: 6px;
@@ -72,7 +70,6 @@
     #save-btn:active { filter: brightness(0.9); }
     #save-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
 
-    /* ── 상태 메시지 ── */
     #status {
       font-size: 10px;
       color: #999;
@@ -83,14 +80,12 @@
     #status.ok { color: var(--accent); }
     #status.err { color: #c0392b; }
 
-    /* ── 구분선 ── */
     .divider {
       border: none;
       border-top: 1px solid #e0e0e0;
       margin: 0 0 8px 0;
     }
 
-    /* ── 로그 목록 ── */
     .log-list {
       max-height: 220px;
       overflow-y: auto;
@@ -195,7 +190,6 @@
       el.className = type;
     }
 
-    // ── 저장 ──
     document.getElementById('save-btn').addEventListener('click', saveRecord);
     document.getElementById('memo-input').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveRecord();
@@ -235,7 +229,6 @@
       }
     }
 
-    // ── 목록 불러오기 ──
     async function loadEntries() {
       const list = document.getElementById('log-list');
       try {
@@ -252,7 +245,7 @@
           list.innerHTML = '<div class="log-empty">아직 기록이 없어요.</div>';
           return;
         }
-        data.entries.forEach(e => appendEntry(e, list));
+        data.entries.slice().reverse().forEach(e => appendEntry(e, list));
       } catch (err) {
         list.innerHTML = `<div class="log-empty">${err.message}</div>`;
       }
@@ -262,8 +255,7 @@
       const list = document.getElementById('log-list');
       const empty = list.querySelector('.log-empty');
       if (empty) empty.remove();
-      const el = buildEntryEl({ time, text });
-      list.prepend(el);
+      list.prepend(buildEntryEl({ time, text }));
     }
 
     function appendEntry(entry, container) {
