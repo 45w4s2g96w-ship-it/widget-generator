@@ -132,6 +132,7 @@
 
       <button class="btn" id="createBtn" style="width:100%; padding:7px;">위젯 생성 (Settings DB에 저장)</button>
       <button class="btn" id="sendToClaudeBtn" style="width:100%; padding:7px; margin-top:6px;" type="button">💬 클로드에서 코드 받기 (현재 설정 복사됨)</button>
+      <button class="btn" id="sendToClaudeCodeBtn" style="width:100%; padding:7px; margin-top:6px;" type="button">⌨️ Claude Code로 보내기 (복사 후 새 탭)</button>
       <div class="status" id="status"></div>
 
       <div class="output">
@@ -273,7 +274,7 @@
     const color = document.getElementById('color').value || '#1a1a1a';
     const accent = document.getElementById('accent').value || '#9b8fc7';
     const fontName = document.getElementById('font').value || 'Helvetica Neue';
-    const font = `'${fontName}', 'Gothic A1', sans-serif`;
+    const font = `'${fontName}', sans-serif`;
     const title = 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase();
     const type = document.getElementById('type').value;
 
@@ -296,7 +297,7 @@
       title: 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase(),
       color: document.getElementById('color').value,
       accent: document.getElementById('accent').value,
-      font: `'${fontName}', 'Gothic A1', sans-serif`,
+      font: `'${fontName}', sans-serif`,
       type: document.getElementById('type').value,
       mode: 'live'
     };
@@ -328,7 +329,7 @@
       title: 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase(),
       color: document.getElementById('color').value,
       accent: document.getElementById('accent').value,
-      font: `'${fontName}', 'Gothic A1', sans-serif`,
+      font: `'${fontName}', sans-serif`,
       type: document.getElementById('type').value,
       source_db_id: document.getElementById('source_db_id').value,
       source_property: document.getElementById('source_property').value
@@ -362,7 +363,7 @@
       title: 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase(),
       color: document.getElementById('color').value || '#1a1a1a',
       accent: document.getElementById('accent').value || '#9b8fc7',
-      font: `'${fontName}', 'Gothic A1', sans-serif`,
+      font: `'${fontName}', sans-serif`,
       type: document.getElementById('type').value,
       source_db_id: document.getElementById('source_db_id').value || '',
       source_property: document.getElementById('source_property').value || ''
@@ -406,7 +407,16 @@
 
   document.getElementById('sendToClaudeBtn').addEventListener('click', async () => {
     const config = document.getElementById('configOutput').value;
-    const message = `이 위젯 만들어줘. config.json은 아래와 같아:\n\n${config}\n\n이 타입에 맞는 widgets/[id]/index.html을 작성해줘.`;
+    const message = `이 위젯 만들어줘.
+
+기본 config.json은 아래와 같아 (필요하면 이 타입에 맞게 필드 추가/수정해서 최종본 같이 줘):
+
+${config}
+
+해줘야 할 것:
+1. widgets/[id]/index.html 작성 (shared/tokens.css, shared/config-loader.js 사용)
+2. 위 config.json을 이 타입에 맞게 최종 확정해서 같이 줘 (필드 빠진 거 있으면 추가)
+3. 데이터 연동이 필요한 타입이면 api/[이름].js도 같이 작성해줘`;
 
     try {
       await navigator.clipboard.writeText(message);
@@ -416,6 +426,30 @@
     }
 
     window.open('https://claude.ai/project/019ee501-a25a-705c-82fd-3bf9d3abca14', '_blank');
+  });
+
+  document.getElementById('sendToClaudeCodeBtn').addEventListener('click', async () => {
+    const config = document.getElementById('configOutput').value;
+    const message = `widget-generator 레포에 이 위젯 만들어서 GitHub에 바로 commit & push까지 해줘.
+
+기본 config.json은 아래와 같아 (필요하면 이 타입에 맞게 필드 추가/수정):
+
+${config}
+
+해줘야 할 것:
+1. widgets/[id]/index.html 작성 (shared/tokens.css, shared/config-loader.js 사용)
+2. widgets/[id]/config.json 작성 (위 값 기반, 타입에 맞게 보완)
+3. 데이터 연동이 필요한 타입이면 api/[이름].js도 작성
+4. 전부 GitHub에 commit & push`;
+
+    try {
+      await navigator.clipboard.writeText(message);
+      document.getElementById('status').textContent = '복사 완료! Claude Code 채팅창에 붙여넣기(Ctrl+V) 하세요';
+    } catch (e) {
+      document.getElementById('status').textContent = '복사 실패 — config.json을 직접 복사해주세요';
+    }
+
+    window.open('https://claude.ai/code', '_blank');
   });
 
   document.getElementById('renderPastedBtn').addEventListener('click', renderPastedCode);
