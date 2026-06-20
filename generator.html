@@ -382,7 +382,7 @@
     }
 
     const interceptScript = `
-      <script>
+      <scr${''}ipt>
         const __fakeConfig = ${JSON.stringify(fakeConfig)};
         const __originalFetch = window.fetch;
         window.fetch = function(url, opts) {
@@ -394,7 +394,7 @@
           }
           return __originalFetch(url, opts);
         };
-      </script>
+      </scr${''}ipt>
     `;
 
     const finalCode = code.replace('<head>', '<head>' + interceptScript);
