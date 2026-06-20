@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// FLIP CLOCK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    :root {
+      --card-bg: #1e1b2e;
+      --card-radius: 16px;
+      --card-gap: 10px;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #111111;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .flip-widget {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    /* ── 타이틀바 ── */
+    .titlebar {
+      background: #111111;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 0 2px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* ── 날짜 행 ── */
+    .date-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px 12px;
+    }
+
+    .date-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 1px;
+      opacity: 0.85;
+    }
+
+    /* ── 카드 행 ── */
+    .cards-row {
+      display: flex;
+      gap: var(--card-gap);
+    }
+
+    .flip-card {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: 20px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 카드 중앙 가로줄 */
+    .flip-card::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      top: 50%;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .card-num {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--accent);
+      letter-spacing: -2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      opacity: 0.55;
+      margin-top: 8px;
+      align-self: flex-end;
+    }
+
+    /* ── AM/PM + 요일 행 ── */
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 4px 0;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="flip-widget">
+    <div class="titlebar">
+      <span data-widget-title>C:// FLIP CLOCK</span>
+      <span style="opacity:0.75;cursor:default">⚙</span>
+    </div>
+
+    <div class="date-row">
+      <span class="date-text" id="date-str">---- -- --</span>
+    </div>
+
+    <div class="cards-row">
+      <div class="flip-card">
+        <div class="card-num" id="hours">00</div>
+        <div class="card-label" id="ampm">AM</div>
+      </div>
+      <div class="flip-card">
+        <div class="card-num" id="minutes">00</div>
+        <div class="card-label" id="dayofweek">MON</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    loadWidgetConfig();
+
+    const DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const ampm = h < 12 ? 'AM' : 'PM';
+      const h12 = h % 12 || 12;
+
+      document.getElementById('hours').textContent = pad(h12);
+      document.getElementById('minutes').textContent = pad(m);
+      document.getElementById('ampm').textContent = ampm;
+      document.getElementById('dayofweek').textContent = DAYS[now.getDay()];
+
+      const y = now.getFullYear();
+      const mo = pad(now.getMonth() + 1);
+      const d = pad(now.getDate());
+      document.getElementById('date-str').textContent = `${y}.${mo}.${d}`;
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>

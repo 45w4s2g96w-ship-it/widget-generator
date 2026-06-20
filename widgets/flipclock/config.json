@@ -1,0 +1,9 @@
+{
+  "id": "flipclock",
+  "title": "C:// FLIP CLOCK",
+  "color": "#111111",
+  "accent": "#9b8fc7",
+  "font": "'Montserrat', sans-serif",
+  "type": "clock",
+  "mode": "live"
+}
