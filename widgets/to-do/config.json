@@ -1,0 +1,15 @@
+{
+  "id": "to-do",
+  "title": "C:// TO-DO",
+  "color": "#1a1a1a",
+  "accent": "#9b8fc7",
+  "font": "'ChosunGu'",
+  "type": "report",
+  "source_db_id": "37651f4140c5805e875cdc92a5715d21",
+  "source_property": "마감일",
+  "name_property": "이름",
+  "done_property": "완료",
+  "parent_property": "상위 항목",
+  "child_property": "하위 항목",
+  "mode": "live"
+}
