@@ -1,0 +1,11 @@
+{
+  "id": "log",
+  "title": "C:// LOG",
+  "color": "#1a1a1a",
+  "accent": "#9b8fc7",
+  "font": "'ChosunGu'",
+  "type": "textinput",
+  "source_db_id": "37451f4140c5808e9141c8804e892661",
+  "source_property": "날짜",
+  "mode": "live"
+}

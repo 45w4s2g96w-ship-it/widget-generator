@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// LOG</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'ChosunGu';
+      src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+      font-display: swap;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+    }
+
+    .window { max-width: 300px; }
+
+    .content { padding: 12px 14px 14px; }
+
+    /* ── 날짜 헤더 ── */
+    .log-date {
+      font-size: 10.5px;
+      color: #888;
+      letter-spacing: 0.3px;
+      margin-bottom: 10px;
+    }
+    .log-date span { color: var(--accent); font-weight: 700; }
+
+    /* ── 입력 영역 ── */
+    .input-row {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    #memo-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+      font-size: 11.5px;
+      line-height: 1.55;
+      padding: 6px 8px;
+      resize: none;
+      outline: none;
+      color: var(--ink);
+      min-height: 52px;
+      max-height: 120px;
+    }
+    #memo-input::placeholder { color: #bbb; }
+    #memo-input:focus { border-color: var(--accent); }
+
+    #save-btn {
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+      font-size: 10.5px;
+      padding: 5px 9px;
+      cursor: pointer;
+      line-height: 1;
+      align-self: flex-end;
+      color: var(--ink);
+    }
+    #save-btn:hover { background: var(--win-color); color: var(--win-text); }
+    #save-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    #save-btn:disabled { opacity: 0.45; cursor: default; background: #fff; color: var(--ink); }
+
+    /* ── 상태 메시지 ── */
+    #status {
+      font-size: 10px;
+      color: #999;
+      min-height: 14px;
+      margin-bottom: 8px;
+      letter-spacing: 0.2px;
+    }
+    #status.ok { color: var(--accent); }
+    #status.err { color: #c0392b; }
+
+    /* ── 구분선 ── */
+    .divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 0 0 8px 0;
+    }
+
+    /* ── 로그 목록 ── */
+    .log-list {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .log-list::-webkit-scrollbar { width: 4px; }
+    .log-list::-webkit-scrollbar-thumb { background: #ddd; }
+
+    .log-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .log-time {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.4px;
+      font-weight: 700;
+    }
+
+    .log-text {
+      font-size: 11.5px;
+      color: var(--ink);
+      line-height: 1.55;
+      border-left: 2px solid var(--accent);
+      padding-left: 6px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-empty {
+      font-size: 11px;
+      color: #bbb;
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .loading-indicator {
+      font-size: 10.5px;
+      color: #bbb;
+      text-align: center;
+      padding: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// LOG</span>
+      <div class="icons">
+        <span>_</span>
+        <span>□</span>
+        <span>×</span>
+      </div>
+    </div>
+    <div class="content">
+      <div class="log-date">date: <span id="today-str">----.--.--</span></div>
+
+      <div class="input-row">
+        <textarea id="memo-input" placeholder="기록할 내용을 입력하세요..." rows="3"></textarea>
+        <button id="save-btn">저장</button>
+      </div>
+      <div id="status"></div>
+
+      <hr class="divider" />
+
+      <div class="log-list" id="log-list">
+        <div class="loading-indicator">불러오는 중...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    let cfg = {};
+
+    (async () => {
+      cfg = await loadWidgetConfig();
+      initDate();
+      await loadEntries();
+    })();
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function todayStr() {
+      const now = new Date();
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    }
+
+    function timeStr() {
+      const now = new Date();
+      return `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+
+    function initDate() {
+      document.getElementById('today-str').textContent = todayStr();
+    }
+
+    function setStatus(msg, type = '') {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = type;
+    }
+
+    // ── 저장 ──
+    document.getElementById('save-btn').addEventListener('click', saveRecord);
+    document.getElementById('memo-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveRecord();
+    });
+
+    async function saveRecord() {
+      const text = document.getElementById('memo-input').value.trim();
+      if (!text) { setStatus('내용을 입력해주세요.', 'err'); return; }
+
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      setStatus('저장 중...');
+
+      try {
+        const res = await fetch('/api/log-entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source_db_id: cfg.source_db_id,
+            source_property: cfg.source_property || '날짜',
+            time: timeStr(),
+            text,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '저장 실패');
+
+        document.getElementById('memo-input').value = '';
+        setStatus('저장됨 ✓', 'ok');
+        setTimeout(() => setStatus(''), 2000);
+
+        prependEntry({ time: data.time, text: data.text });
+      } catch (err) {
+        setStatus(err.message, 'err');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ── 목록 불러오기 ──
+    async function loadEntries() {
+      const list = document.getElementById('log-list');
+      try {
+        const params = new URLSearchParams({
+          source_db_id: cfg.source_db_id,
+          source_property: cfg.source_property || '날짜',
+        });
+        const res = await fetch('/api/log-entry?' + params);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        list.innerHTML = '';
+        if (!data.entries || data.entries.length === 0) {
+          list.innerHTML = '<div class="log-empty">아직 기록이 없어요.</div>';
+          return;
+        }
+        data.entries.forEach(e => appendEntry(e, list));
+      } catch (err) {
+        list.innerHTML = `<div class="log-empty">${err.message}</div>`;
+      }
+    }
+
+    function prependEntry({ time, text }) {
+      const list = document.getElementById('log-list');
+      const empty = list.querySelector('.log-empty');
+      if (empty) empty.remove();
+      const el = buildEntryEl({ time, text });
+      list.prepend(el);
+    }
+
+    function appendEntry(entry, container) {
+      container.appendChild(buildEntryEl(entry));
+    }
+
+    function buildEntryEl({ time, text }) {
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.innerHTML = `
+        <div class="log-time">${time}</div>
+        <div class="log-text">${escHtml(text)}</div>
+      `;
+      return item;
+    }
+
+    function escHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
