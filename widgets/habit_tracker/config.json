@@ -3,7 +3,7 @@
   "title": "C:// HABIT TRACKER",
   "color": "#1a1a1a",
   "accent": "#9b8fc7",
-  "font": "'MemomentKkukkukk', sans-serif",
+  "font": "'MemomentKkukkukk', monospace",
   "type": "habit_tracker",
   "mode": "live",
   "source_db_id": "",
