@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// HABIT TRACKER</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'MemomentKkukkukk';
+      src: url('../../shared/fonts/MemomentKkukkukk.ttf') format('truetype');
+    }
+
+    body { display: flex; justify-content: center; }
+
+    .window { max-width: 300px; width: 100%; }
+
+    .content { padding: 14px 16px 16px; }
+
+    /* ── 날짜 헤더 ── */
+    .ht-date {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 0.4px;
+      margin-bottom: 10px;
+    }
+    .ht-date .day-acc { color: var(--accent); }
+
+    /* ── 별 진행바 ── */
+    .star-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .star {
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* clip-path star polygon */
+    .star::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #333;
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%,
+        68% 57%, 79% 91%,
+        50% 70%, 21% 91%,
+        32% 57%, 2% 35%,
+        39% 35%
+      );
+      transition: background 0.3s ease;
+    }
+
+    .star.filled::before {
+      background: var(--accent);
+    }
+
+    /* ── 습관 항목 리스트 ── */
+    .habit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .habit-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .habit-item .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: 1.5px solid #555;
+      flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .habit-item.done .dot {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .habit-item .label {
+      color: var(--ink);
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+
+    .habit-item.done .label {
+      opacity: 1;
+      text-decoration: line-through;
+      text-decoration-color: var(--accent);
+    }
+
+    /* ── 완성률 텍스트 ── */
+    .progress-line {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 0.3px;
+      margin-bottom: 10px;
+    }
+
+    .progress-line .acc { color: var(--accent); font-weight: 700; }
+
+    /* ── 칭찬 스티커 ── */
+    .sticker {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 7px 10px;
+      border-radius: 2px;
+      animation: pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+
+    .sticker.visible { display: flex; }
+
+    .sticker .pixel-star {
+      width: 10px;
+      height: 10px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .sticker .pixel-star::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%,
+        68% 57%, 79% 91%,
+        50% 70%, 21% 91%,
+        32% 57%, 2% 35%,
+        39% 35%
+      );
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── 에러/로딩 ── */
+    .ht-msg {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// HABIT TRACKER</span>
+      <span class="icons">
+        <span>_</span><span>□</span><span>×</span>
+      </span>
+    </div>
+    <div class="content">
+      <div class="ht-date">
+        <span id="ht-date-ymd">----.--.--</span>
+        <span class="day-acc" id="ht-date-day">(---)</span>
+      </div>
+
+      <div class="star-bar" id="star-bar"></div>
+
+      <div class="progress-line" id="progress-line"></div>
+
+      <div class="habit-list" id="habit-list">
+        <div class="ht-msg">loading...</div>
+      </div>
+
+      <div class="sticker" id="sticker">
+        <span class="pixel-star"></span>
+        <span>ALL DONE! GREAT JOB!</span>
+        <span class="pixel-star"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function renderDate() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const mo = pad(now.getMonth() + 1);
+      const d = pad(now.getDate());
+      document.getElementById('ht-date-ymd').textContent = `${y}-${mo}-${d}`;
+      document.getElementById('ht-date-day').textContent = `(${DAYS[now.getDay()]})`;
+    }
+
+    function renderStars(completed, total) {
+      const bar = document.getElementById('star-bar');
+      bar.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const s = document.createElement('span');
+        s.className = 'star' + (i < completed ? ' filled' : '');
+        bar.appendChild(s);
+      }
+    }
+
+    function renderHabits(items) {
+      const list = document.getElementById('habit-list');
+      list.innerHTML = '';
+      items.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'habit-item' + (item.done ? ' done' : '');
+
+        const dot = document.createElement('span');
+        dot.className = 'dot';
+
+        const lbl = document.createElement('span');
+        lbl.className = 'label';
+        lbl.textContent = item.name;
+
+        row.appendChild(dot);
+        row.appendChild(lbl);
+        list.appendChild(row);
+      });
+    }
+
+    function renderProgress(completed, total) {
+      const line = document.getElementById('progress-line');
+      const pct = total ? Math.round((completed / total) * 100) : 0;
+      line.innerHTML = `오늘의 루틴 <span class="acc">${completed}/${total}</span> (${pct}%)`;
+    }
+
+    function renderSticker(allDone) {
+      const sticker = document.getElementById('sticker');
+      if (allDone) {
+        sticker.classList.add('visible');
+      } else {
+        sticker.classList.remove('visible');
+      }
+    }
+
+    async function loadHabits(config) {
+      const { source_db_id, source_property } = config;
+      if (!source_db_id || !source_property) {
+        document.getElementById('habit-list').innerHTML =
+          '<div class="ht-msg">config에 source_db_id / source_property를 입력하세요.</div>';
+        renderStars(0, 5);
+        renderProgress(0, 5);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/get-habit-data?source_db_id=${encodeURIComponent(source_db_id)}&source_property=${encodeURIComponent(source_property)}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        renderStars(data.completed, data.total);
+        renderProgress(data.completed, data.total);
+        renderHabits(data.items);
+        renderSticker(data.total > 0 && data.completed === data.total);
+      } catch (err) {
+        document.getElementById('habit-list').innerHTML =
+          `<div class="ht-msg">데이터 로드 실패: ${err.message}</div>`;
+        renderStars(0, 0);
+        renderProgress(0, 0);
+      }
+    }
+
+    async function init() {
+      renderDate();
+      const config = await loadWidgetConfig();
+      await loadHabits(config);
+    }
+
+    init();
+
+    // 5분마다 갱신
+    setInterval(async () => {
+      const config = await loadWidgetConfig();
+      await loadHabits(config);
+    }, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
