@@ -43,33 +43,42 @@
       line-height: 1;
     }
 
+    /* 픽셀 하트: 5×4 grid, 2px per pixel, box-shadow로 격자 그리기 */
     .hearts {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      margin: 0 6px;
-    }
-
-    .heart {
-      width: 7px;
-      height: 7px;
-      background: var(--accent);
-      position: relative;
-      transform: rotate(45deg);
+      gap: 5px;
+      margin: 0 10px;
       flex-shrink: 0;
     }
-    .heart::before,
-    .heart::after {
-      content: '';
-      width: 7px;
-      height: 7px;
-      background: var(--accent);
-      border-radius: 50%;
-      position: absolute;
+
+    .pixel-heart {
+      position: relative;
+      width: 10px;
+      height: 8px;
+      flex-shrink: 0;
     }
-    .heart::before { top: -3.5px; left: 0; }
-    .heart::after  { left: -3.5px; top: 0; }
+    .pixel-heart::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 2px;
+      background: transparent;
+      box-shadow:
+        2px  0px 0 0 var(--accent),
+        6px  0px 0 0 var(--accent),
+        0px  2px 0 0 var(--accent),
+        2px  2px 0 0 var(--accent),
+        4px  2px 0 0 var(--accent),
+        6px  2px 0 0 var(--accent),
+        8px  2px 0 0 var(--accent),
+        2px  4px 0 0 var(--accent),
+        4px  4px 0 0 var(--accent),
+        6px  4px 0 0 var(--accent),
+        4px  6px 0 0 var(--accent);
+    }
 
     .hearts.blink { animation: blink 1s step-start infinite; }
     @keyframes blink { 50% { opacity: 0; } }
@@ -91,8 +100,8 @@
       <div class="clock-time">
         <span id="time-h">00</span>
         <span class="hearts blink">
-          <span class="heart"></span>
-          <span class="heart"></span>
+          <span class="pixel-heart"></span>
+          <span class="pixel-heart"></span>
         </span>
         <span id="time-m">00</span>
       </div>
