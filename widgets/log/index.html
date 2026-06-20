@@ -58,19 +58,19 @@
 
     #save-btn {
       flex-shrink: 0;
-      border: 1px solid var(--border);
-      background: #fff;
+      border: 1px solid var(--accent);
+      background: var(--accent);
       font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
       font-size: 10.5px;
       padding: 5px 9px;
       cursor: pointer;
       line-height: 1;
       align-self: flex-end;
-      color: var(--ink);
+      color: #fff;
     }
-    #save-btn:hover { background: var(--win-color); color: var(--win-text); }
-    #save-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
-    #save-btn:disabled { opacity: 0.45; cursor: default; background: #fff; color: var(--ink); }
+    #save-btn:hover { filter: brightness(1.1); }
+    #save-btn:active { filter: brightness(0.9); }
+    #save-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
 
     /* ── 상태 메시지 ── */
     #status {
@@ -143,11 +143,7 @@
   <div class="window">
     <div class="titlebar">
       <span data-widget-title>C:// LOG</span>
-      <div class="icons">
-        <span>_</span>
-        <span>□</span>
-        <span>×</span>
-      </div>
+      <span style="opacity:0.75;cursor:default">⚙</span>
     </div>
     <div class="content">
       <div class="log-date">date: <span id="today-str">----.--.--</span></div>
