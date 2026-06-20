@@ -6,8 +6,10 @@
 <link rel="stylesheet" href="./shared/tokens.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Noto+Serif+KR&family=Nanum+Gothic&family=Nanum+Myeongjo&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Gaegu&family=Gowun+Dodum&family=Gowun+Batang&family=Hahmlet&family=Gothic+A1&family=IBM+Plex+Sans+KR&family=Stylish&family=Sunflower&family=Single+Day&family=East+Sea+Dokdo&family=Poor+Story&family=Yeon+Sung&family=Cute+Font&family=Dokdo&family=Gugi&family=Song+Myung&family=Inter&family=Work+Sans&family=Archivo+Black&family=Space+Mono&family=IBM+Plex+Mono&family=Bebas+Neue&family=DM+Mono&family=Sora&family=Manrope&family=Space+Grotesk&family=JetBrains+Mono&family=Syne&family=Unbounded&family=Fraunces&family=Instrument+Serif&family=Roboto&family=Poppins&family=Montserrat&family=Playfair+Display&family=Outfit&family=Plus+Jakarta+Sans&family=Crimson+Text&family=Libre+Baskerville&family=Cormorant+Garamond&family=Public+Sans&display=swap">
 <style>
-  body { background: #f4f4f2; padding: 32px; display: flex; gap: 40px; flex-wrap: wrap; }
-  .form-panel { width: 320px; }
+  body { background: #f4f4f2; padding: 32px; display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .col { width: 280px; flex-shrink: 0; }
+  .col h3 { font-size: 13px; margin-bottom: 10px; color: #555; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .form-panel { width: 280px; }
   .field { margin-bottom: 12px; }
   .field label { display: block; font-size: 11px; color: #555; margin-bottom: 3px; }
   .field input, .field select {
@@ -63,7 +65,9 @@
 </head>
 <body>
 
-  <div class="form-panel">
+  <!-- 1. 정보 입력 -->
+  <div class="col form-panel">
+    <h3>① 정보 입력</h3>
     <div class="content" style="border:1px solid var(--border); background:#fff; padding:16px;">
 
       <div class="field">
@@ -137,8 +141,9 @@
     </div>
   </div>
 
-  <div class="preview-panel">
-    <h3>미리보기 (샘플 데이터)</h3>
+  <!-- 2. 정보로 미리보기 -->
+  <div class="col">
+    <h3>② 정보로 미리보기 (샘플 데이터)</h3>
     <div class="window" id="previewWindow">
       <div class="titlebar">
         <span id="previewTitle">C:// CLOCK</span>
@@ -146,19 +151,24 @@
       </div>
       <div class="content" id="previewContent"></div>
     </div>
+  </div>
 
-    <div style="margin-top:24px;">
-      <h3>코드 붙여넣어 미리보기</h3>
-      <p style="font-size:11px; color:#777; margin-bottom:8px;">클로드한테 받은 index.html 전체를 붙여넣으면 GitHub에 올리기 전에 바로 확인할 수 있어요.</p>
-      <textarea id="pastedCode" placeholder="여기에 index.html 코드 전체를 붙여넣으세요" style="width:260px; height:140px; font-family:monospace; font-size:10px; border:1px solid var(--border); padding:6px;"></textarea>
+  <!-- 3. 코드 입력 -->
+  <div class="col">
+    <h3>③ 코드 입력</h3>
+    <p style="font-size:11px; color:#777; margin-bottom:8px;">클로드한테 받은 index.html 전체를 붙여넣으세요.</p>
+    <textarea id="pastedCode" placeholder="여기에 index.html 코드 전체를 붙여넣으세요" style="width:260px; height:200px; font-family:monospace; font-size:10px; border:1px solid var(--border); padding:6px;"></textarea>
 
-      <label style="font-size:11px; color:#555; display:block; margin-top:8px;">config.json (가짜 데이터, 선택)</label>
-      <textarea id="pastedConfig" placeholder='{"id":"stars","title":"C:// RATING","color":"#1a1a1a"}' style="width:260px; height:80px; font-family:monospace; font-size:10px; border:1px solid var(--border); padding:6px;"></textarea>
+    <label style="font-size:11px; color:#555; display:block; margin-top:8px;">config.json (① 폼 값에서 자동 생성됨)</label>
+    <textarea id="pastedConfig" readonly style="width:260px; height:80px; font-family:monospace; font-size:10px; border:1px solid var(--border); padding:6px; background:#f4f4f2; color:#777;"></textarea>
 
-      <button class="btn" id="renderPastedBtn" style="width:260px; padding:7px; margin-top:6px;">이 코드로 미리보기</button>
-      <button class="btn" id="applyStyleBtn" style="width:260px; padding:7px; margin-top:6px; background:var(--win-color); color:#fff;">왼쪽 색/폰트를 이 코드에 적용</button>
-      <iframe id="pastedPreview" style="width:260px; height:300px; border:1px solid var(--border); margin-top:10px; background:#fff;"></iframe>
-    </div>
+    <button class="btn" id="renderPastedBtn" style="width:260px; padding:7px; margin-top:6px;">④로 미리보기 실행 →</button>
+  </div>
+
+  <!-- 4. 코드로 미리보기 -->
+  <div class="col">
+    <h3>④ 코드로 미리보기 (실제 작동)</h3>
+    <iframe id="pastedPreview" style="width:260px; height:340px; border:1px solid var(--border); background:#fff;"></iframe>
   </div>
 
 <script>
@@ -345,15 +355,35 @@
     }
   });
 
+  function buildConfigFromForm() {
+    const fontName = document.getElementById('font').value || 'Helvetica Neue';
+    return {
+      id: document.getElementById('widgetId').value || 'widget-id',
+      title: 'C:// ' + (document.getElementById('title').value || 'WIDGET').toUpperCase(),
+      color: document.getElementById('color').value || '#1a1a1a',
+      accent: document.getElementById('accent').value || '#9b8fc7',
+      font: `'${fontName}', 'Gothic A1', sans-serif`,
+      type: document.getElementById('type').value,
+      source_db_id: document.getElementById('source_db_id').value || '',
+      source_property: document.getElementById('source_property').value || ''
+    };
+  }
+
   function renderPastedCode() {
     let code = document.getElementById('pastedCode').value;
     code = code.replace(/\.\.\/\.\.\/shared\//g, '/shared/');
 
-    const fakeConfig = document.getElementById('pastedConfig').value.trim() || '{}';
+    const fakeConfig = buildConfigFromForm();
+    document.getElementById('pastedConfig').value = JSON.stringify(fakeConfig, null, 2);
+
+    if (!code.includes('<html') && !code.includes('<!DOCTYPE')) {
+      document.getElementById('status').textContent = '위 코드 칸에는 index.html 전체 코드가 들어가야 해요 (HTML 코드가 아닌 것 같아요)';
+      return;
+    }
 
     const interceptScript = `
       <script>
-        const __fakeConfig = ${fakeConfig};
+        const __fakeConfig = ${JSON.stringify(fakeConfig)};
         const __originalFetch = window.fetch;
         window.fetch = function(url, opts) {
           if (typeof url === 'string' && url.includes('config.json')) {
@@ -371,6 +401,7 @@
 
     const iframe = document.getElementById('pastedPreview');
     iframe.srcdoc = finalCode;
+    document.getElementById('status').textContent = '';
   }
 
   document.getElementById('sendToClaudeBtn').addEventListener('click', async () => {
@@ -388,23 +419,6 @@
   });
 
   document.getElementById('renderPastedBtn').addEventListener('click', renderPastedCode);
-
-  // 왼쪽 패널의 현재 색/폰트를 붙여넣은 코드의 config.json에 반영하고 다시 렌더링
-  document.getElementById('applyStyleBtn').addEventListener('click', () => {
-    let config;
-    try {
-      config = JSON.parse(document.getElementById('pastedConfig').value.trim() || '{}');
-    } catch (e) {
-      config = {};
-    }
-    const fontName = document.getElementById('font').value || 'Helvetica Neue';
-    config.color = document.getElementById('color').value;
-    config.accent = document.getElementById('accent').value;
-    config.font = `'${fontName}', 'Gothic A1', sans-serif`;
-
-    document.getElementById('pastedConfig').value = JSON.stringify(config, null, 2);
-    renderPastedCode();
-  });
 
   updatePreview();
   setInterval(() => {
