@@ -46,48 +46,43 @@
 
     .empty-msg { font-size: 11px; color: #ccc; text-align: center; padding: 20px 0; }
 
-    /* ── modal ── */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.38); z-index: 100; align-items: center; justify-content: center; }
+    /* modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.32); z-index: 100; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal { background: #fff; border: 1px solid var(--border); padding: 18px 16px 14px; width: 288px; font-family: 'ChosunGu', 'Helvetica Neue', sans-serif; }
-    .modal-heading { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; color: #333; margin-bottom: 14px; }
+    .modal {
+      background: #fff; border: 1px solid var(--border);
+      padding: 12px 12px 10px; width: 232px;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+    }
 
-    .field { margin-bottom: 10px; }
-    .field label { display: block; font-size: 9.5px; color: #999; letter-spacing: 0.3px; margin-bottom: 3px; }
+    .field { margin-bottom: 7px; }
+    .field label { display: block; font-size: 9px; color: #bbb; letter-spacing: 0.3px; margin-bottom: 2px; }
     .field input[type="text"],
     .field input[type="datetime-local"],
     .field textarea {
-      width: 100%; border: 1px solid #e0e0e0;
-      padding: 5px 7px;
+      width: 100%; border: 1px solid #e0e0e0; padding: 4px 6px;
       font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
-      font-size: 11.5px; color: var(--ink); outline: none;
-      box-sizing: border-box;
+      font-size: 11px; color: var(--ink); outline: none; box-sizing: border-box;
     }
-    .field textarea { resize: vertical; min-height: 54px; line-height: 1.5; }
+    .field textarea { resize: none; height: 44px; line-height: 1.45; }
     .field input:focus, .field textarea:focus { border-color: var(--accent); }
 
-    .field-row { display: flex; align-items: center; gap: 8px; }
-    .field-row input[type="checkbox"] { width: 13px; height: 13px; accent-color: var(--accent); cursor: pointer; }
-    .field-row label { font-size: 11px; color: #555; cursor: pointer; }
+    .field-check { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+    .field-check input[type="checkbox"] { width: 12px; height: 12px; accent-color: var(--accent); cursor: pointer; margin: 0; }
+    .field-check label { font-size: 11px; color: #555; cursor: pointer; }
 
-    .auto-badge {
-      display: inline-block; font-size: 9px; color: #aaa;
-      border: 1px solid #e8e8e8; padding: 1px 5px; border-radius: 2px;
-      margin-top: 2px;
-    }
-
-    .modal-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 14px; }
+    .modal-actions { display: flex; gap: 5px; justify-content: flex-end; margin-top: 10px; }
     .modal-actions button {
       border: 1px solid var(--accent); background: var(--accent); color: #fff;
       font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
-      font-size: 10.5px; padding: 4px 14px; cursor: pointer;
+      font-size: 10px; padding: 3px 12px; cursor: pointer;
     }
     .modal-actions button:hover { filter: brightness(1.1); }
     .modal-actions button:active { filter: brightness(0.9); }
     .modal-actions button:disabled { opacity: 0.45; cursor: default; filter: none; }
-    .modal-actions .cancel-btn { background: #fff; color: #666; border-color: #ccc; }
+    .modal-actions .cancel-btn { background: #fff; color: #888; border-color: #ccc; }
     .modal-actions .cancel-btn:hover { filter: none; background: #f5f5f5; }
-    .modal-status { font-size: 10px; min-height: 14px; color: #c0392b; margin-top: 6px; }
+    .modal-status { font-size: 9.5px; min-height: 13px; color: #c0392b; margin-top: 4px; }
     .modal-status.ok { color: var(--accent); }
   </style>
 </head>
@@ -107,35 +102,22 @@
 
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
-      <div class="modal-heading" id="modal-heading">할일 추가</div>
-
       <div class="field">
         <label>이름 *</label>
-        <input type="text" id="f-title" placeholder="할일을 입력하세요" />
+        <input type="text" id="f-title" placeholder="할일" />
       </div>
-
       <div class="field">
         <label>마감일</label>
         <input type="datetime-local" id="f-due" />
       </div>
-
       <div class="field">
         <label>메모</label>
-        <textarea id="f-memo" placeholder="메모 (선택)"></textarea>
+        <textarea id="f-memo" placeholder="메모"></textarea>
       </div>
-
-      <div class="field">
-        <div class="field-row">
-          <input type="checkbox" id="f-done" />
-          <label for="f-done">완료</label>
-        </div>
+      <div class="field-check">
+        <input type="checkbox" id="f-done" />
+        <label for="f-done">완료</label>
       </div>
-
-      <div id="auto-info" style="margin-bottom:6px">
-        <span class="auto-badge" id="badge-added">추가일: 오늘 자동 설정</span>
-        <span class="auto-badge" id="badge-quad">사분면: 마감일 기준 자동</span>
-      </div>
-
       <div class="modal-status" id="modal-status"></div>
       <div class="modal-actions">
         <button class="cancel-btn" id="modal-cancel">취소</button>
@@ -147,7 +129,7 @@
   <script src="../../shared/config-loader.js"></script>
   <script>
     let cfg = {}, allPages = [], todayStr = '', endOfWeek = '';
-    let editingPageId = null; // null = add mode
+    let editingPageId = null;
 
     (async () => { cfg = await loadWidgetConfig(); await loadTodos(); })();
 
@@ -165,20 +147,10 @@
 
     function dateOnly(str) { return str ? str.slice(0, 10) : ''; }
     function isToday(page) { return dateOnly(page.dueStart) === todayStr; }
-
     function periodLabel(page) {
       if (!isToday(page)) return null;
       return page.hasTime ? `(${page.dueStart.slice(11, 16)})` : null;
     }
-
-    function quadrantLabel(dueDateStr) {
-      if (!dueDateStr) return null;
-      const d = dueDateStr.slice(0, 10);
-      if (d === todayStr) return cfg.quadrant_today || '1사분면';
-      if (d <= endOfWeek) return cfg.quadrant_week || '2사분면';
-      return null;
-    }
-
     function byDate(a, b) {
       const da = dateOnly(a.dueStart || ''), db = dateOnly(b.dueStart || '');
       if (da !== db) return da.localeCompare(db);
@@ -197,7 +169,6 @@
       items.forEach(page => {
         const today = isToday(page);
         const pLabel = periodLabel(page);
-
         const row = document.createElement('div');
         row.className = 'todo-row' + (today ? ' today' : '');
 
@@ -233,73 +204,31 @@
     async function pinToday(page, btn) {
       btn.disabled = true;
       try {
-        const r = await fetch('/api/get-todo', {
-          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pageId: page.id, dueDate: todayStr, cfg }),
-        });
+        const r = await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: page.id, dueDate: todayStr, cfg }) });
         const data = await r.json();
         if (!r.ok) throw new Error(data.error);
-        page.dueStart = todayStr; page.hasTime = false;
-        render();
+        page.dueStart = todayStr; page.hasTime = false; render();
       } catch (err) { alert('핀 저장 실패: ' + err.message); btn.disabled = false; }
     }
 
     async function toggleDone(page, btn, textEl) {
       const newDone = !page.done;
-      btn.classList.toggle('checked', newDone);
-      btn.textContent = newDone ? '✓' : '';
-      textEl.classList.toggle('done-text', newDone);
-      page.done = newDone;
+      btn.classList.toggle('checked', newDone); btn.textContent = newDone ? '✓' : '';
+      textEl.classList.toggle('done-text', newDone); page.done = newDone;
       try {
-        await fetch('/api/get-todo', {
-          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pageId: page.id, done: newDone, cfg }),
-        });
-      } catch {
-        page.done = !newDone;
-        btn.classList.toggle('checked', !newDone);
-        textEl.classList.toggle('done-text', !newDone);
-      }
+        await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: page.id, done: newDone, cfg }) });
+      } catch { page.done = !newDone; btn.classList.toggle('checked', !newDone); textEl.classList.toggle('done-text', !newDone); }
     }
 
-    // ── modal ──
     function openModal(page) {
-      editingPageId = page.id;
-      document.getElementById('modal-heading').textContent = '항목 편집';
-      document.getElementById('f-title').value = page.title;
-      document.getElementById('f-memo').value = page.memo || '';
-      document.getElementById('f-done').checked = page.done;
+      editingPageId = page ? page.id : null;
+      document.getElementById('f-title').value = page ? page.title : '';
+      document.getElementById('f-memo').value = page ? (page.memo || '') : '';
+      document.getElementById('f-done').checked = page ? page.done : false;
       const dueInput = document.getElementById('f-due');
-      dueInput.value = page.dueStart
+      dueInput.value = (page && page.dueStart)
         ? `${page.dueStart.slice(0, 10)}T${page.hasTime ? page.dueStart.slice(11, 16) : '00:00'}`
         : '';
-      updateAutoBadge(dueInput.value);
-      document.getElementById('auto-info').style.display = 'none';
-      resetModal();
-    }
-
-    function openAddModal() {
-      editingPageId = null;
-      document.getElementById('modal-heading').textContent = '할일 추가';
-      document.getElementById('f-title').value = '';
-      document.getElementById('f-memo').value = '';
-      document.getElementById('f-done').checked = false;
-      document.getElementById('f-due').value = '';
-      document.getElementById('auto-info').style.display = '';
-      updateAutoBadge('');
-      resetModal();
-    }
-
-    function updateAutoBadge(dueRaw) {
-      const d = dueRaw ? dueRaw.slice(0, 10) : null;
-      const q = d ? quadrantLabel(d) : null;
-      document.getElementById('badge-quad').textContent =
-        q ? `사분면: ${q} (자동)` : '사분면: 자동 계산';
-    }
-
-    document.getElementById('f-due').addEventListener('input', e => updateAutoBadge(e.target.value));
-
-    function resetModal() {
       document.getElementById('modal-status').textContent = '';
       document.getElementById('modal-status').className = 'modal-status';
       document.getElementById('modal-save').disabled = false;
@@ -307,11 +236,9 @@
       setTimeout(() => document.getElementById('f-title').focus(), 50);
     }
 
-    document.getElementById('add-btn').addEventListener('click', openAddModal);
+    document.getElementById('add-btn').addEventListener('click', () => openModal(null));
     document.getElementById('modal-cancel').addEventListener('click', closeModal);
-    document.getElementById('modal-overlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('modal-overlay')) closeModal();
-    });
+    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
     document.getElementById('modal-save').addEventListener('click', async () => {
@@ -319,7 +246,6 @@
       const dueRaw = document.getElementById('f-due').value;
       const memo = document.getElementById('f-memo').value.trim();
       const done = document.getElementById('f-done').checked;
-
       if (!title) { setModalStatus('이름을 입력해주세요.'); return; }
 
       const saveBtn = document.getElementById('modal-save');
@@ -334,25 +260,17 @@
 
       try {
         if (editingPageId) {
-          const r = await fetch('/api/get-todo', {
-            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pageId: editingPageId, title, dueDate, memo, done, cfg }),
-          });
+          const r = await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: editingPageId, title, dueDate, memo, done, cfg }) });
           const data = await r.json();
           if (!r.ok) throw new Error(data.error);
           const page = allPages.find(p => p.id === editingPageId);
           if (page) {
-            page.title = title; page.dueStart = dueDate; page.hasTime = hasTime;
-            page.memo = memo; page.done = done;
+            page.title = title; page.dueStart = dueDate; page.hasTime = hasTime; page.memo = memo; page.done = done;
             const d = dueDate ? dueDate.slice(0, 10) : null;
-            if (!d || d < todayStr || d > endOfWeek)
-              allPages = allPages.filter(p => p.id !== editingPageId);
+            if (!d || d < todayStr || d > endOfWeek) allPages = allPages.filter(p => p.id !== editingPageId);
           }
         } else {
-          const r = await fetch('/api/get-todo', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ source_db_id: cfg.source_db_id, title, dueDate, memo, cfg }),
-          });
+          const r = await fetch('/api/get-todo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ source_db_id: cfg.source_db_id, title, dueDate, memo, cfg }) });
           const newPage = await r.json();
           if (!r.ok) throw new Error(newPage.error);
           const d = newPage.dueStart ? newPage.dueStart.slice(0, 10) : null;
