@@ -5,7 +5,10 @@ export default async function handler(req, res) {
     'Content-Type': 'application/json',
   };
 
-  const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+  // 오전 5시 기준 — 5시 이전이면 어제 날짜로 기록
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+  if (now.getHours() < 5) now.setDate(now.getDate() - 1);
+  const today = now.toLocaleDateString('sv-SE');
 
   async function getTodayPageId(source_db_id, source_property) {
     const r = await fetch(`https://api.notion.com/v1/databases/${source_db_id}/query`, {
