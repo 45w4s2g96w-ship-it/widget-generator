@@ -5,10 +5,18 @@ export default async function handler(req, res) {
     'Content-Type': 'application/json',
   };
 
-  function getToday() {
+  function getSeoulNow() {
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
     if (now.getHours() < 5) now.setDate(now.getDate() - 1);
     return now;
+  }
+
+  function calcQuadrant(dueDateStr, todayStr, endOfWeekStr, cfg) {
+    if (!dueDateStr) return null;
+    const d = dueDateStr.slice(0, 10);
+    if (d === todayStr) return cfg.quadrant_today || '1사분면';
+    if (d <= endOfWeekStr) return cfg.quadrant_week || '2사분면';
+    return null;
   }
 
   if (req.method === 'GET') {
@@ -16,10 +24,8 @@ export default async function handler(req, res) {
     if (!source_db_id) return res.status(400).json({ error: 'source_db_id required' });
 
     try {
-      const now = getToday();
+      const now = getSeoulNow();
       const today = now.toLocaleDateString('sv-SE');
-
-      // 이번 주 = 오늘 포함 7일
       const weekEnd = new Date(now);
       weekEnd.setDate(now.getDate() + 6);
       const endOfWeek = weekEnd.toLocaleDateString('sv-SE');
@@ -53,9 +59,8 @@ export default async function handler(req, res) {
         const dueStart = dueProp?.start || null;
         const hasTime = dueStart ? dueStart.includes('T') : false;
         const done = page.properties['완료']?.checkbox || false;
-        const parentIds = (page.properties['상위 항목']?.relation || []).map(r => r.id);
-        const childIds = (page.properties['하위 항목']?.relation || []).map(r => r.id);
-        return { id: page.id, title, dueStart, hasTime, done, parentIds, childIds };
+        const memo = page.properties['메모']?.rich_text?.[0]?.plain_text || '';
+        return { id: page.id, title, dueStart, hasTime, done, memo };
       });
 
       return res.status(200).json({ pages, today, endOfWeek });
@@ -65,14 +70,26 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { source_db_id, title, dueDate } = req.body;
+    const { source_db_id, title, dueDate, memo, cfg } = req.body;
     if (!source_db_id || !title) return res.status(400).json({ error: 'source_db_id, title required' });
 
     try {
+      const now = getSeoulNow();
+      const today = now.toLocaleDateString('sv-SE');
+      const weekEnd = new Date(now);
+      weekEnd.setDate(now.getDate() + 6);
+      const endOfWeek = weekEnd.toLocaleDateString('sv-SE');
+
+      const quadrant = calcQuadrant(dueDate, today, endOfWeek, cfg || {});
+
       const props = {
         '이름': { title: [{ text: { content: title } }] },
+        '완료': { checkbox: false },
+        '추가일': { date: { start: today } },
       };
       if (dueDate) props['마감일'] = { date: { start: dueDate } };
+      if (memo) props['메모'] = { rich_text: [{ text: { content: memo } }] };
+      if (quadrant) props['사분면'] = { select: { name: quadrant } };
 
       const r = await fetch('https://api.notion.com/v1/pages', {
         method: 'POST', headers,
@@ -86,7 +103,8 @@ export default async function handler(req, res) {
         id: data.id, title,
         dueStart: newDue,
         hasTime: newDue ? newDue.includes('T') : false,
-        done: false, parentIds: [], childIds: [],
+        done: false,
+        memo: memo || '',
       });
     } catch (err) {
       return res.status(500).json({ error: err.message });
@@ -94,14 +112,28 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'PATCH') {
-    const { pageId, dueDate, title, done } = req.body;
+    const { pageId, dueDate, title, done, memo, cfg } = req.body;
     if (!pageId) return res.status(400).json({ error: 'pageId required' });
 
     try {
+      const now = getSeoulNow();
+      const today = now.toLocaleDateString('sv-SE');
+      const weekEnd = new Date(now);
+      weekEnd.setDate(now.getDate() + 6);
+      const endOfWeek = weekEnd.toLocaleDateString('sv-SE');
+
       const props = {};
-      if (dueDate !== undefined) props['마감일'] = { date: dueDate ? { start: dueDate } : null };
       if (title !== undefined) props['이름'] = { title: [{ text: { content: title } }] };
-      if (done !== undefined) props['완료'] = { checkbox: done };
+      if (memo !== undefined) props['메모'] = { rich_text: memo ? [{ text: { content: memo } }] : [] };
+      if (dueDate !== undefined) {
+        props['마감일'] = { date: dueDate ? { start: dueDate } : null };
+        const quadrant = calcQuadrant(dueDate, today, endOfWeek, cfg || {});
+        if (quadrant) props['사분면'] = { select: { name: quadrant } };
+      }
+      if (done !== undefined) {
+        props['완료'] = { checkbox: done };
+        props['완료일'] = { date: done ? { start: today } : null };
+      }
 
       const r = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
         method: 'PATCH', headers, body: JSON.stringify({ properties: props }),

@@ -9,7 +9,11 @@
   "source_property": "마감일",
   "name_property": "이름",
   "done_property": "완료",
-  "parent_property": "상위 항목",
-  "child_property": "하위 항목",
+  "added_date_property": "추가일",
+  "memo_property": "메모",
+  "completion_date_property": "완료일",
+  "quadrant_property": "사분면",
+  "quadrant_today": "1사분면",
+  "quadrant_week": "2사분면",
   "mode": "live"
 }
