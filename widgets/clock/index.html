@@ -6,35 +6,72 @@
   <title>C:// CLOCK</title>
   <link rel="stylesheet" href="../../shared/tokens.css" />
   <style>
+    @font-face {
+      font-family: 'MemomentKkukkukk';
+      src: url('../../shared/fonts/MemomentKkukkukk.ttf') format('truetype');
+    }
+
     body { display: flex; justify-content: center; }
 
-    .clock-time {
-      font-size: 32px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: var(--ink);
-      text-align: center;
-      padding: 8px 0 4px;
-      font-variant-numeric: tabular-nums;
-    }
+    .window { max-width: 300px; }
 
-    .clock-seconds {
-      font-size: 14px;
-      color: var(--accent);
-      letter-spacing: 1px;
-      text-align: center;
-      margin-bottom: 4px;
-    }
+    .content { padding: 16px 18px 18px; }
 
     .clock-date {
-      font-size: 10.5px;
+      font-size: 13px;
       color: #777;
-      text-align: center;
       letter-spacing: 0.5px;
-      padding-bottom: 4px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    .blink { animation: blink 1s step-start infinite; }
+    .clock-date .day-paren {
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    .clock-time {
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      line-height: 1;
+    }
+
+    .hearts {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin: 0 6px;
+    }
+
+    .heart {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      position: relative;
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+    .heart::before,
+    .heart::after {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: absolute;
+    }
+    .heart::before { top: -3.5px; left: 0; }
+    .heart::after  { left: -3.5px; top: 0; }
+
+    .hearts.blink { animation: blink 1s step-start infinite; }
     @keyframes blink { 50% { opacity: 0; } }
   </style>
 </head>
@@ -47,9 +84,18 @@
       </span>
     </div>
     <div class="content">
-      <div class="clock-time" id="time">00<span class="blink">:</span>00</div>
-      <div class="clock-seconds" id="seconds">:00</div>
-      <div class="clock-date" id="date">----. --. --.  ---</div>
+      <div class="clock-date">
+        <span id="date-ymd">----.--.--</span>
+        <span class="day-paren" id="date-day">(---)</span>
+      </div>
+      <div class="clock-time">
+        <span id="time-h">00</span>
+        <span class="hearts blink">
+          <span class="heart"></span>
+          <span class="heart"></span>
+        </span>
+        <span id="time-m">00</span>
+      </div>
     </div>
   </div>
 
@@ -57,25 +103,20 @@
   <script>
     loadWidgetConfig();
 
-    const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
     function tick() {
       const now = new Date();
-      const h = pad(now.getHours());
-      const m = pad(now.getMinutes());
-      const s = pad(now.getSeconds());
-
-      document.getElementById('time').innerHTML =
-        `${h}<span class="blink">:</span>${m}`;
-      document.getElementById('seconds').textContent = `:${s}`;
+      document.getElementById('time-h').textContent = pad(now.getHours());
+      document.getElementById('time-m').textContent = pad(now.getMinutes());
 
       const y = now.getFullYear();
       const mo = pad(now.getMonth() + 1);
       const d = pad(now.getDate());
-      const day = DAYS[now.getDay()];
-      document.getElementById('date').textContent = `${y}. ${mo}. ${d}.  ${day}`;
+      document.getElementById('date-ymd').textContent = `${y}-${mo}-${d}`;
+      document.getElementById('date-day').textContent = `(${DAYS[now.getDay()]})`;
     }
 
     tick();
