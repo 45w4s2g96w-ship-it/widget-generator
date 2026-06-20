@@ -9,6 +9,17 @@ async function loadWidgetConfig() {
   const res = await fetch('./config.json');
   const config = await res.json();
 
+  // Notion Settings DB에 저장된 최신 값이 있으면 덮어쓴다 (없으면 config.json 기본값 사용)
+  try {
+    const liveRes = await fetch(`/api/get-settings?widgetId=${config.id}`);
+    if (liveRes.ok) {
+      const live = await liveRes.json();
+      Object.assign(config, live);
+    }
+  } catch (e) {
+    console.warn('Settings DB 연결 실패 — 기본값(config.json)으로 표시됨');
+  }
+
   const root = document.documentElement.style;
   root.setProperty('--win-color', config.color || '#1a1a1a');
   root.setProperty('--accent', config.accent || config.color || '#9b8fc7');
