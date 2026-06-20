@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Widget</title>
+<link rel="stylesheet" href="../../shared/tokens.css">
+<style>
+  @font-face {
+    font-family: 'ChosunGu';
+    src: url('../../shared/fonts/ChosunGu.ttf') format('truetype');
+  }
+
+  body {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: transparent;
+  }
+
+  .clock-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 24px;
+  }
+
+  .clock-time {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .clock-date {
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+  <div class="window">
+    <div class="titlebar" data-widget-title>C:// WIDGET</div>
+    <div class="content">
+      <div class="clock-content">
+        <div class="clock-time" id="clockTime">00:00:00</div>
+        <div class="clock-date" id="clockDate">2026-01-01 (월)</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    loadWidgetConfig();
+
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clockTime').textContent = `${h}:${m}:${s}`;
+
+      const y = now.getFullYear();
+      const mo = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const day = days[now.getDay()];
+      document.getElementById('clockDate').textContent = `${y}-${mo}-${d} (${day})`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+
+</body>
+</html>
