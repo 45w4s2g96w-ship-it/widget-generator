@@ -25,9 +25,20 @@
     .todo-row { display: flex; align-items: center; gap: 5px; padding: 3px 4px 3px 2px; border-radius: 2px; }
     .todo-row.today { background: rgba(180, 155, 215, 0.28); }
 
-    .pin-btn { background: none; border: none; cursor: pointer; font-size: 11px; padding: 0; line-height: 1; opacity: 0.28; flex-shrink: 0; filter: grayscale(1); transition: opacity 0.15s; }
-    .pin-btn:hover { opacity: 0.65; }
-    .pin-btn.pinned { opacity: 1; filter: none; }
+    .pin-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; padding: 0; line-height: 1;
+      flex-shrink: 0; transition: opacity 0.15s;
+      /* gray by default */
+      filter: grayscale(1);
+      opacity: 0.3;
+    }
+    .pin-btn:hover { opacity: 0.6; }
+    /* pinned = purple */
+    .pin-btn.pinned {
+      filter: invert(52%) sepia(30%) saturate(500%) hue-rotate(220deg) brightness(0.9);
+      opacity: 1;
+    }
 
     .todo-label { flex: 1; display: flex; align-items: center; gap: 3px; min-width: 0; cursor: pointer; }
     .todo-label:hover .todo-inner { text-decoration: underline; }
@@ -121,14 +132,11 @@
     }
 
     function dateOnly(str) { return str ? str.slice(0, 10) : ''; }
-
     function isToday(page) { return dateOnly(page.dueStart) === todayStr; }
-
     function periodLabel(page) {
       if (!isToday(page)) return null;
       return page.hasTime ? `(${page.dueStart.slice(11, 16)})` : null;
     }
-
     function byDate(a, b) {
       const da = dateOnly(a.dueStart || ''), db = dateOnly(b.dueStart || '');
       if (da !== db) return da.localeCompare(db);
@@ -140,16 +148,10 @@
       const content = document.getElementById('todo-content');
       const pageMap = {};
       allPages.forEach(p => { pageMap[p.id] = p; });
-
       const items = allPages
         .filter(p => p.parentIds.length === 0 || !p.parentIds.some(pid => pageMap[pid]))
         .sort(byDate);
-
-      if (!items.length) {
-        content.innerHTML = '<div class="empty-msg">이번 주 마감 항목이 없어요.</div>';
-        return;
-      }
-
+      if (!items.length) { content.innerHTML = '<div class="empty-msg">이번 주 마감 항목이 없어요.</div>'; return; }
       const frag = document.createDocumentFragment();
       items.forEach(page => appendRow(frag, page, pageMap));
       content.innerHTML = '';
@@ -251,7 +253,6 @@
       dueInput.value = page.dueStart ? `${page.dueStart.slice(0, 10)}T${page.hasTime ? page.dueStart.slice(11, 16) : '00:00'}` : '';
       resetModal();
     }
-
     function openAddModal() {
       editingPageId = null;
       document.getElementById('modal-heading').textContent = '할일 추가';
@@ -259,7 +260,6 @@
       document.getElementById('edit-due').value = '';
       resetModal();
     }
-
     function resetModal() {
       document.getElementById('modal-status').textContent = '';
       document.getElementById('modal-status').className = 'modal-status';
@@ -278,14 +278,12 @@
       if (!title) { setModalStatus('제목을 입력해주세요.'); return; }
       const saveBtn = document.getElementById('modal-save');
       saveBtn.disabled = true; setModalStatus('저장 중...');
-
       let dueDate = null, hasTime = false;
       if (dueRaw) {
         const d = dueRaw.slice(0, 10), t = dueRaw.slice(11, 16);
         if (t && t !== '00:00') { dueDate = `${d}T${t}:00+09:00`; hasTime = true; }
         else dueDate = d;
       }
-
       try {
         if (editingPageId) {
           const r = await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: editingPageId, title, dueDate }) });
