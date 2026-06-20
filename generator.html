@@ -148,6 +148,14 @@
       </div>
       <div class="content" id="previewContent"></div>
     </div>
+
+    <div style="margin-top:24px;">
+      <h3>코드 붙여넣어 미리보기</h3>
+      <p style="font-size:11px; color:#777; margin-bottom:8px;">클로드한테 받은 index.html 전체를 붙여넣으면 GitHub에 올리기 전에 바로 확인할 수 있어요.</p>
+      <textarea id="pastedCode" placeholder="여기에 index.html 코드 전체를 붙여넣으세요" style="width:260px; height:140px; font-family:monospace; font-size:10px; border:1px solid var(--border); padding:6px;"></textarea>
+      <button class="btn" id="renderPastedBtn" style="width:260px; padding:7px; margin-top:6px;">이 코드로 미리보기</button>
+      <iframe id="pastedPreview" style="width:260px; height:300px; border:1px solid var(--border); margin-top:10px; background:#fff;"></iframe>
+    </div>
   </div>
 
 <script>
@@ -202,7 +210,14 @@
     select.innerHTML = FONT_LIST.map(f =>
       `<option value="${f}" style="font-family:'${f}'">${f}</option>`
     ).join('');
-    select.addEventListener('change', updatePreview);
+
+    const savedFont = localStorage.getItem('widgetGenerator_lastFont');
+    if (savedFont) select.value = savedFont;
+
+    select.addEventListener('change', () => {
+      localStorage.setItem('widgetGenerator_lastFont', select.value);
+      updatePreview();
+    });
   }
   renderFontDropdown();
 
@@ -325,6 +340,14 @@
     } catch (e) {
       document.getElementById('status').textContent = '에러: ' + e.message;
     }
+  });
+
+  document.getElementById('renderPastedBtn').addEventListener('click', () => {
+    let code = document.getElementById('pastedCode').value;
+    // widgets/[id]/index.html 기준 상대경로(../../shared/...)를 절대경로(/shared/...)로 자동 보정
+    code = code.replace(/\.\.\/\.\.\/shared\//g, '/shared/');
+    const iframe = document.getElementById('pastedPreview');
+    iframe.srcdoc = code;
   });
 
   updatePreview();
