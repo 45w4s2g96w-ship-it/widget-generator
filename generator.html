@@ -80,13 +80,43 @@
       </div>
 
       <div class="field">
-        <label>폰트</label>
-        <select id="font">
-          <option value="'Helvetica Neue', Arial, sans-serif">Helvetica</option>
-          <option value="'Courier New', monospace">Courier (모노)</option>
-          <option value="'Georgia', serif">Georgia (세리프)</option>
-          <option value="'Gothic A1', sans-serif">고딕A1 (한글)</option>
-        </select>
+        <label>폰트 (입력하면 검색됨, 목록 외 이름도 직접 입력 가능)</label>
+        <input type="text" id="font" value="Helvetica Neue" placeholder="폰트 이름 검색" list="fontList">
+        <datalist id="fontList">
+          <!-- 한글 지원 -->
+          <option value="Noto Sans KR">
+          <option value="Noto Serif KR">
+          <option value="Nanum Gothic">
+          <option value="Nanum Myeongjo">
+          <option value="Nanum Pen Script">
+          <option value="Nanum Brush Script">
+          <option value="Black Han Sans">
+          <option value="Do Hyeon">
+          <option value="Jua">
+          <option value="Gaegu">
+          <option value="Gowun Dodum">
+          <option value="Gowun Batang">
+          <option value="Hahmlet">
+          <option value="Gothic A1">
+          <option value="IBM Plex Sans KR">
+          <!-- 영문 (한국 디자인에서 자주 쓰는 디스플레이/모노) -->
+          <option value="Inter">
+          <option value="Work Sans">
+          <option value="Archivo Black">
+          <option value="Space Mono">
+          <option value="IBM Plex Mono">
+          <option value="Bebas Neue">
+          <option value="DM Mono">
+          <option value="Sora">
+          <option value="Manrope">
+          <option value="Space Grotesk">
+          <option value="JetBrains Mono">
+          <option value="Syne">
+          <option value="Unbounded">
+          <option value="Fraunces">
+          <option value="Instrument Serif">
+        </datalist>
+        <div style="font-size:10px; color:#999; margin-top:3px;">입력 후 잠깐 기다리면 미리보기에 바로 적용돼요</div>
       </div>
 
       <div class="field">
@@ -153,12 +183,29 @@
     }
   }
 
+  let fontLoadTimer;
+  function loadGoogleFont(fontName) {
+    const familyParam = fontName.trim().replace(/\s+/g, '+');
+    let link = document.getElementById('dynamicFontLink');
+    if (!link) {
+      link = document.createElement('link');
+      link.id = 'dynamicFontLink';
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    }
+    link.href = `https://fonts.googleapis.com/css2?family=${familyParam}:wght@400;700;900&display=swap`;
+  }
+
   function updatePreview() {
     const color = document.getElementById('color').value || '#1a1a1a';
     const accent = document.getElementById('accent').value || '#9b8fc7';
-    const font = document.getElementById('font').value;
+    const fontName = document.getElementById('font').value || 'Helvetica Neue';
+    const font = `'${fontName}', sans-serif`;
     const title = document.getElementById('title').value || 'C:// WIDGET';
     const type = document.getElementById('type').value;
+
+    clearTimeout(fontLoadTimer);
+    fontLoadTimer = setTimeout(() => loadGoogleFont(fontName), 400);
 
     document.documentElement.style.setProperty('--win-color', color);
     document.documentElement.style.setProperty('--accent', accent);
