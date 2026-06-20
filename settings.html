@@ -32,9 +32,7 @@
 
       <div class="field">
         <label>위젯 선택</label>
-        <select id="widgetSelect">
-          <option value="clock">clock</option>
-        </select>
+        <select id="widgetSelect"></select>
       </div>
 
       <div class="field">
@@ -60,12 +58,7 @@
 
       <div class="field">
         <label>폰트</label>
-        <select id="font">
-          <option value="'Helvetica Neue', Arial, sans-serif">Helvetica</option>
-          <option value="'Courier New', monospace">Courier (모노)</option>
-          <option value="'Georgia', serif">Georgia (세리프)</option>
-          <option value="'Gothic A1', sans-serif">고딕A1 (한글)</option>
-        </select>
+        <select id="font"></select>
       </div>
 
       <div class="field">
@@ -87,6 +80,50 @@
 <script>
   let currentPageId = null;
 
+  const FONT_LIST = [
+    'Helvetica Neue','Noto Sans KR','Noto Serif KR','Nanum Gothic','Nanum Myeongjo',
+    'Nanum Pen Script','Nanum Brush Script','Black Han Sans','Do Hyeon','Jua','Gaegu',
+    'Gowun Dodum','Gowun Batang','Hahmlet','Gothic A1','IBM Plex Sans KR',
+    'Stylish','Sunflower','Single Day','East Sea Dokdo','Poor Story',
+    'Yeon Sung','Cute Font','Dokdo','Gugi','Song Myung',
+    'Inter','Work Sans','Archivo Black','Space Mono','IBM Plex Mono',
+    'Bebas Neue','DM Mono','Sora','Manrope','Space Grotesk',
+    'JetBrains Mono','Syne','Unbounded','Fraunces','Instrument Serif',
+    'Roboto','Poppins','Montserrat','Playfair Display','Outfit',
+    'Plus Jakarta Sans','Crimson Text','Libre Baskerville','Cormorant Garamond','Public Sans'
+  ];
+
+  // GitHub shared/fonts/manifest.json에 등록된 커스텀 폰트도 같이 불러옴
+  async function loadFontOptions() {
+    const select = document.getElementById('font');
+    let customFonts = [];
+    try {
+      const res = await fetch('/shared/fonts/manifest.json');
+      if (res.ok) {
+        const data = await res.json();
+        customFonts = data.map(f => f.name);
+      }
+    } catch (e) {
+      // manifest 없으면 그냥 구글 폰트만 사용
+    }
+
+    const customOptions = customFonts.map(f => `<option value="${f}">${f} (직접 업로드)</option>`).join('');
+    const googleOptions = FONT_LIST.map(f => `<option value="${f}">${f}</option>`).join('');
+    select.innerHTML = customOptions + googleOptions;
+  }
+
+  async function loadWidgetOptions() {
+    const select = document.getElementById('widgetSelect');
+    try {
+      const res = await fetch('/api/list-widgets');
+      const data = await res.json();
+      const widgets = data.widgets && data.widgets.length ? data.widgets : ['clock'];
+      select.innerHTML = widgets.map(w => `<option value="${w}">${w}</option>`).join('');
+    } catch (e) {
+      select.innerHTML = `<option value="clock">clock</option>`;
+    }
+  }
+
   async function loadSettings(widgetId) {
     document.getElementById('status').textContent = '불러오는 중...';
     try {
@@ -102,7 +139,11 @@
       document.getElementById('colorPicker').value = data.color || '#1a1a1a';
       document.getElementById('accent').value = data.accent || '';
       document.getElementById('accentPicker').value = data.accent || '#9b8fc7';
-      document.getElementById('font').value = data.font || "'Helvetica Neue', Arial, sans-serif";
+
+      // 저장된 font 값은 "'폰트명'" 형태라 따옴표 제거해서 select에 매칭
+      const fontName = (data.font || 'Helvetica Neue').replace(/['"]/g, '').split(',')[0].trim();
+      document.getElementById('font').value = fontName;
+
       document.getElementById('source_db_id').value = data.source_db_id || '';
       document.getElementById('source_property').value = data.source_property || '';
       document.getElementById('status').textContent = '불러오기 완료';
@@ -128,12 +169,13 @@
       return;
     }
     document.getElementById('status').textContent = '저장 중...';
+    const fontName = document.getElementById('font').value;
     const body = {
       pageId: currentPageId,
       title: document.getElementById('title').value,
       color: document.getElementById('color').value,
       accent: document.getElementById('accent').value,
-      font: document.getElementById('font').value,
+      font: `'${fontName}'`,
       source_db_id: document.getElementById('source_db_id').value,
       source_property: document.getElementById('source_property').value
     };
@@ -153,7 +195,13 @@
     }
   });
 
-  loadSettings('clock');
+  async function init() {
+    await loadFontOptions();
+    await loadWidgetOptions();
+    const firstWidget = document.getElementById('widgetSelect').value;
+    if (firstWidget) loadSettings(firstWidget);
+  }
+  init();
 </script>
 
 </body>
