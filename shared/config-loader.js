@@ -21,14 +21,15 @@ async function loadWidgetConfig() {
   }
 
   const root = document.documentElement.style;
-  root.setProperty('--win-color', config.color || '#1a1a1a');
-  root.setProperty('--accent', config.accent || config.color || '#9b8fc7');
-  root.setProperty('--font', config.font || "'Helvetica Neue', Arial, sans-serif");
+  if (config.color)  root.setProperty('--win-color', config.color);
+  if (config.accent) root.setProperty('--accent', config.accent);
+  if (config.font)   root.setProperty('--font', config.font);
 
-  document.title = config.title || 'Widget';
-
-  const titleEl = document.querySelector('[data-widget-title]');
-  if (titleEl) titleEl.textContent = config.title;
+  if (config.title) {
+    document.title = config.title;
+    const titleEl = document.querySelector('[data-widget-title]');
+    if (titleEl) titleEl.textContent = config.title;
+  }
 
   return config;
 }
