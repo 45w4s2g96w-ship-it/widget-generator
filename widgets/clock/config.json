@@ -1,9 +1,0 @@
-{
-  "id": "clock",
-  "title": "C:// CLOCK",
-  "color": "#1a1a1a",
-  "accent": "#9b8fc7",
-  "font": "'ChosunGu', 'Gothic A1', sans-serif",
-  "type": "clock",
-  "mode": "live"
-}
