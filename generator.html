@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Widget Generator</title>
 <link rel="stylesheet" href="./shared/tokens.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Noto+Serif+KR&family=Nanum+Gothic&family=Nanum+Myeongjo&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Gaegu&family=Gowun+Dodum&family=Gowun+Batang&family=Hahmlet&family=Gothic+A1&family=IBM+Plex+Sans+KR&family=Stylish&family=Sunflower&family=Single+Day&family=East+Sea+Dokdo&family=Poor+Story&family=Yeon+Sung&family=Cute+Font&family=Dokdo&family=Gugi&family=Song+Myung&family=Inter&family=Work+Sans&family=Archivo+Black&family=Space+Mono&family=IBM+Plex+Mono&family=Bebas+Neue&family=DM+Mono&family=Sora&family=Manrope&family=Space+Grotesk&family=JetBrains+Mono&family=Syne&family=Unbounded&family=Fraunces&family=Instrument+Serif&family=Roboto&family=Poppins&family=Montserrat&family=Playfair+Display&family=Outfit&family=Plus+Jakarta+Sans&family=Crimson+Text&family=Libre+Baskerville&family=Cormorant+Garamond&family=Public+Sans&display=swap">
 <style>
   body { background: #f4f4f2; padding: 32px; display: flex; gap: 40px; flex-wrap: wrap; }
   .form-panel { width: 320px; }
@@ -36,6 +37,28 @@
   .habit-row { display: flex; align-items: center; gap: 7px; padding: 3px 0; font-size: 12px; }
   .habit-row .box { width: 11px; height: 11px; border: 1px solid var(--ink); flex-shrink: 0; }
   .habit-row .box.done { background: var(--accent); }
+  .font-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    padding: 6px;
+    margin-top: 6px;
+  }
+  .font-item {
+    border: 1px solid #ddd;
+    padding: 6px 8px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #fff;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .font-item:hover { border-color: var(--border); }
+  .font-item.selected { background: var(--win-color); color: #fff; border-color: var(--win-color); }
 </style>
 </head>
 <body>
@@ -80,43 +103,9 @@
       </div>
 
       <div class="field">
-        <label>폰트 (입력하면 검색됨, 목록 외 이름도 직접 입력 가능)</label>
-        <input type="text" id="font" value="Helvetica Neue" placeholder="폰트 이름 검색" list="fontList">
-        <datalist id="fontList">
-          <!-- 한글 지원 -->
-          <option value="Noto Sans KR">
-          <option value="Noto Serif KR">
-          <option value="Nanum Gothic">
-          <option value="Nanum Myeongjo">
-          <option value="Nanum Pen Script">
-          <option value="Nanum Brush Script">
-          <option value="Black Han Sans">
-          <option value="Do Hyeon">
-          <option value="Jua">
-          <option value="Gaegu">
-          <option value="Gowun Dodum">
-          <option value="Gowun Batang">
-          <option value="Hahmlet">
-          <option value="Gothic A1">
-          <option value="IBM Plex Sans KR">
-          <!-- 영문 (한국 디자인에서 자주 쓰는 디스플레이/모노) -->
-          <option value="Inter">
-          <option value="Work Sans">
-          <option value="Archivo Black">
-          <option value="Space Mono">
-          <option value="IBM Plex Mono">
-          <option value="Bebas Neue">
-          <option value="DM Mono">
-          <option value="Sora">
-          <option value="Manrope">
-          <option value="Space Grotesk">
-          <option value="JetBrains Mono">
-          <option value="Syne">
-          <option value="Unbounded">
-          <option value="Fraunces">
-          <option value="Instrument Serif">
-        </datalist>
-        <div style="font-size:10px; color:#999; margin-top:3px;">입력 후 잠깐 기다리면 미리보기에 바로 적용돼요</div>
+        <label>폰트 (글씨체 보고 클릭해서 선택, 직접 입력도 가능)</label>
+        <input type="text" id="font" value="Helvetica Neue" placeholder="폰트 이름 직접 입력도 가능">
+        <div class="font-grid" id="fontGrid"></div>
       </div>
 
       <div class="field">
@@ -130,7 +119,7 @@
       </div>
 
       <button class="btn" id="createBtn" style="width:100%; padding:7px;">위젯 생성 (Settings DB에 저장)</button>
-      <a href="https://claude.ai/new" target="_blank" style="display:block; text-decoration:none;">
+      <a href="https://claude.ai/project/019ee501-a25a-705c-82fd-3bf9d3abca14" target="_blank" style="display:block; text-decoration:none;">
         <button class="btn" style="width:100%; padding:7px; margin-top:6px;" type="button">💬 클로드에서 코드 받기</button>
       </a>
       <div class="status" id="status"></div>
@@ -185,6 +174,35 @@
         `;
     }
   }
+
+  const FONT_LIST = [
+    'Noto Sans KR','Noto Serif KR','Nanum Gothic','Nanum Myeongjo','Nanum Pen Script',
+    'Nanum Brush Script','Black Han Sans','Do Hyeon','Jua','Gaegu',
+    'Gowun Dodum','Gowun Batang','Hahmlet','Gothic A1','IBM Plex Sans KR',
+    'Stylish','Sunflower','Single Day','East Sea Dokdo','Poor Story',
+    'Yeon Sung','Cute Font','Dokdo','Gugi','Song Myung',
+    'Inter','Work Sans','Archivo Black','Space Mono','IBM Plex Mono',
+    'Bebas Neue','DM Mono','Sora','Manrope','Space Grotesk',
+    'JetBrains Mono','Syne','Unbounded','Fraunces','Instrument Serif',
+    'Roboto','Poppins','Montserrat','Playfair Display','Outfit',
+    'Plus Jakarta Sans','Crimson Text','Libre Baskerville','Cormorant Garamond','Public Sans'
+  ];
+
+  function renderFontGrid() {
+    const grid = document.getElementById('fontGrid');
+    grid.innerHTML = FONT_LIST.map(f =>
+      `<div class="font-item" style="font-family:'${f}'" data-font="${f}">${f}</div>`
+    ).join('');
+    grid.querySelectorAll('.font-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.getElementById('font').value = item.dataset.font;
+        grid.querySelectorAll('.font-item').forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        updatePreview();
+      });
+    });
+  }
+  renderFontGrid();
 
   let fontLoadTimer;
   function loadGoogleFont(fontName) {
