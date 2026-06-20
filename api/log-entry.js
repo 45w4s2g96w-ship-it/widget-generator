@@ -37,6 +37,7 @@ export default async function handler(req, res) {
       const data = await r.json();
       if (data.object === 'error') throw new Error(data.message);
 
+      const pageIdClean = pageId.replace(/-/g, '');
       const entries = [];
       for (const block of data.results || []) {
         if (block.type !== 'quote') continue;
@@ -47,7 +48,7 @@ export default async function handler(req, res) {
         const bodyPart = rich.slice(1).map(r => r.text?.content || '').join('');
         const text = bodyPart.replace(/^\n/, '');
         const blockId = block.id.replace(/-/g, '');
-        if (time && text) entries.push({ time, text, blockId });
+        if (time && text) entries.push({ time, text, pageId: pageIdClean, blockId });
       }
 
       return res.status(200).json({ entries });
