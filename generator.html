@@ -127,9 +127,7 @@
       </div>
 
       <button class="btn" id="createBtn" style="width:100%; padding:7px;">위젯 생성 (Settings DB에 저장)</button>
-      <a href="https://claude.ai/project/019ee501-a25a-705c-82fd-3bf9d3abca14" target="_blank" style="display:block; text-decoration:none;">
-        <button class="btn" style="width:100%; padding:7px; margin-top:6px;" type="button">💬 클로드에서 코드 받기</button>
-      </a>
+      <button class="btn" id="sendToClaudeBtn" style="width:100%; padding:7px; margin-top:6px;" type="button">💬 클로드에서 코드 받기 (현재 설정 복사됨)</button>
       <div class="status" id="status"></div>
 
       <div class="output">
@@ -153,7 +151,12 @@
       <h3>코드 붙여넣어 미리보기</h3>
       <p style="font-size:11px; color:#777; margin-bottom:8px;">클로드한테 받은 index.html 전체를 붙여넣으면 GitHub에 올리기 전에 바로 확인할 수 있어요.</p>
       <textarea id="pastedCode" placeholder="여기에 index.html 코드 전체를 붙여넣으세요" style="width:260px; height:140px; font-family:monospace; font-size:10px; border:1px solid var(--border); padding:6px;"></textarea>
+
+      <label style="font-size:11px; color:#555; display:block; margin-top:8px;">config.json (가짜 데이터, 선택)</label>
+      <textarea id="pastedConfig" placeholder='{"id":"stars","title":"C:// RATING","color":"#1a1a1a"}' style="width:260px; height:80px; font-family:monospace; font-size:10px; border:1px solid var(--border); padding:6px;"></textarea>
+
       <button class="btn" id="renderPastedBtn" style="width:260px; padding:7px; margin-top:6px;">이 코드로 미리보기</button>
+      <button class="btn" id="applyStyleBtn" style="width:260px; padding:7px; margin-top:6px; background:var(--win-color); color:#fff;">왼쪽 색/폰트를 이 코드에 적용</button>
       <iframe id="pastedPreview" style="width:260px; height:300px; border:1px solid var(--border); margin-top:10px; background:#fff;"></iframe>
     </div>
   </div>
@@ -342,12 +345,65 @@
     }
   });
 
-  document.getElementById('renderPastedBtn').addEventListener('click', () => {
+  function renderPastedCode() {
     let code = document.getElementById('pastedCode').value;
-    // widgets/[id]/index.html 기준 상대경로(../../shared/...)를 절대경로(/shared/...)로 자동 보정
     code = code.replace(/\.\.\/\.\.\/shared\//g, '/shared/');
+
+    const fakeConfig = document.getElementById('pastedConfig').value.trim() || '{}';
+
+    const interceptScript = `
+      <script>
+        const __fakeConfig = ${fakeConfig};
+        const __originalFetch = window.fetch;
+        window.fetch = function(url, opts) {
+          if (typeof url === 'string' && url.includes('config.json')) {
+            return Promise.resolve(new Response(JSON.stringify(__fakeConfig), { status: 200 }));
+          }
+          if (typeof url === 'string' && url.includes('/api/get-settings')) {
+            return Promise.resolve(new Response(JSON.stringify(__fakeConfig), { status: 200 }));
+          }
+          return __originalFetch(url, opts);
+        };
+      </script>
+    `;
+
+    const finalCode = code.replace('<head>', '<head>' + interceptScript);
+
     const iframe = document.getElementById('pastedPreview');
-    iframe.srcdoc = code;
+    iframe.srcdoc = finalCode;
+  }
+
+  document.getElementById('sendToClaudeBtn').addEventListener('click', async () => {
+    const config = document.getElementById('configOutput').value;
+    const message = `이 위젯 만들어줘. config.json은 아래와 같아:\n\n${config}\n\n이 타입에 맞는 widgets/[id]/index.html을 작성해줘.`;
+
+    try {
+      await navigator.clipboard.writeText(message);
+      document.getElementById('status').textContent = '복사 완료! Project 채팅창에 붙여넣기(Ctrl+V) 하세요';
+    } catch (e) {
+      document.getElementById('status').textContent = '복사 실패 — config.json을 직접 복사해주세요';
+    }
+
+    window.open('https://claude.ai/project/019ee501-a25a-705c-82fd-3bf9d3abca14', '_blank');
+  });
+
+  document.getElementById('renderPastedBtn').addEventListener('click', renderPastedCode);
+
+  // 왼쪽 패널의 현재 색/폰트를 붙여넣은 코드의 config.json에 반영하고 다시 렌더링
+  document.getElementById('applyStyleBtn').addEventListener('click', () => {
+    let config;
+    try {
+      config = JSON.parse(document.getElementById('pastedConfig').value.trim() || '{}');
+    } catch (e) {
+      config = {};
+    }
+    const fontName = document.getElementById('font').value || 'Helvetica Neue';
+    config.color = document.getElementById('color').value;
+    config.accent = document.getElementById('accent').value;
+    config.font = `'${fontName}', 'Gothic A1', sans-serif`;
+
+    document.getElementById('pastedConfig').value = JSON.stringify(config, null, 2);
+    renderPastedCode();
   });
 
   updatePreview();
