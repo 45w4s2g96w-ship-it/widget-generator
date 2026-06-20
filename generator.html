@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Widget Generator</title>
+<link rel="stylesheet" href="./shared/tokens.css">
+<style>
+  body { background: #f4f4f2; padding: 32px; display: flex; gap: 40px; flex-wrap: wrap; }
+  .form-panel { width: 320px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 11px; color: #555; margin-bottom: 3px; }
+  .field input, .field select {
+    width: 100%;
+    border: 1px solid var(--border);
+    padding: 5px 6px;
+    font-size: 12px;
+    font-family: var(--font);
+  }
+  .color-row { display: flex; gap: 8px; align-items: center; }
+  .color-row input[type="color"] { width: 32px; height: 26px; padding: 0; border: 1px solid var(--border); cursor: pointer; }
+  .status { font-size: 11px; margin-top: 8px; color: #777; }
+
+  .preview-panel { width: 260px; }
+  .preview-panel h3 { font-size: 12px; margin-bottom: 10px; color: #555; }
+
+  .output { margin-top: 20px; }
+  .output textarea {
+    width: 100%; height: 140px; font-family: monospace; font-size: 10px;
+    border: 1px solid var(--border); padding: 6px; resize: vertical;
+  }
+  .output label { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin: 10px 0 4px; }
+  .copy-btn { font-size: 10px; padding: 2px 8px; cursor: pointer; border: 1px solid var(--border); background: #fff; }
+
+  /* preview content samples */
+  .clock-time { font-size: 26px; font-weight: 700; letter-spacing: 1px; }
+  .habit-row { display: flex; align-items: center; gap: 7px; padding: 3px 0; font-size: 12px; }
+  .habit-row .box { width: 11px; height: 11px; border: 1px solid var(--ink); flex-shrink: 0; }
+  .habit-row .box.done { background: var(--accent); }
+</style>
+</head>
+<body>
+
+  <div class="form-panel">
+    <div class="content" style="border:1px solid var(--border); background:#fff; padding:16px;">
+
+      <div class="field">
+        <label>위젯 ID (영문, 소문자, 공백없이)</label>
+        <input type="text" id="widgetId" placeholder="예: habit">
+      </div>
+
+      <div class="field">
+        <label>타이틀바 텍스트</label>
+        <input type="text" id="title" placeholder="C:// HABITS">
+      </div>
+
+      <div class="field">
+        <label>타입</label>
+        <select id="type">
+          <option value="clock">clock — 시계</option>
+          <option value="habit">habit — 체크리스트형</option>
+          <option value="textinput">textinput — 텍스트 입력형</option>
+          <option value="report">report — 통계/리포트형</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>창 색 (color)</label>
+        <div class="color-row">
+          <input type="color" id="colorPicker" value="#1a1a1a">
+          <input type="text" id="color" value="#1a1a1a">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>포인트 색 (accent)</label>
+        <div class="color-row">
+          <input type="color" id="accentPicker" value="#9b8fc7">
+          <input type="text" id="accent" value="#9b8fc7">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>폰트</label>
+        <select id="font">
+          <option value="'Helvetica Neue', Arial, sans-serif">Helvetica</option>
+          <option value="'Courier New', monospace">Courier (모노)</option>
+          <option value="'Georgia', serif">Georgia (세리프)</option>
+          <option value="'Gothic A1', sans-serif">고딕A1 (한글)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Source DB ID (데이터 연동 필요한 타입만)</label>
+        <input type="text" id="source_db_id" placeholder="비워둬도 됨">
+      </div>
+
+      <div class="field">
+        <label>Source Property</label>
+        <input type="text" id="source_property" placeholder="비워둬도 됨">
+      </div>
+
+      <button class="btn" id="createBtn" style="width:100%; padding:7px;">위젯 생성 (Settings DB에 저장)</button>
+      <div class="status" id="status"></div>
+
+      <div class="output">
+        <label>config.json <button class="copy-btn" onclick="copyText('configOutput')">복사</button></label>
+        <textarea id="configOutput" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <h3>미리보기 (샘플 데이터)</h3>
+    <div class="window" id="previewWindow">
+      <div class="titlebar">
+        <span id="previewTitle">C:// CLOCK</span>
+        <span class="icons"><span>_</span><span>□</span><span>x</span></span>
+      </div>
+      <div class="content" id="previewContent"></div>
+    </div>
+  </div>
+
+<script>
+  function sampleContent(type) {
+    switch (type) {
+      case 'habit':
+        return `
+          <div class="meta">TODAY</div>
+          <div class="habit-row"><div class="box done"></div>아침 산책</div>
+          <div class="habit-row"><div class="box done"></div>일기 쓰기</div>
+          <div class="habit-row"><div class="box"></div>독서 30분</div>
+          <div class="habit-row"><div class="box"></div>스트레칭</div>
+        `;
+      case 'textinput':
+        return `
+          <div class="meta">INBOX</div>
+          <div style="margin-bottom:10px;">오늘 회의에서 나온 아이디어 정리해야 함</div>
+          <button class="btn">SAVE & ROUTE</button>
+        `;
+      case 'report':
+        return `
+          <div class="meta">WEEK 25</div>
+          <div>일기 작성 5/7<br>투두 완료 12/18<br>키워드: 마감, 산책, 회고</div>
+        `;
+      case 'clock':
+      default:
+        const d = new Date();
+        const time = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+        return `
+          <div class="meta">${d.toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', weekday:'short' })}</div>
+          <div class="clock-time">${time}</div>
+        `;
+    }
+  }
+
+  function updatePreview() {
+    const color = document.getElementById('color').value || '#1a1a1a';
+    const accent = document.getElementById('accent').value || '#9b8fc7';
+    const font = document.getElementById('font').value;
+    const title = document.getElementById('title').value || 'C:// WIDGET';
+    const type = document.getElementById('type').value;
+
+    document.documentElement.style.setProperty('--win-color', color);
+    document.documentElement.style.setProperty('--accent', accent);
+    document.documentElement.style.setProperty('--font', font);
+    document.getElementById('previewTitle').textContent = title;
+    document.getElementById('previewContent').innerHTML = sampleContent(type);
+
+    updateConfigOutput();
+  }
+
+  function updateConfigOutput() {
+    const config = {
+      id: document.getElementById('widgetId').value || 'widget-id',
+      title: document.getElementById('title').value || 'C:// WIDGET',
+      color: document.getElementById('color').value,
+      accent: document.getElementById('accent').value,
+      font: document.getElementById('font').value,
+      type: document.getElementById('type').value,
+      mode: 'live'
+    };
+    document.getElementById('configOutput').value = JSON.stringify(config, null, 2);
+  }
+
+  function copyText(id) {
+    const el = document.getElementById(id);
+    el.select();
+    document.execCommand('copy');
+  }
+
+  // 입력값 바뀔 때마다 실시간 반영
+  ['widgetId','title','type','color','accent','font'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updatePreview);
+  });
+  document.getElementById('colorPicker').addEventListener('input', e => {
+    document.getElementById('color').value = e.target.value; updatePreview();
+  });
+  document.getElementById('accentPicker').addEventListener('input', e => {
+    document.getElementById('accent').value = e.target.value; updatePreview();
+  });
+
+  // Settings DB에 새 위젯 행 생성
+  document.getElementById('createBtn').addEventListener('click', async () => {
+    const body = {
+      id: document.getElementById('widgetId').value,
+      title: document.getElementById('title').value,
+      color: document.getElementById('color').value,
+      accent: document.getElementById('accent').value,
+      font: document.getElementById('font').value,
+      type: document.getElementById('type').value,
+      source_db_id: document.getElementById('source_db_id').value,
+      source_property: document.getElementById('source_property').value
+    };
+    if (!body.id) {
+      document.getElementById('status').textContent = '위젯 ID를 입력하세요';
+      return;
+    }
+    document.getElementById('status').textContent = '생성 중...';
+    try {
+      const res = await fetch('/api/create-widget', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        document.getElementById('status').textContent = 'Settings DB에 저장 완료 — 아래 config.json을 GitHub에 추가하세요';
+      } else {
+        const err = await res.json();
+        document.getElementById('status').textContent = '실패: ' + (err.error || res.status);
+      }
+    } catch (e) {
+      document.getElementById('status').textContent = '에러: ' + e.message;
+    }
+  });
+
+  updatePreview();
+  setInterval(() => {
+    if (document.getElementById('type').value === 'clock') updatePreview();
+  }, 30000);
+</script>
+
+</body>
+</html>
