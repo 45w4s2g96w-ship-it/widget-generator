@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// CLOCK</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    body { display: flex; justify-content: center; }
+
+    .clock-time {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--ink);
+      text-align: center;
+      padding: 8px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-seconds {
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .clock-date {
+      font-size: 10.5px;
+      color: #777;
+      text-align: center;
+      letter-spacing: 0.5px;
+      padding-bottom: 4px;
+    }
+
+    .blink { animation: blink 1s step-start infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// CLOCK</span>
+      <span class="icons">
+        <span>_</span><span>□</span><span>×</span>
+      </span>
+    </div>
+    <div class="content">
+      <div class="clock-time" id="time">00<span class="blink">:</span>00</div>
+      <div class="clock-seconds" id="seconds">:00</div>
+      <div class="clock-date" id="date">----. --. --.  ---</div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    loadWidgetConfig();
+
+    const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      const now = new Date();
+      const h = pad(now.getHours());
+      const m = pad(now.getMinutes());
+      const s = pad(now.getSeconds());
+
+      document.getElementById('time').innerHTML =
+        `${h}<span class="blink">:</span>${m}`;
+      document.getElementById('seconds').textContent = `:${s}`;
+
+      const y = now.getFullYear();
+      const mo = pad(now.getMonth() + 1);
+      const d = pad(now.getDate());
+      const day = DAYS[now.getDay()];
+      document.getElementById('date').textContent = `${y}. ${mo}. ${d}.  ${day}`;
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
