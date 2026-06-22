@@ -52,24 +52,27 @@
 
     /* ─ Left folder panel ─ */
     .folder-panel {
-      width: 50px;
+      width: 88px;
       flex-shrink: 0;
       border-right: 1px solid #ebebeb;
       background: #f8f8f8;
-      display: flex;
-      flex-direction: column;
-      padding: 8px 0;
-      gap: 2px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-content: start;
+      padding: 6px 4px;
+      gap: 4px;
+      overflow-y: auto;
     }
+    .folder-panel::-webkit-scrollbar { display: none; }
+    .folder-panel { scrollbar-width: none; }
 
     .folder-target {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 6px 3px;
-      margin: 0 3px;
-      gap: 1px;
-      border-radius: 3px;
+      padding: 5px 3px;
+      gap: 2px;
+      border-radius: 4px;
       border: 1px solid transparent;
       transition: background 0.12s, border-color 0.12s;
       cursor: default;
@@ -78,13 +81,14 @@
       background: rgba(155, 143, 199, 0.18);
       border-color: var(--accent);
     }
-    .folder-icon { font-size: 14px; line-height: 1.2; }
+    .folder-icon { font-size: 18px; line-height: 1.2; }
     .folder-label {
       font-size: 7px;
-      color: #bbb;
+      color: #aaa;
       font-family: 'ChosunGu', sans-serif;
       letter-spacing: 0.2px;
       text-align: center;
+      word-break: break-all;
     }
     .folder-target.drag-over .folder-label { color: var(--accent); }
 
@@ -112,7 +116,6 @@
       gap: 5px;
     }
 
-    /* delete checkbox on left */
     .bubble-cb {
       flex-shrink: 0;
       width: 13px;
@@ -126,7 +129,6 @@
     .bubble-cb.checked { background: var(--accent); border-color: var(--accent); }
     .delete-mode .bubble-cb { display: block; }
 
-    /* speech bubble */
     .bubble {
       max-width: 86%;
       background: rgba(155, 143, 199, 0.13);
@@ -308,7 +310,7 @@
     </div>
 
     <div class="content">
-      <!-- Left: drag-target folders -->
+      <!-- Left: drag-target folders (2-column grid) -->
       <div class="folder-panel" id="folder-panel">
         <div class="folder-target" data-target="IDEA">
           <span class="folder-icon">💡</span>
@@ -393,7 +395,6 @@
     let selectedIds = new Set();
     let pendingDrop = null;
 
-    // Drag state
     const drag = { memo: null, bubble: null, ghost: null, startX: 0, startY: 0, active: false };
     const DRAG_THRESHOLD = 7;
 
@@ -563,7 +564,6 @@
       row.className = 'bubble-row';
       row.dataset.id = m.id;
 
-      // Delete checkbox
       const cb = document.createElement('div');
       cb.className = 'bubble-cb' + (selectedIds.has(m.id) ? ' checked' : '');
       cb.addEventListener('click', () => {
@@ -572,11 +572,9 @@
         updateSelCount();
       });
 
-      // Bubble
       const bub = document.createElement('div');
       bub.className = 'bubble' + (m.done ? ' is-done' : '') + (deleteMode ? '' : ' can-drag');
 
-      // Header
       const hdr = document.createElement('div'); hdr.className = 'bubble-header';
       if (m.category) {
         const cat = document.createElement('span'); cat.className = 'bubble-cat'; cat.textContent = m.category;
@@ -600,7 +598,6 @@
       bub.appendChild(hdr);
       bub.appendChild(makeTextNode(m.text));
 
-      // Pointer drag
       if (!deleteMode) {
         bub.addEventListener('pointerdown', e => {
           if (e.button !== 0 && e.button !== undefined) return;
@@ -650,7 +647,6 @@
       return row;
     }
 
-    // ─ Drag helpers ─
     function updateFolderHighlight(x, y) {
       document.querySelectorAll('.folder-target').forEach(f => {
         const r = f.getBoundingClientRect();
@@ -673,7 +669,6 @@
       drag.memo = null; drag.bubble = null; drag.active = false;
     }
 
-    // ─ Drop popup ─
     function showDropPopup(target, memo, x, y) {
       pendingDrop = { memo, target };
       const titles = { 'IDEA': '💡 IDEA로 이동', 'TO-DO': '✅ TO-DO로 이동', 'CART': '🛒 CART로 이동' };
