@@ -25,7 +25,6 @@
       overflow: hidden;
     }
 
-    /* ── 타이틀바 오른쪽 영역 ── */
     .titlebar-right {
       display: flex;
       align-items: center;
@@ -42,16 +41,14 @@
     }
     .gear-btn:hover { opacity: 1; }
 
-    /* ── 본문 ── */
     .content {
-      padding: 14px 16px 16px;
+      padding: 7px 8px 8px;
       height: 420px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    /* ── 날짜 (LOG 스타일) ── */
     .ht-date {
       display: flex;
       align-items: center;
@@ -76,7 +73,6 @@
     .date-nav:hover { color: var(--accent); }
     .date-nav.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
 
-    /* ── 별 진행바 ── */
     .star-bar {
       display: flex;
       gap: 4px;
@@ -109,7 +105,6 @@
 
     .star.filled::before { background: var(--accent); }
 
-    /* ── 완성률 ── */
     .progress-line {
       font-size: 11px;
       color: var(--ink);
@@ -117,7 +112,6 @@
       margin-bottom: 12px;
     }
 
-    /* ── 그룹 섹션 ── */
     .group-section { margin-bottom: 11px; }
 
     .group-label {
@@ -174,7 +168,6 @@
 
     .habit-item.toggling { opacity: 0.5; pointer-events: none; }
 
-    /* ── 루틴 목록 스크롤 영역 ── */
     #groups-container {
       flex: 1;
       overflow-y: auto;
@@ -183,7 +176,6 @@
     #groups-container::-webkit-scrollbar { width: 4px; }
     #groups-container::-webkit-scrollbar-thumb { background: #ddd; }
 
-    /* ── 칭찬 스티커 ── */
     .sticker {
       display: none;
       align-items: center;
@@ -223,7 +215,6 @@
       to   { transform: scale(1);   opacity: 1; }
     }
 
-    /* ── 로딩 / 에러 ── */
     .ht-msg {
       font-size: 11px;
       color: #888;
@@ -231,14 +222,13 @@
       padding: 10px 0;
     }
 
-    /* ══ 설정 오버레이 ══ */
     .settings-overlay {
       display: none;
       position: absolute;
       top: 25px;
       left: 0; right: 0; bottom: 0;
       background: var(--window-bg);
-      padding: 12px 14px 14px;
+      padding: 6px 7px 7px;
       overflow-y: auto;
       z-index: 20;
       min-height: 240px;
@@ -312,7 +302,6 @@
       padding: 2px 0;
     }
 
-    /* ── 추가 폼 ── */
     .add-form {
       border-top: 1px solid #ececec;
       padding-top: 10px;
@@ -383,7 +372,6 @@
       </div>
     </div>
 
-    <!-- 메인 콘텐츠 -->
     <div class="content">
       <div class="ht-date">
         <span class="date-nav" id="date-prev">&#8592;</span>
@@ -405,7 +393,6 @@
       </div>
     </div>
 
-    <!-- 설정 오버레이 -->
     <div class="settings-overlay" id="settings-overlay">
       <div class="settings-header">
         <span class="settings-title">루틴 설정</span>
@@ -579,8 +566,6 @@
       }
     }
 
-    /* ══ 설정 모달 ══ */
-
     function renderSettingsGroups(groups) {
       const container = document.getElementById('settings-groups');
       container.innerHTML = '';
@@ -701,7 +686,6 @@
       }
     }
 
-    /* ── Init ── */
     async function init() {
       renderDate();
       _config = await loadWidgetConfig();
