@@ -50,6 +50,25 @@ api/
 <div class="icons"><span>_</span><span>□</span><span>×</span></div>
 ```
 
+### 날짜 표기 스타일
+- **모든 위젯의 날짜 표기는 LOG 위젯 스타일을 따른다.**
+- `date:` 레이블은 회색(`#888`), 날짜 값은 `var(--accent)` 볼드.
+- 날짜 구분자는 `-` 사용 (`YYYY-MM-DD`).
+
+```html
+<div class="widget-date">date: <span id="date-val">----.--.--</span></div>
+```
+
+```css
+.widget-date {
+  font-size: 10.5px;
+  color: #888;
+  letter-spacing: 0.3px;
+  margin-bottom: 10px;
+}
+#date-val { color: var(--accent); font-weight: 700; }
+```
+
 ### 버튼 스타일
 - **모든 버튼은 `var(--accent)` (보라색) 배경**으로 한다.
 - 하얀 텍스트, accent 색상 border.

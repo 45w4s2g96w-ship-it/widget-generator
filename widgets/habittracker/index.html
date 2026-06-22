@@ -51,19 +51,18 @@
       overflow: hidden;
     }
 
-    /* ── 날짜 ── */
+    /* ── 날짜 (LOG 스타일) ── */
     .ht-date {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--ink);
+      font-size: 10.5px;
+      color: #888;
       letter-spacing: 0.3px;
       margin-bottom: 10px;
     }
-    .ht-date .day-acc { color: var(--accent); font-weight: 700; }
     .ht-date .date-text { flex: 1; }
+    #ht-date-ymd { color: var(--accent); font-weight: 700; }
 
     .date-nav {
       cursor: pointer;
@@ -113,11 +112,10 @@
     /* ── 완성률 ── */
     .progress-line {
       font-size: 11px;
-      color: #888;
+      color: var(--ink);
       letter-spacing: 0.3px;
       margin-bottom: 12px;
     }
-    .progress-line .acc { color: var(--accent); font-weight: 700; }
 
     /* ── 그룹 섹션 ── */
     .group-section { margin-bottom: 11px; }
@@ -237,7 +235,7 @@
     .settings-overlay {
       display: none;
       position: absolute;
-      top: 25px; /* titlebar 높이 */
+      top: 25px;
       left: 0; right: 0; bottom: 0;
       background: var(--window-bg);
       padding: 12px 14px 14px;
@@ -436,14 +434,11 @@
 
   <script src="../../shared/config-loader.js"></script>
   <script>
-    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const GROUP_ORDER = ['아침', '종일', '저녁'];
     const GROUP_LABELS = { '아침': 'Morning', '종일': 'All Day', '저녁': 'Evening' };
 
     let _config = null;
     let _lastData = null;
-
-    // 오늘 기준 날짜 오프셋 (0 = 오늘, -1 = 어제, ...)
     let _dateOffset = 0;
 
     function pad(n) { return String(n).padStart(2, '0'); }
@@ -477,14 +472,13 @@
     function renderProgress(completed, total) {
       const line = document.getElementById('progress-line');
       const pct = total ? Math.round((completed / total) * 100) : 0;
-      line.innerHTML = `오늘의 루틴 <span class="acc">${completed}/${total}</span> (${pct}%)`;
+      line.textContent = `오늘의 루틴 ${completed}/${total} (${pct}%)`;
     }
 
     function renderGroups(groups) {
       const container = document.getElementById('groups-container');
       container.innerHTML = '';
 
-      // 정해진 순서 + 기타 그룹
       const allKeys = [...GROUP_ORDER, ...Object.keys(groups).filter(k => !GROUP_ORDER.includes(k))];
       const presentKeys = allKeys.filter(k => groups[k] && groups[k].length > 0);
 
@@ -542,10 +536,8 @@
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
-        // 로컬 즉시 반영
         item.done = data.done;
         row.classList.toggle('done', data.done);
-        // 별/진행바 갱신
         await loadHabits();
       } catch (err) {
         console.error('toggle 실패:', err.message);
