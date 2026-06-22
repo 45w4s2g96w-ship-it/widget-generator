@@ -20,7 +20,7 @@
 
     .window { max-width: 300px; }
 
-    /* ── Tabs ── */
+    /* ─ Tabs ─ */
     .tabs {
       display: flex;
       overflow-x: auto;
@@ -29,7 +29,6 @@
       scrollbar-width: none;
     }
     .tabs::-webkit-scrollbar { display: none; }
-
     .tab {
       flex-shrink: 0;
       padding: 4px 9px;
@@ -43,99 +42,139 @@
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
     .tab:hover:not(.active) { color: var(--ink); }
 
-    /* ── Content ── */
+    /* ─ Main layout: folder panel + chat ─ */
     .content {
-      padding: 0;
-      height: 400px;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      height: 400px;
       overflow: hidden;
     }
 
-    /* ── Memo list ── */
-    .memo-list {
+    /* ─ Left folder panel ─ */
+    .folder-panel {
+      width: 50px;
+      flex-shrink: 0;
+      border-right: 1px solid #ebebeb;
+      background: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0;
+      gap: 2px;
+    }
+
+    .folder-target {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 3px;
+      margin: 0 3px;
+      gap: 1px;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      transition: background 0.12s, border-color 0.12s;
+      cursor: default;
+    }
+    .folder-target.drag-over {
+      background: rgba(155, 143, 199, 0.18);
+      border-color: var(--accent);
+    }
+    .folder-icon { font-size: 14px; line-height: 1.2; }
+    .folder-label {
+      font-size: 7px;
+      color: #bbb;
+      font-family: 'ChosunGu', sans-serif;
+      letter-spacing: 0.2px;
+      text-align: center;
+    }
+    .folder-target.drag-over .folder-label { color: var(--accent); }
+
+    /* ─ Chat area ─ */
+    .chat-area {
       flex: 1;
-      min-height: 0;
+      min-width: 0;
       overflow-y: auto;
-      padding: 10px 12px;
+      padding: 10px 10px 6px 8px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
-    .memo-list::-webkit-scrollbar { width: 3px; }
-    .memo-list::-webkit-scrollbar-thumb { background: #ddd; }
+    .chat-area::-webkit-scrollbar { width: 3px; }
+    .chat-area::-webkit-scrollbar-thumb { background: #ddd; }
 
-    .memo-empty {
-      font-size: 11px;
-      color: #bbb;
-      text-align: center;
-      padding: 24px 0;
+    .chat-empty { font-size: 11px; color: #ccc; text-align: center; padding: 24px 0; }
+    .loading-indicator { font-size: 10.5px; color: #ccc; text-align: center; padding: 8px 0; }
+
+    /* ─ Bubble row ─ */
+    .bubble-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+      gap: 5px;
     }
 
-    .loading-indicator {
-      font-size: 10.5px;
-      color: #bbb;
-      text-align: center;
-      padding: 8px 0;
-    }
-
-    /* ── Memo item ── */
-    .memo-item { display: flex; gap: 6px; align-items: flex-start; }
-
-    .memo-cb {
+    /* delete checkbox on left */
+    .bubble-cb {
       flex-shrink: 0;
       width: 13px;
       height: 13px;
       border: 1px solid #ccc;
       cursor: pointer;
-      margin-top: 2px;
-      display: none;
       background: #fff;
+      display: none;
+      align-self: center;
     }
-    .memo-cb.checked { background: var(--accent); border-color: var(--accent); }
-    .delete-mode .memo-cb { display: block; }
+    .bubble-cb.checked { background: var(--accent); border-color: var(--accent); }
+    .delete-mode .bubble-cb { display: block; }
 
-    .memo-body { flex: 1; min-width: 0; }
+    /* speech bubble */
+    .bubble {
+      max-width: 86%;
+      background: rgba(155, 143, 199, 0.13);
+      border: 1px solid rgba(155, 143, 199, 0.3);
+      border-radius: 12px 12px 2px 12px;
+      padding: 6px 9px;
+      touch-action: none;
+      user-select: none;
+      position: relative;
+    }
+    .bubble.can-drag { cursor: grab; }
+    .bubble.dragging { opacity: 0.3; }
+    .bubble.is-done { opacity: 0.5; }
+    .bubble.is-done .bubble-text { text-decoration: line-through; color: #bbb; }
 
-    .memo-meta {
+    .bubble-header {
       display: flex;
+      justify-content: flex-end;
       align-items: center;
       gap: 4px;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
-
-    .memo-time { font-size: 9.5px; color: #aaa; letter-spacing: 0.3px; }
-
-    .memo-cat {
-      font-size: 9px;
+    .bubble-cat {
+      font-size: 8.5px;
       color: var(--accent);
       border: 1px solid var(--accent);
       padding: 0 3px;
-      line-height: 1.5;
+      line-height: 1.4;
     }
-
-    .memo-star {
-      font-size: 10px;
+    .bubble-star {
+      font-size: 9px;
       color: #f0c040;
+      opacity: 0.22;
       cursor: pointer;
-      opacity: 0.25;
-      margin-left: auto;
-      flex-shrink: 0;
+      line-height: 1;
     }
-    .memo-star.on { opacity: 1; }
+    .bubble-star.on { opacity: 1; }
+    .bubble-time { font-size: 9px; color: #c0c0c0; }
 
-    .memo-text {
+    .bubble-text {
       font-size: 11.5px;
       color: var(--ink);
-      line-height: 1.55;
+      line-height: 1.5;
       word-break: break-all;
       white-space: pre-wrap;
     }
-    .memo-item.is-done .memo-text { color: #bbb; text-decoration: line-through; }
-    .memo-item.is-done .memo-body { opacity: 0.6; }
-
-    .memo-expand {
-      font-size: 10px;
+    .bubble-expand {
+      font-size: 9.5px;
       color: var(--accent);
       cursor: pointer;
       background: none;
@@ -143,95 +182,76 @@
       padding: 0;
       font-family: 'ChosunGu', sans-serif;
     }
+    .bubble-list-ul { margin: 0; padding-left: 13px; font-size: 11.5px; line-height: 1.5; color: var(--ink); }
+    .bubble-checklist { display: flex; flex-direction: column; gap: 2px; }
+    .bubble-checklist-item { display: flex; gap: 5px; align-items: flex-start; font-size: 11.5px; line-height: 1.5; }
+    .bubble-checklist-item input { margin-top: 3px; flex-shrink: 0; }
 
-    .memo-list-ul {
-      margin: 0;
-      padding-left: 14px;
-      font-size: 11.5px;
-      line-height: 1.55;
-      color: var(--ink);
-    }
-
-    .memo-checklist { display: flex; flex-direction: column; gap: 2px; }
-    .memo-checklist-item {
-      display: flex;
-      gap: 5px;
-      align-items: flex-start;
-      font-size: 11.5px;
-      line-height: 1.55;
-    }
-    .memo-checklist-item input { margin-top: 3px; flex-shrink: 0; }
-
-    .memo-actions { display: flex; gap: 4px; margin-top: 3px; }
-
-    .action-btn {
-      font-size: 9.5px;
-      color: #aaa;
-      background: none;
-      border: 1px solid #e0e0e0;
-      padding: 1px 5px;
-      cursor: pointer;
+    /* ─ Drag ghost ─ */
+    .drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      background: var(--accent);
+      color: #fff;
       font-family: 'ChosunGu', sans-serif;
+      font-size: 10.5px;
+      padding: 5px 10px;
+      border-radius: 10px;
+      max-width: 150px;
+      transform: translate(-50%, -50%);
+      opacity: 0.9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.22);
     }
-    .action-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-    /* ── Delete bar ── */
+    /* ─ Delete bar ─ */
     .delete-bar {
       display: none;
-      padding: 6px 10px;
+      padding: 5px 8px;
       border-top: 1px solid #e0e0e0;
       background: #fafafa;
-      gap: 6px;
+      gap: 5px;
       align-items: center;
-      font-size: 10.5px;
+      font-size: 10px;
     }
     .delete-bar.visible { display: flex; }
     .delete-bar span { flex: 1; color: #888; }
-
-    .del-btn {
-      border: 1px solid #ddd;
-      background: #fff;
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 10px;
-      padding: 3px 8px;
-      cursor: pointer;
-      color: #888;
-    }
+    .del-btn { border: 1px solid #ddd; background: #fff; font-family: 'ChosunGu', sans-serif; font-size: 9.5px; padding: 2px 7px; cursor: pointer; color: #888; }
     .del-btn.danger { border-color: #e74c3c; color: #e74c3c; }
-    .del-btn:hover { background: #f5f5f5; }
 
-    /* ── Input area ── */
+    /* ─ Input ─ */
     .input-area {
       border-top: 1px solid #e0e0e0;
-      padding: 8px 10px;
+      padding: 7px 8px;
       display: flex;
-      gap: 6px;
+      gap: 5px;
       align-items: flex-end;
     }
-
     #memo-input {
       flex: 1;
       border: 1px solid var(--border);
       background: #fff;
       font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
       font-size: 11.5px;
-      line-height: 1.55;
+      line-height: 1.5;
       padding: 5px 7px;
       resize: none;
       outline: none;
       color: var(--ink);
-      min-height: 38px;
-      max-height: 100px;
+      min-height: 36px;
+      max-height: 90px;
     }
     #memo-input::placeholder { color: #ccc; }
     #memo-input:focus { border-color: var(--accent); }
-
     #send-btn {
       flex-shrink: 0;
       border: 1px solid var(--accent);
       background: var(--accent);
       color: #fff;
-      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+      font-family: 'ChosunGu', sans-serif;
       font-size: 10.5px;
       padding: 5px 8px;
       cursor: pointer;
@@ -241,125 +261,38 @@
     #send-btn:active { filter: brightness(0.9); }
     #send-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
 
-    /* ── Titlebar extras ── */
+    /* ─ Titlebar ─ */
     .titlebar-right { display: flex; align-items: center; gap: 6px; }
-
-    .trash-btn {
-      font-size: 12px;
-      opacity: 0.55;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      color: var(--win-text);
-      line-height: 1;
-    }
+    .trash-btn { font-size: 12px; opacity: 0.55; cursor: pointer; background: none; border: none; padding: 0; color: var(--win-text); line-height: 1; }
     .trash-btn:hover { opacity: 0.9; }
     .trash-btn.active { opacity: 1; }
 
-    /* ── Route modal ── */
-    .modal-overlay {
+    /* ─ Drop options popup ─ */
+    .drop-popup {
       display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.35);
-      z-index: 100;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-overlay.visible { display: flex; }
-
-    .route-modal {
+      z-index: 500;
       background: #fff;
       border: 1px solid var(--border);
-      width: 232px;
+      padding: 10px 12px;
+      width: 195px;
       font-family: 'ChosunGu', sans-serif;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     }
-
-    .modal-titlebar {
-      background: var(--win-color);
-      color: var(--win-text);
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 4px 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .drop-popup.visible { display: block; }
+    .drop-popup-title { font-size: 10.5px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .drop-popup label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
+    .drop-popup select, .drop-popup input[type=date] {
+      width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
+      font-size: 11px; padding: 3px 5px; margin-bottom: 8px; color: var(--ink); background: #fff;
     }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--win-text);
-      cursor: pointer;
-      font-size: 11px;
-      opacity: 0.7;
-      padding: 0;
-      line-height: 1;
-    }
-    .modal-close:hover { opacity: 1; }
-
-    .modal-body { padding: 10px 12px; }
-
-    .modal-preview {
-      font-size: 10.5px;
-      color: #666;
-      border-left: 2px solid var(--accent);
-      padding-left: 6px;
-      margin-bottom: 10px;
-      word-break: break-all;
-      line-height: 1.5;
-    }
-
-    .folder-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .folder-option {
-      border: 1px solid #e0e0e0;
-      background: #fff;
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 10.5px;
-      padding: 5px 4px;
-      cursor: pointer;
-      text-align: center;
-      color: var(--ink);
-    }
-    .folder-option:hover { border-color: var(--accent); color: var(--accent); }
-    .folder-option.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
-
-    .sub-form { display: none; margin-bottom: 8px; }
-    .sub-form.visible { display: block; }
-
-    .form-row { margin-bottom: 6px; }
-    .form-label { font-size: 9.5px; color: #888; margin-bottom: 2px; }
-
-    .form-select, .form-date {
-      width: 100%;
-      border: 1px solid #ddd;
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 11px;
-      padding: 4px 6px;
-      color: var(--ink);
-      background: #fff;
-    }
-    .form-select:focus, .form-date:focus { outline: none; border-color: var(--accent); }
-
-    .modal-submit {
-      width: 100%;
-      border: 1px solid var(--accent);
-      background: var(--accent);
-      color: #fff;
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 11px;
-      padding: 6px;
-      cursor: pointer;
-    }
-    .modal-submit:hover { filter: brightness(1.1); }
-    .modal-submit:disabled { opacity: 0.45; cursor: default; filter: none; }
+    .drop-popup select:focus, .drop-popup input:focus { outline: none; border-color: var(--accent); }
+    .drop-btns { display: flex; gap: 5px; }
+    .drop-btns button { flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 10px; padding: 4px; cursor: pointer; }
+    #drop-ok { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+    #drop-cancel { border: 1px solid #ddd; background: #fff; color: #888; }
+    #drop-ok:hover { filter: brightness(1.1); }
+    #drop-ok:disabled { opacity: 0.45; cursor: default; filter: none; }
   </style>
 </head>
 <body>
@@ -384,74 +317,79 @@
     </div>
 
     <div class="content">
-      <div class="memo-list" id="memo-list">
+      <!-- Left: drag-target folders -->
+      <div class="folder-panel" id="folder-panel">
+        <div class="folder-target" data-target="IDEA">
+          <span class="folder-icon">💡</span>
+          <span class="folder-label">IDEA</span>
+        </div>
+        <div class="folder-target" data-target="TO-DO">
+          <span class="folder-icon">✅</span>
+          <span class="folder-label">TO-DO</span>
+        </div>
+        <div class="folder-target" data-target="CART">
+          <span class="folder-icon">🛒</span>
+          <span class="folder-label">CART</span>
+        </div>
+        <div class="folder-target" data-target="DIARY">
+          <span class="folder-icon">📔</span>
+          <span class="folder-label">DIARY</span>
+        </div>
+        <div class="folder-target" data-target="LOG">
+          <span class="folder-icon">📋</span>
+          <span class="folder-label">LOG</span>
+        </div>
+        <div class="folder-target" data-target="ETC">
+          <span class="folder-icon">📁</span>
+          <span class="folder-label">ETC</span>
+        </div>
+      </div>
+
+      <!-- Right: chat bubbles -->
+      <div class="chat-area" id="chat-area">
         <div class="loading-indicator">불러오는 중...</div>
       </div>
+    </div>
 
-      <div class="delete-bar" id="delete-bar">
-        <span id="sel-count">0개 선택됨</span>
-        <button class="del-btn" id="del-selected-btn">선택 삭제</button>
-        <button class="del-btn danger" id="del-all-btn">전체 삭제</button>
-      </div>
+    <div class="delete-bar" id="delete-bar">
+      <span id="sel-count">0개 선택됨</span>
+      <button class="del-btn" id="del-selected-btn">선택 삭제</button>
+      <button class="del-btn danger" id="del-all-btn">전체 삭제</button>
+    </div>
 
-      <div class="input-area" id="input-area">
-        <textarea id="memo-input" placeholder="생각을 던져보세요... (Enter=전송)" rows="2"></textarea>
-        <button id="send-btn">SEND</button>
-      </div>
+    <div class="input-area" id="input-area">
+      <textarea id="memo-input" placeholder="생각을 던져보세요... (Enter=전송)" rows="2"></textarea>
+      <button id="send-btn">SEND</button>
     </div>
   </div>
 
-  <!-- Route modal -->
-  <div class="modal-overlay" id="route-modal">
-    <div class="route-modal">
-      <div class="modal-titlebar">
-        <span>분류하기</span>
-        <button class="modal-close" id="modal-close">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-preview" id="modal-preview"></div>
-
-        <div class="folder-grid" id="folder-grid">
-          <button class="folder-option" data-target="IDEA">💡 IDEA</button>
-          <button class="folder-option" data-target="TO-DO">✅ TO-DO</button>
-          <button class="folder-option" data-target="CART">🛒 CART</button>
-          <button class="folder-option" data-target="DIARY">📔 DIARY</button>
-          <button class="folder-option" data-target="LOG">📋 LOG</button>
-          <button class="folder-option" data-target="ETC">📁 ETC</button>
-        </div>
-
-        <div class="sub-form" id="form-idea">
-          <div class="form-row">
-            <div class="form-label">영역</div>
-            <select class="form-select" id="idea-area">
-              <option value="anything">anything</option>
-              <option value="life">life</option>
-              <option value="work">work</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="sub-form" id="form-todo">
-          <div class="form-row">
-            <div class="form-label">마감일 (선택)</div>
-            <input type="date" class="form-date" id="todo-due" />
-          </div>
-        </div>
-
-        <div class="sub-form" id="form-cart">
-          <div class="form-row">
-            <div class="form-label">종류</div>
-            <select class="form-select" id="cart-type">
-              <option value="Need &amp; Buy">Need &amp; Buy</option>
-              <option value="Need &amp; Want">Need &amp; Want</option>
-              <option value="Need Later">Need Later</option>
-              <option value="Just Want">Just Want</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="modal-submit" id="modal-submit" style="display:none">저장</button>
-      </div>
+  <!-- Drop options popup -->
+  <div class="drop-popup" id="drop-popup">
+    <div class="drop-popup-title" id="drop-popup-title">옵션</div>
+    <div id="drop-form-idea" style="display:none">
+      <label>영역</label>
+      <select id="drop-idea-area">
+        <option value="anything">anything</option>
+        <option value="life">life</option>
+        <option value="work">work</option>
+      </select>
+    </div>
+    <div id="drop-form-todo" style="display:none">
+      <label>마감일 (선택)</label>
+      <input type="date" id="drop-todo-due" />
+    </div>
+    <div id="drop-form-cart" style="display:none">
+      <label>종류</label>
+      <select id="drop-cart-type">
+        <option value="Need &amp; Buy">Need &amp; Buy</option>
+        <option value="Need &amp; Want">Need &amp; Want</option>
+        <option value="Need Later">Need Later</option>
+        <option value="Just Want">Just Want</option>
+      </select>
+    </div>
+    <div class="drop-btns">
+      <button id="drop-cancel">취소</button>
+      <button id="drop-ok">확인</button>
     </div>
   </div>
 
@@ -462,8 +400,11 @@
     let activeFolder = 'ALL';
     let deleteMode = false;
     let selectedIds = new Set();
-    let activeMemo = null;
-    let selectedTarget = null;
+    let pendingDrop = null;
+
+    // Drag state
+    const drag = { memo: null, bubble: null, ghost: null, startX: 0, startY: 0, active: false };
+    const DRAG_THRESHOLD = 7;
 
     (async () => {
       cfg = await loadWidgetConfig();
@@ -472,7 +413,7 @@
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
-    // ── Tabs ──
+    // ─ Tabs ─
     document.getElementById('tabs').addEventListener('click', e => {
       const tab = e.target.closest('.tab');
       if (!tab) return;
@@ -482,7 +423,7 @@
       renderMemos();
     });
 
-    // ── Delete mode ──
+    // ─ Delete mode ─
     document.getElementById('trash-btn').addEventListener('click', () => {
       deleteMode = !deleteMode;
       document.getElementById('trash-btn').classList.toggle('active', deleteMode);
@@ -517,22 +458,17 @@
         selectedIds.clear();
         updateSelCount();
         renderMemos();
-      } catch (err) {
-        alert(err.message);
-      }
+      } catch (err) { alert(err.message); }
     }
 
     function updateSelCount() {
       document.getElementById('sel-count').textContent = `${selectedIds.size}개 선택됨`;
     }
 
-    // ── Send ──
+    // ─ Send ─
     document.getElementById('send-btn').addEventListener('click', sendMemo);
     document.getElementById('memo-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMemo();
-      }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMemo(); }
     });
 
     async function sendMemo() {
@@ -551,17 +487,18 @@
         document.getElementById('memo-input').value = '';
         memos = [...d.created, ...memos];
         renderMemos();
-        document.getElementById('memo-list').scrollTop = 0;
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        btn.disabled = false;
-      }
+        scrollBottom();
+      } catch (err) { alert(err.message); }
+      finally { btn.disabled = false; }
     }
 
-    // ── Load ──
+    function scrollBottom() {
+      const a = document.getElementById('chat-area');
+      setTimeout(() => { a.scrollTop = a.scrollHeight; }, 30);
+    }
+
+    // ─ Load ─
     async function loadMemos() {
-      const list = document.getElementById('memo-list');
       try {
         const params = new URLSearchParams({ source_db_id: cfg.source_db_id });
         const r = await fetch('/api/braindump?' + params);
@@ -569,12 +506,14 @@
         if (!r.ok) throw new Error(d.error);
         memos = d.memos;
         renderMemos();
+        scrollBottom();
       } catch (err) {
-        list.innerHTML = `<div class="memo-empty">${escHtml(err.message)}</div>`;
+        document.getElementById('chat-area').innerHTML =
+          `<div class="chat-empty">${escHtml(err.message)}</div>`;
       }
     }
 
-    // ── Render ──
+    // ─ Render ─
     function filteredMemos() {
       if (activeFolder === 'ALL') return memos;
       if (activeFolder === '★') return memos.filter(m => m.important);
@@ -582,64 +521,53 @@
     }
 
     function renderMemos() {
-      const list = document.getElementById('memo-list');
-      list.className = 'memo-list' + (deleteMode ? ' delete-mode' : '');
-      const filtered = filteredMemos();
-      if (!filtered.length) {
-        list.innerHTML = '<div class="memo-empty">메모가 없어요.</div>';
+      const area = document.getElementById('chat-area');
+      area.className = 'chat-area' + (deleteMode ? ' delete-mode' : '');
+      const list = filteredMemos().slice().reverse(); // oldest first = bottom is newest
+      if (!list.length) {
+        area.innerHTML = '<div class="chat-empty">메모가 없어요.</div>';
         return;
       }
-      list.innerHTML = '';
-      filtered.forEach(m => list.appendChild(buildMemoEl(m)));
+      area.innerHTML = '';
+      list.forEach(m => area.appendChild(buildBubble(m)));
     }
 
-    function formatTime(isoStr) {
-      if (!isoStr) return '';
-      const d = new Date(isoStr);
+    function formatTime(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
       return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
-    function renderText(text) {
+    function makeTextNode(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
       const allBullets = lines.length && lines.every(l => l.startsWith('- '));
       const allChecks  = lines.length && lines.every(l => l.startsWith('[] ') || l.startsWith('[x] '));
 
       if (allBullets) {
         const ul = document.createElement('ul');
-        ul.className = 'memo-list-ul';
+        ul.className = 'bubble-list-ul';
         lines.forEach(l => { const li = document.createElement('li'); li.textContent = l.slice(2); ul.appendChild(li); });
         return ul;
       }
-
       if (allChecks) {
         const wrap = document.createElement('div');
-        wrap.className = 'memo-checklist';
+        wrap.className = 'bubble-checklist';
         lines.forEach(l => {
-          const item = document.createElement('div');
-          item.className = 'memo-checklist-item';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.checked = l.startsWith('[x] ');
-          cb.disabled = true;
-          const span = document.createElement('span');
-          span.textContent = l.replace(/^\[.\] /, '');
-          item.appendChild(cb);
-          item.appendChild(span);
-          wrap.appendChild(item);
+          const row = document.createElement('div'); row.className = 'bubble-checklist-item';
+          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = l.startsWith('[x] '); cb.disabled = true;
+          const sp = document.createElement('span'); sp.textContent = l.replace(/^\[.\] /, '');
+          row.appendChild(cb); row.appendChild(sp); wrap.appendChild(row);
         });
         return wrap;
       }
 
       const LIMIT = 120;
       const div = document.createElement('div');
-      div.className = 'memo-text';
+      div.className = 'bubble-text';
       if (text.length > LIMIT) {
-        const short = document.createTextNode(text.slice(0, LIMIT) + '...');
-        const btn = document.createElement('button');
-        btn.className = 'memo-expand';
-        btn.textContent = ' 더보기';
+        div.appendChild(document.createTextNode(text.slice(0, LIMIT) + '...'));
+        const btn = document.createElement('button'); btn.className = 'bubble-expand'; btn.textContent = ' 더보기';
         btn.onclick = () => { div.textContent = ''; div.appendChild(document.createTextNode(text)); };
-        div.appendChild(short);
         div.appendChild(btn);
       } else {
         div.textContent = text;
@@ -647,144 +575,174 @@
       return div;
     }
 
-    function buildMemoEl(m) {
-      const item = document.createElement('div');
-      item.className = 'memo-item' + (m.done ? ' is-done' : '');
-      item.dataset.id = m.id;
+    function buildBubble(m) {
+      const row = document.createElement('div');
+      row.className = 'bubble-row';
+      row.dataset.id = m.id;
 
+      // Delete checkbox
       const cb = document.createElement('div');
-      cb.className = 'memo-cb' + (selectedIds.has(m.id) ? ' checked' : '');
+      cb.className = 'bubble-cb' + (selectedIds.has(m.id) ? ' checked' : '');
       cb.addEventListener('click', () => {
-        if (selectedIds.has(m.id)) selectedIds.delete(m.id);
-        else selectedIds.add(m.id);
+        if (selectedIds.has(m.id)) selectedIds.delete(m.id); else selectedIds.add(m.id);
         cb.classList.toggle('checked', selectedIds.has(m.id));
         updateSelCount();
       });
 
-      const body = document.createElement('div');
-      body.className = 'memo-body';
+      // Bubble
+      const bub = document.createElement('div');
+      bub.className = 'bubble' + (m.done ? ' is-done' : '') + (deleteMode ? '' : ' can-drag');
 
-      const meta = document.createElement('div');
-      meta.className = 'memo-meta';
-
-      const time = document.createElement('span');
-      time.className = 'memo-time';
-      time.textContent = formatTime(m.createdAt);
-      meta.appendChild(time);
-
+      // Header
+      const hdr = document.createElement('div'); hdr.className = 'bubble-header';
       if (m.category) {
-        const cat = document.createElement('span');
-        cat.className = 'memo-cat';
-        cat.textContent = m.category;
-        meta.appendChild(cat);
+        const cat = document.createElement('span'); cat.className = 'bubble-cat'; cat.textContent = m.category;
+        hdr.appendChild(cat);
       }
-
       const star = document.createElement('span');
-      star.className = 'memo-star' + (m.important ? ' on' : '');
+      star.className = 'bubble-star' + (m.important ? ' on' : '');
       star.textContent = '★';
-      star.title = m.important ? '중요 해제' : '중요 표시';
-      star.addEventListener('click', async () => {
+      star.addEventListener('click', async e => {
+        e.stopPropagation();
+        if (drag.active) return;
         m.important = !m.important;
         star.classList.toggle('on', m.important);
         await fetch('/api/braindump', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ pageId: m.id, important: m.important }),
         });
       });
-      meta.appendChild(star);
+      const time = document.createElement('span'); time.className = 'bubble-time'; time.textContent = formatTime(m.createdAt);
+      hdr.appendChild(star); hdr.appendChild(time);
+      bub.appendChild(hdr);
+      bub.appendChild(makeTextNode(m.text));
 
-      body.appendChild(meta);
-      body.appendChild(renderText(m.text));
-
-      if (!m.category || m.category === 'ETC') {
-        const actions = document.createElement('div');
-        actions.className = 'memo-actions';
-        const routeBtn = document.createElement('button');
-        routeBtn.className = 'action-btn';
-        routeBtn.textContent = '→ 분류';
-        routeBtn.addEventListener('click', () => openRouteModal(m));
-        actions.appendChild(routeBtn);
-        body.appendChild(actions);
+      // Pointer drag
+      if (!deleteMode) {
+        bub.addEventListener('pointerdown', e => {
+          if (e.button !== 0 && e.button !== undefined) return;
+          e.preventDefault();
+          bub.setPointerCapture(e.pointerId);
+          drag.memo = m; drag.bubble = bub;
+          drag.startX = e.clientX; drag.startY = e.clientY;
+          drag.active = false;
+        });
+        bub.addEventListener('pointermove', e => {
+          if (drag.memo?.id !== m.id) return;
+          const dist = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
+          if (!drag.active && dist > DRAG_THRESHOLD) {
+            drag.active = true;
+            drag.ghost = document.createElement('div');
+            drag.ghost.className = 'drag-ghost';
+            drag.ghost.textContent = m.text.slice(0, 22) + (m.text.length > 22 ? '...' : '');
+            document.body.appendChild(drag.ghost);
+            bub.classList.add('dragging');
+          }
+          if (drag.active) {
+            drag.ghost.style.left = e.clientX + 'px';
+            drag.ghost.style.top  = e.clientY + 'px';
+            updateFolderHighlight(e.clientX, e.clientY);
+          }
+        });
+        bub.addEventListener('pointerup', e => {
+          if (drag.memo?.id !== m.id) return;
+          const memo = m;
+          const wasActive = drag.active;
+          const cx = e.clientX, cy = e.clientY;
+          cleanupDrag();
+          if (!wasActive) return;
+          const target = getFolderAt(cx, cy);
+          if (!target) return;
+          if (['IDEA', 'TO-DO', 'CART'].includes(target)) {
+            showDropPopup(target, memo, cx, cy);
+          } else {
+            submitRoute(memo, target, {});
+          }
+        });
+        bub.addEventListener('pointercancel', cleanupDrag);
       }
 
-      item.appendChild(cb);
-      item.appendChild(body);
-      return item;
+      row.appendChild(cb);
+      row.appendChild(bub);
+      return row;
     }
 
-    // ── Route modal ──
-    function openRouteModal(memo) {
-      activeMemo = memo;
-      selectedTarget = null;
-      document.getElementById('modal-preview').textContent =
-        memo.text.length > 80 ? memo.text.slice(0, 80) + '...' : memo.text;
-      document.querySelectorAll('.folder-option').forEach(b => b.classList.remove('selected'));
-      document.querySelectorAll('.sub-form').forEach(f => f.classList.remove('visible'));
-      document.getElementById('modal-submit').style.display = 'none';
-      document.getElementById('todo-due').value = '';
-      document.getElementById('route-modal').classList.add('visible');
+    // ─ Drag helpers ─
+    function updateFolderHighlight(x, y) {
+      document.querySelectorAll('.folder-target').forEach(f => {
+        const r = f.getBoundingClientRect();
+        f.classList.toggle('drag-over', x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
+      });
     }
 
-    document.getElementById('modal-close').addEventListener('click', () => {
-      document.getElementById('route-modal').classList.remove('visible');
+    function getFolderAt(x, y) {
+      for (const f of document.querySelectorAll('.folder-target')) {
+        const r = f.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return f.dataset.target;
+      }
+      return null;
+    }
+
+    function cleanupDrag() {
+      if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
+      if (drag.bubble) drag.bubble.classList.remove('dragging');
+      document.querySelectorAll('.folder-target').forEach(f => f.classList.remove('drag-over'));
+      drag.memo = null; drag.bubble = null; drag.active = false;
+    }
+
+    // ─ Drop popup ─
+    function showDropPopup(target, memo, x, y) {
+      pendingDrop = { memo, target };
+      const titles = { 'IDEA': '💡 IDEA로 이동', 'TO-DO': '✅ TO-DO로 이동', 'CART': '🛒 CART로 이동' };
+      document.getElementById('drop-popup-title').textContent = titles[target];
+      document.getElementById('drop-form-idea').style.display = target === 'IDEA'  ? 'block' : 'none';
+      document.getElementById('drop-form-todo').style.display = target === 'TO-DO' ? 'block' : 'none';
+      document.getElementById('drop-form-cart').style.display = target === 'CART'  ? 'block' : 'none';
+      document.getElementById('drop-todo-due').value = '';
+
+      const popup = document.getElementById('drop-popup');
+      popup.style.display = 'block';
+      const pw = popup.offsetWidth || 195, ph = popup.offsetHeight || 110;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      popup.style.left = Math.max(8, Math.min(x - pw / 2, vw - pw - 8)) + 'px';
+      popup.style.top  = Math.max(8, Math.min(y + 12, vh - ph - 8)) + 'px';
+      popup.classList.add('visible');
+    }
+
+    document.getElementById('drop-ok').addEventListener('click', async () => {
+      if (!pendingDrop) return;
+      const { memo, target } = pendingDrop;
+      const opts = {};
+      if (target === 'IDEA')  opts.ideaArea = document.getElementById('drop-idea-area').value;
+      if (target === 'TO-DO') opts.dueDate  = document.getElementById('drop-todo-due').value || null;
+      if (target === 'CART')  opts.cartType  = document.getElementById('drop-cart-type').value;
+      document.getElementById('drop-popup').classList.remove('visible');
+      pendingDrop = null;
+      await submitRoute(memo, target, opts);
     });
-    document.getElementById('route-modal').addEventListener('click', e => {
-      if (e.target === document.getElementById('route-modal'))
-        document.getElementById('route-modal').classList.remove('visible');
+
+    document.getElementById('drop-cancel').addEventListener('click', () => {
+      document.getElementById('drop-popup').classList.remove('visible');
+      pendingDrop = null;
     });
 
-    document.getElementById('folder-grid').addEventListener('click', e => {
-      const btn = e.target.closest('.folder-option');
-      if (!btn) return;
-      document.querySelectorAll('.folder-option').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedTarget = btn.dataset.target;
-
-      document.querySelectorAll('.sub-form').forEach(f => f.classList.remove('visible'));
-      if (selectedTarget === 'IDEA')  document.getElementById('form-idea').classList.add('visible');
-      if (selectedTarget === 'TO-DO') document.getElementById('form-todo').classList.add('visible');
-      if (selectedTarget === 'CART')  document.getElementById('form-cart').classList.add('visible');
-      document.getElementById('modal-submit').style.display = 'block';
-    });
-
-    document.getElementById('modal-submit').addEventListener('click', async () => {
-      if (!selectedTarget || !activeMemo) return;
-      const btn = document.getElementById('modal-submit');
-      btn.disabled = true;
-
-      const payload = {
-        memoId: activeMemo.id,
-        text: activeMemo.text,
-        target: selectedTarget,
-      };
-      if (selectedTarget === 'IDEA')  payload.ideaArea = document.getElementById('idea-area').value;
-      if (selectedTarget === 'TO-DO') payload.dueDate  = document.getElementById('todo-due').value || null;
-      if (selectedTarget === 'CART')  payload.cartType  = document.getElementById('cart-type').value;
-
+    async function submitRoute(memo, target, opts) {
       try {
         const r = await fetch('/api/braindump-route', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ memoId: memo.id, text: memo.text, target, ...opts }),
         });
         const d = await r.json();
         if (!r.ok) throw new Error(d.error);
-
-        activeMemo.category = selectedTarget;
-        const markDone = ['DIARY', 'TO-DO', 'CART', 'IDEA'].includes(selectedTarget);
-        if (markDone) activeMemo.done = true;
-        document.getElementById('route-modal').classList.remove('visible');
+        memo.category = target;
+        if (['DIARY', 'TO-DO', 'CART', 'IDEA'].includes(target)) memo.done = true;
         renderMemos();
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        btn.disabled = false;
-      }
-    });
+      } catch (err) { alert(err.message); }
+    }
 
-    function escHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
   </script>
 </body>
