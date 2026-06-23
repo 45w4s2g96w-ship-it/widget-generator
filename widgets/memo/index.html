@@ -217,12 +217,22 @@
     .drop-popup {
       display: none; position: fixed; z-index: 500;
       background: #fff; border: 1px solid var(--border);
-      padding: 12px 13px 10px; width: 195px;
+      padding: 10px 13px 10px; width: 195px;
       font-family: 'ChosunGu', sans-serif;
       box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     }
     .drop-popup.visible { display: block; }
-    .drop-popup label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
+    .drop-popup-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .drop-popup-header label { font-size: 9.5px; color: #888; margin: 0; }
+    .drop-popup-close {
+      background: none; border: none; padding: 0;
+      font-size: 13px; line-height: 1; color: #bbb;
+      cursor: pointer; display: flex; align-items: center;
+    }
+    .drop-popup-close:hover { color: #888; }
     .drop-popup select, .drop-popup input[type=date] {
       width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
       font-size: 11px; padding: 3px 5px; margin-bottom: 8px; color: var(--ink); background: #fff;
@@ -305,7 +315,10 @@
 
   <!-- 폴더 이동 팝업 -->
   <div class="drop-popup" id="drop-popup">
-    <label>폴더 선택</label>
+    <div class="drop-popup-header">
+      <label>폴더 선택</label>
+      <button class="drop-popup-close" id="drop-close">×</button>
+    </div>
     <select id="drop-folder">
       <option value="DIARY">DIARY</option>
       <option value="TO-DO">TO-DO</option>
@@ -559,8 +572,11 @@
           if (wasActive) {
             const target = getFolderAt(cx, cy);
             if (!target) return;
+            // DIARY는 팝업 없이 바로 저장
+            if (target === 'DIARY') { submitRoute(memo, 'DIARY', {}); return; }
             showDropPopup(target, memo, cx, cy);
           } else {
+            // 클릭 → 폴더 선택 팝업
             showDropPopup(memo.category || 'ETC', memo, cx, cy);
           }
         });
@@ -595,6 +611,14 @@
     }
 
     /* ── 팝업 ── */
+    function closePopup() {
+      document.getElementById('drop-popup').classList.remove('visible');
+      pendingDrop = null;
+    }
+
+    document.getElementById('drop-close').addEventListener('click', closePopup);
+    document.getElementById('drop-cancel').addEventListener('click', closePopup);
+
     function updateDropForm(folder) {
       const hasExtra = ['IDEA', 'TO-DO', 'CART'].includes(folder);
       document.getElementById('drop-divider').style.display = hasExtra ? 'block' : 'none';
@@ -631,14 +655,8 @@
       if (target === 'IDEA')  opts.ideaArea = document.getElementById('drop-idea-area').value;
       if (target === 'TO-DO') opts.dueDate  = document.getElementById('drop-todo-due').value || null;
       if (target === 'CART')  opts.cartType  = document.getElementById('drop-cart-type').value;
-      document.getElementById('drop-popup').classList.remove('visible');
-      pendingDrop = null;
+      closePopup();
       await submitRoute(memo, target, opts);
-    });
-
-    document.getElementById('drop-cancel').addEventListener('click', () => {
-      document.getElementById('drop-popup').classList.remove('visible');
-      pendingDrop = null;
     });
 
     async function submitRoute(memo, target, opts) {
