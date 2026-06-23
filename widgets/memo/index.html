@@ -240,7 +240,17 @@
     .trash-menu-item:hover { background: #f7f5ff; color: var(--accent); }
     .trash-menu-item.danger:hover { background: #fff5f5; color: #e74c3c; }
 
-    /* ── 폴더 이동 팝업 ── */
+    /* ── 폴더 이동 팝업 + 백드륩 ── */
+    .popup-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 490;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .popup-backdrop.visible { display: block; }
+
     .drop-popup {
       display: none; position: fixed; z-index: 500;
       background: #fff; border: 1px solid var(--border);
@@ -255,9 +265,10 @@
     }
     .drop-popup-header label { font-size: 9.5px; color: #888; margin: 0; }
     .drop-popup-close {
-      background: none; border: none; padding: 0;
-      font-size: 13px; line-height: 1; color: #bbb;
+      background: none; border: none; padding: 4px 6px;
+      font-size: 15px; line-height: 1; color: #bbb;
       cursor: pointer; display: flex; align-items: center;
+      -webkit-tap-highlight-color: transparent;
     }
     .drop-popup-close:hover { color: #888; }
     .drop-popup select,
@@ -265,8 +276,8 @@
     .drop-popup input[type=text],
     .drop-popup input[type=url] {
       width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
-      font-size: 11px; padding: 3px 5px; margin-bottom: 8px; color: var(--ink); background: #fff;
-      box-sizing: border-box;
+      font-size: 11px; padding: 4px 6px; margin-bottom: 8px; color: var(--ink); background: #fff;
+      box-sizing: border-box; -webkit-appearance: none; border-radius: 0;
     }
     .drop-popup select:focus,
     .drop-popup input:focus { outline: none; border-color: var(--accent); }
@@ -276,12 +287,17 @@
     }
     .drop-popup label.field-label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
     .drop-divider { border: none; border-top: 1px solid #eee; margin: 0 0 9px; }
-    .drop-btns { display: flex; gap: 5px; }
-    .drop-btns button { flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 10px; padding: 4px; cursor: pointer; }
+    .drop-btns { display: flex; gap: 5px; margin-top: 2px; }
+    .drop-btns button {
+      flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 11px;
+      padding: 7px 4px; cursor: pointer; border-radius: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
     #drop-ok { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
     #drop-cancel { border: 1px solid #ddd; background: #fff; color: #888; }
-    #drop-ok:hover { filter: brightness(1.1); }
-    #drop-ok:disabled { opacity: 0.45; cursor: default; filter: none; }
+    #drop-ok:active { filter: brightness(0.9); }
+    #drop-cancel:active { background: #f5f5f5; }
+    #drop-ok:disabled { opacity: 0.45; cursor: default; }
   </style>
 </head>
 <body>
@@ -355,6 +371,9 @@ MARK</span>
       <button id="send-btn">SEND</button>
     </div>
   </div>
+
+  <!-- 팝업 백드륩: 팝업 뒤 탭 이벤트 차단 -->
+  <div class="popup-backdrop" id="popup-backdrop"></div>
 
   <!-- 폴더 이동 팝업 -->
   <div class="drop-popup" id="drop-popup">
@@ -690,11 +709,15 @@ MARK</span>
     }
 
     /* ── 폴더 이동 팝업 ── */
+    const backdrop = document.getElementById('popup-backdrop');
+
     function closePopup() {
       document.getElementById('drop-popup').classList.remove('visible');
+      backdrop.classList.remove('visible');
       pendingDrop = null;
     }
 
+    backdrop.addEventListener('click', closePopup);
     document.getElementById('drop-close').addEventListener('click', closePopup);
     document.getElementById('drop-cancel').addEventListener('click', closePopup);
 
@@ -719,6 +742,7 @@ MARK</span>
       document.getElementById('drop-bookmark-link').value = '';
       updateDropForm(initialFolder);
 
+      backdrop.classList.add('visible');
       const popup = document.getElementById('drop-popup');
       popup.style.display = 'block';
       const pw = popup.offsetWidth || 210, ph = popup.offsetHeight || 140;
