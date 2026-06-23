@@ -175,7 +175,6 @@
     .bubble-checklist-item { display: flex; gap: 5px; align-items: flex-start; font-size: 11.5px; line-height: 1.5; }
     .bubble-checklist-item input { margin-top: 3px; flex-shrink: 0; }
 
-    /* ── 선택 삭제 바 ── */
     .delete-bar {
       flex-shrink: 0; display: none;
       padding: 5px 8px; border-top: 1px solid #e0e0e0;
@@ -245,7 +244,7 @@
     .drop-popup {
       display: none; position: fixed; z-index: 500;
       background: #fff; border: 1px solid var(--border);
-      padding: 10px 13px 10px; width: 195px;
+      padding: 10px 13px 10px; width: 210px;
       font-family: 'ChosunGu', sans-serif;
       box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     }
@@ -261,16 +260,21 @@
       cursor: pointer; display: flex; align-items: center;
     }
     .drop-popup-close:hover { color: #888; }
-    .drop-popup select, .drop-popup input[type=date] {
+    .drop-popup select,
+    .drop-popup input[type=date],
+    .drop-popup input[type=text],
+    .drop-popup input[type=url] {
       width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
       font-size: 11px; padding: 3px 5px; margin-bottom: 8px; color: var(--ink); background: #fff;
       box-sizing: border-box;
     }
-    .drop-popup select:focus, .drop-popup input:focus { outline: none; border-color: var(--accent); }
+    .drop-popup select:focus,
+    .drop-popup input:focus { outline: none; border-color: var(--accent); }
     #drop-folder {
       font-weight: 700; color: var(--accent); border-color: var(--accent);
       margin-bottom: 10px;
     }
+    .drop-popup label.field-label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
     .drop-divider { border: none; border-top: 1px solid #eee; margin: 0 0 9px; }
     .drop-btns { display: flex; gap: 5px; }
     .drop-btns button { flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 10px; padding: 4px; cursor: pointer; }
@@ -286,7 +290,6 @@
       <span data-widget-title>C:// MEMO</span>
       <div class="titlebar-right">
         <button class="trash-btn" id="trash-btn" title="삭제">🗑</button>
-        <!-- 삭제 메뉴 -->
         <div class="trash-menu" id="trash-menu">
           <div class="trash-menu-item danger" id="del-categorized">분류 완료된 항목 지우기</div>
           <div class="trash-menu-item danger" id="del-uncategorized">미분류 항목 지우기</div>
@@ -302,6 +305,7 @@
       <div class="tab" data-folder="TO-DO">TO-DO</div>
       <div class="tab" data-folder="IDEA">IDEA</div>
       <div class="tab" data-folder="CART">CART</div>
+      <div class="tab" data-folder="BOOKMARK">BOOKMARK</div>
       <div class="tab" data-folder="ETC">ETC</div>
       <div class="tab" data-folder="★">★</div>
     </div>
@@ -324,6 +328,11 @@
           <div class="folder-shape"></div>
           <span class="folder-label">CART</span>
         </div>
+        <div class="folder-target" data-target="BOOKMARK">
+          <div class="folder-shape"></div>
+          <span class="folder-label">BOOK
+MARK</span>
+        </div>
         <div class="folder-target" data-target="ETC">
           <div class="folder-shape"></div>
           <span class="folder-label">ETC</span>
@@ -335,7 +344,6 @@
       </div>
     </div>
 
-    <!-- 선택 삭제 모드 바 -->
     <div class="delete-bar" id="delete-bar">
       <span id="sel-count">0개 선택됨</span>
       <button class="del-btn danger" id="del-selected-btn">선택 삭제</button>
@@ -359,11 +367,12 @@
       <option value="TO-DO">TO-DO</option>
       <option value="IDEA">IDEA</option>
       <option value="CART">CART</option>
+      <option value="BOOKMARK">BOOKMARK</option>
       <option value="ETC">ETC</option>
     </select>
     <hr class="drop-divider" id="drop-divider" style="display:none" />
     <div id="drop-form-idea" style="display:none">
-      <label>영역</label>
+      <label class="field-label">영역</label>
       <select id="drop-idea-area">
         <option value="anything">anything</option>
         <option value="life">life</option>
@@ -371,17 +380,23 @@
       </select>
     </div>
     <div id="drop-form-todo" style="display:none">
-      <label>마감일 (선택)</label>
+      <label class="field-label">마감일 (선택)</label>
       <input type="date" id="drop-todo-due" />
     </div>
     <div id="drop-form-cart" style="display:none">
-      <label>종류</label>
+      <label class="field-label">종류</label>
       <select id="drop-cart-type">
         <option value="Need &amp; Buy">Need &amp; Buy</option>
         <option value="Need &amp; Want">Need &amp; Want</option>
         <option value="Need Later">Need Later</option>
         <option value="Just Want">Just Want</option>
       </select>
+    </div>
+    <div id="drop-form-bookmark" style="display:none">
+      <label class="field-label">제목 <span style="color:#e74c3c">*</span></label>
+      <input type="text" id="drop-bookmark-title" placeholder="제목 입력" />
+      <label class="field-label">링크 (선택)</label>
+      <input type="url" id="drop-bookmark-link" placeholder="https://..." />
     </div>
     <div class="drop-btns">
       <button id="drop-cancel">취소</button>
@@ -418,7 +433,7 @@
       renderMemos();
     });
 
-    /* ── 싸레기통 버튼 → 메뉴 ── */
+    /* ── 싸레기통 메뉴 ── */
     const trashMenu = document.getElementById('trash-menu');
 
     document.getElementById('trash-btn').addEventListener('click', e => {
@@ -428,7 +443,6 @@
 
     document.addEventListener('click', () => trashMenu.classList.remove('visible'));
 
-    // 분류 완료된 항목 지우기
     document.getElementById('del-categorized').addEventListener('click', async () => {
       const ids = memos.filter(m => m.category).map(m => m.id);
       if (!ids.length) { alert('분류된 항목이 없어요.'); return; }
@@ -436,7 +450,6 @@
       await deleteMemos(ids);
     });
 
-    // 미분류 항목 지우기
     document.getElementById('del-uncategorized').addEventListener('click', async () => {
       const ids = memos.filter(m => !m.category).map(m => m.id);
       if (!ids.length) { alert('미분류 항목이 없어요.'); return; }
@@ -444,10 +457,7 @@
       await deleteMemos(ids);
     });
 
-    // 선택 항목 지우기 → 체크박스 모드
-    document.getElementById('del-select').addEventListener('click', () => {
-      enterDeleteMode();
-    });
+    document.getElementById('del-select').addEventListener('click', enterDeleteMode);
 
     function enterDeleteMode() {
       deleteMode = true;
@@ -689,11 +699,12 @@
     document.getElementById('drop-cancel').addEventListener('click', closePopup);
 
     function updateDropForm(folder) {
-      const hasExtra = ['IDEA', 'TO-DO', 'CART'].includes(folder);
-      document.getElementById('drop-divider').style.display = hasExtra ? 'block' : 'none';
-      document.getElementById('drop-form-idea').style.display = folder === 'IDEA'  ? 'block' : 'none';
-      document.getElementById('drop-form-todo').style.display = folder === 'TO-DO' ? 'block' : 'none';
-      document.getElementById('drop-form-cart').style.display = folder === 'CART'  ? 'block' : 'none';
+      const hasExtra = ['IDEA', 'TO-DO', 'CART', 'BOOKMARK'].includes(folder);
+      document.getElementById('drop-divider').style.display    = hasExtra ? 'block' : 'none';
+      document.getElementById('drop-form-idea').style.display     = folder === 'IDEA'     ? 'block' : 'none';
+      document.getElementById('drop-form-todo').style.display     = folder === 'TO-DO'    ? 'block' : 'none';
+      document.getElementById('drop-form-cart').style.display     = folder === 'CART'     ? 'block' : 'none';
+      document.getElementById('drop-form-bookmark').style.display = folder === 'BOOKMARK' ? 'block' : 'none';
     }
 
     document.getElementById('drop-folder').addEventListener('change', e => {
@@ -702,14 +713,15 @@
 
     function showDropPopup(initialFolder, memo, x, y) {
       pendingDrop = { memo };
-      const sel = document.getElementById('drop-folder');
-      sel.value = initialFolder;
+      document.getElementById('drop-folder').value = initialFolder;
       document.getElementById('drop-todo-due').value = '';
+      document.getElementById('drop-bookmark-title').value = '';
+      document.getElementById('drop-bookmark-link').value = '';
       updateDropForm(initialFolder);
 
       const popup = document.getElementById('drop-popup');
       popup.style.display = 'block';
-      const pw = popup.offsetWidth || 195, ph = popup.offsetHeight || 130;
+      const pw = popup.offsetWidth || 210, ph = popup.offsetHeight || 140;
       const vw = window.innerWidth, vh = window.innerHeight;
       popup.style.left = Math.max(8, Math.min(x - pw / 2, vw - pw - 8)) + 'px';
       popup.style.top  = Math.max(8, Math.min(y + 12, vh - ph - 8)) + 'px';
@@ -721,9 +733,15 @@
       const { memo } = pendingDrop;
       const target = document.getElementById('drop-folder').value;
       const opts = {};
-      if (target === 'IDEA')  opts.ideaArea = document.getElementById('drop-idea-area').value;
-      if (target === 'TO-DO') opts.dueDate  = document.getElementById('drop-todo-due').value || null;
-      if (target === 'CART')  opts.cartType  = document.getElementById('drop-cart-type').value;
+      if (target === 'IDEA')     opts.ideaArea      = document.getElementById('drop-idea-area').value;
+      if (target === 'TO-DO')    opts.dueDate       = document.getElementById('drop-todo-due').value || null;
+      if (target === 'CART')     opts.cartType      = document.getElementById('drop-cart-type').value;
+      if (target === 'BOOKMARK') {
+        const title = document.getElementById('drop-bookmark-title').value.trim();
+        if (!title) { document.getElementById('drop-bookmark-title').focus(); return; }
+        opts.bookmarkTitle = title;
+        opts.bookmarkLink  = document.getElementById('drop-bookmark-link').value.trim() || null;
+      }
       closePopup();
       await submitRoute(memo, target, opts);
     });
@@ -738,7 +756,7 @@
         const d = await r.json();
         if (!r.ok) throw new Error(d.error);
         memo.category = target;
-        if (['TO-DO', 'CART', 'IDEA'].includes(target)) memo.done = true;
+        if (['TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target)) memo.done = true;
         renderMemos();
       } catch (err) { alert(err.message); }
     }

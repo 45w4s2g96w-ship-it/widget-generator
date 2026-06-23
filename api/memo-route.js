@@ -4,10 +4,11 @@ const HEADERS = {
   'Content-Type': 'application/json',
 };
 
-const DIARY_DB_ID = '37451f4140c5808e9141c8804e892661';
-const TODO_DB_ID  = '37651f4140c5805e875cdc92a5715d21';
-const CART_DB_ID  = '37751f4140c580598f09f7903db2248f';
-const IDEA_DB_ID  = '37a51f4140c580e4bcf9f6279769ae26';
+const DIARY_DB_ID    = '37451f4140c5808e9141c8804e892661';
+const TODO_DB_ID     = '37651f4140c5805e875cdc92a5715d21';
+const CART_DB_ID     = '37751f4140c580598f09f7903db2248f';
+const IDEA_DB_ID     = '37a51f4140c580e4bcf9f6279769ae26';
+const BOOKMARK_DB_ID = 'ac98568f39fc489c89ca3844122b7266';
 
 function getSeoulNow() {
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
@@ -132,27 +133,42 @@ async function routeIdea(text, area) {
   if (d.object === 'error') throw new Error(d.message);
 }
 
+async function routeBookmark(text, title, link) {
+  const properties = {
+    '제목': { title: [{ text: { content: title } }] },
+    '내용': { rich_text: [{ text: { content: text } }] },
+  };
+  if (link) properties['링크'] = { url: link };
+
+  const r = await fetch('https://api.notion.com/v1/pages', {
+    method: 'POST',
+    headers: HEADERS,
+    body: JSON.stringify({ parent: { database_id: BOOKMARK_DB_ID }, properties }),
+  });
+  const d = await r.json();
+  if (d.object === 'error') throw new Error(d.message);
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { memoId, text, target, dueDate, cartType, ideaArea } = req.body;
+  const { memoId, text, target, dueDate, cartType, ideaArea, bookmarkTitle, bookmarkLink } = req.body;
   if (!text || !target) return res.status(400).json({ error: 'text, target required' });
 
   try {
     switch (target) {
-      case 'DIARY': await routeDiary(text); break;
-      case 'TO-DO': await routeTodo(text, dueDate); break;
-      case 'CART':  await routeCart(text, cartType); break;
-      case 'IDEA':  await routeIdea(text, ideaArea); break;
-      case 'LOG':
-      case 'ETC':
-        break;
+      case 'DIARY':    await routeDiary(text); break;
+      case 'TO-DO':    await routeTodo(text, dueDate); break;
+      case 'CART':     await routeCart(text, cartType); break;
+      case 'IDEA':     await routeIdea(text, ideaArea); break;
+      case 'BOOKMARK': await routeBookmark(text, bookmarkTitle, bookmarkLink); break;
+      case 'ETC': break;
       default:
         return res.status(400).json({ error: `unknown target: ${target}` });
     }
 
     if (memoId) {
-      const markDone = ['DIARY', 'TO-DO', 'CART', 'IDEA'].includes(target);
+      const markDone = ['DIARY', 'TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target);
       const properties = {
         '분류': { select: { name: target } },
       };
