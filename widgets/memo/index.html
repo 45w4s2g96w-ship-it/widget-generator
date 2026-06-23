@@ -175,6 +175,7 @@
     .bubble-checklist-item { display: flex; gap: 5px; align-items: flex-start; font-size: 11.5px; line-height: 1.5; }
     .bubble-checklist-item input { margin-top: 3px; flex-shrink: 0; }
 
+    /* ── 선택 삭제 바 ── */
     .delete-bar {
       flex-shrink: 0; display: none;
       padding: 5px 8px; border-top: 1px solid #e0e0e0;
@@ -184,6 +185,7 @@
     .delete-bar span { flex: 1; color: #888; }
     .del-btn { border: 1px solid #ddd; background: #fff; font-family: 'ChosunGu', sans-serif; font-size: 9.5px; padding: 2px 7px; cursor: pointer; color: #888; }
     .del-btn.danger { border-color: #e74c3c; color: #e74c3c; }
+    .del-btn.done-btn { border-color: var(--accent); color: var(--accent); }
 
     .input-area {
       flex-shrink: 0; border-top: 1px solid #e0e0e0;
@@ -208,12 +210,38 @@
     #send-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
 
     .titlebar { flex-shrink: 0; }
-    .titlebar-right { display: flex; align-items: center; gap: 6px; }
+    .titlebar-right { position: relative; display: flex; align-items: center; gap: 6px; }
     .trash-btn { font-size: 12px; opacity: 0.55; cursor: pointer; background: none; border: none; padding: 0; color: var(--win-text); line-height: 1; }
     .trash-btn:hover { opacity: 0.9; }
-    .trash-btn.active { opacity: 1; }
 
-    /* ── 팝업 ── */
+    /* ── 삭제 메뉴 ── */
+    .trash-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 20px;
+      margin-top: 6px;
+      background: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.14);
+      z-index: 600;
+      min-width: 160px;
+      font-family: 'ChosunGu', sans-serif;
+    }
+    .trash-menu.visible { display: block; }
+    .trash-menu-item {
+      padding: 9px 13px;
+      font-size: 11px;
+      color: var(--ink);
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      white-space: nowrap;
+    }
+    .trash-menu-item:last-child { border-bottom: none; }
+    .trash-menu-item:hover { background: #f7f5ff; color: var(--accent); }
+    .trash-menu-item.danger:hover { background: #fff5f5; color: #e74c3c; }
+
+    /* ── 폴더 이동 팝업 ── */
     .drop-popup {
       display: none; position: fixed; z-index: 500;
       background: #fff; border: 1px solid var(--border);
@@ -257,7 +285,13 @@
     <div class="titlebar">
       <span data-widget-title>C:// MEMO</span>
       <div class="titlebar-right">
-        <button class="trash-btn" id="trash-btn" title="삭제 모드">🗑</button>
+        <button class="trash-btn" id="trash-btn" title="삭제">🗑</button>
+        <!-- 삭제 메뉴 -->
+        <div class="trash-menu" id="trash-menu">
+          <div class="trash-menu-item danger" id="del-categorized">분류 완료된 항목 지우기</div>
+          <div class="trash-menu-item danger" id="del-uncategorized">미분류 항목 지우기</div>
+          <div class="trash-menu-item" id="del-select">선택 항목 지우기</div>
+        </div>
         <span style="opacity:0.75;cursor:default">⚙</span>
       </div>
     </div>
@@ -301,10 +335,11 @@
       </div>
     </div>
 
+    <!-- 선택 삭제 모드 바 -->
     <div class="delete-bar" id="delete-bar">
       <span id="sel-count">0개 선택됨</span>
-      <button class="del-btn" id="del-selected-btn">선택 삭제</button>
-      <button class="del-btn danger" id="del-all-btn">전체 삭제</button>
+      <button class="del-btn danger" id="del-selected-btn">선택 삭제</button>
+      <button class="del-btn done-btn" id="del-done-btn">완료</button>
     </div>
 
     <div class="input-area" id="input-area">
@@ -373,6 +408,7 @@
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
+    /* ── 탭 ── */
     document.getElementById('tabs').addEventListener('click', e => {
       const tab = e.target.closest('.tab');
       if (!tab) return;
@@ -382,26 +418,60 @@
       renderMemos();
     });
 
-    document.getElementById('trash-btn').addEventListener('click', () => {
-      deleteMode = !deleteMode;
-      document.getElementById('trash-btn').classList.toggle('active', deleteMode);
-      document.getElementById('delete-bar').classList.toggle('visible', deleteMode);
-      document.getElementById('input-area').style.display = deleteMode ? 'none' : '';
-      if (!deleteMode) { selectedIds.clear(); updateSelCount(); }
-      renderMemos();
+    /* ── 싸레기통 버튼 → 메뉴 ── */
+    const trashMenu = document.getElementById('trash-menu');
+
+    document.getElementById('trash-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      trashMenu.classList.toggle('visible');
     });
+
+    document.addEventListener('click', () => trashMenu.classList.remove('visible'));
+
+    // 분류 완료된 항목 지우기
+    document.getElementById('del-categorized').addEventListener('click', async () => {
+      const ids = memos.filter(m => m.category).map(m => m.id);
+      if (!ids.length) { alert('분류된 항목이 없어요.'); return; }
+      if (!confirm(`분류 완료된 항목 ${ids.length}개를 삭제할까요?`)) return;
+      await deleteMemos(ids);
+    });
+
+    // 미분류 항목 지우기
+    document.getElementById('del-uncategorized').addEventListener('click', async () => {
+      const ids = memos.filter(m => !m.category).map(m => m.id);
+      if (!ids.length) { alert('미분류 항목이 없어요.'); return; }
+      if (!confirm(`미분류 항목 ${ids.length}개를 삭제할까요?`)) return;
+      await deleteMemos(ids);
+    });
+
+    // 선택 항목 지우기 → 체크박스 모드
+    document.getElementById('del-select').addEventListener('click', () => {
+      enterDeleteMode();
+    });
+
+    function enterDeleteMode() {
+      deleteMode = true;
+      document.getElementById('delete-bar').classList.add('visible');
+      document.getElementById('input-area').style.display = 'none';
+      selectedIds.clear(); updateSelCount();
+      renderMemos();
+    }
+
+    function exitDeleteMode() {
+      deleteMode = false;
+      document.getElementById('delete-bar').classList.remove('visible');
+      document.getElementById('input-area').style.display = '';
+      selectedIds.clear(); updateSelCount();
+      renderMemos();
+    }
 
     document.getElementById('del-selected-btn').addEventListener('click', async () => {
       if (!selectedIds.size) return;
+      if (!confirm(`선택한 ${selectedIds.size}개를 삭제할까요?`)) return;
       await deleteMemos([...selectedIds]);
     });
 
-    document.getElementById('del-all-btn').addEventListener('click', async () => {
-      const ids = filteredMemos().map(m => m.id);
-      if (!ids.length) return;
-      if (!confirm(`${ids.length}개 메모를 모두 삭제할까요?`)) return;
-      await deleteMemos(ids);
-    });
+    document.getElementById('del-done-btn').addEventListener('click', exitDeleteMode);
 
     async function deleteMemos(ids) {
       try {
@@ -413,7 +483,7 @@
         const d = await r.json();
         if (!r.ok) throw new Error(d.error);
         memos = memos.filter(m => !ids.includes(m.id));
-        selectedIds.clear(); updateSelCount(); renderMemos();
+        if (deleteMode) exitDeleteMode(); else renderMemos();
       } catch (err) { alert(err.message); }
     }
 
@@ -421,6 +491,7 @@
       document.getElementById('sel-count').textContent = `${selectedIds.size}개 선택됨`;
     }
 
+    /* ── 입력 ── */
     document.getElementById('send-btn').addEventListener('click', sendMemo);
     document.getElementById('memo-input').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMemo(); }
@@ -572,11 +643,9 @@
           if (wasActive) {
             const target = getFolderAt(cx, cy);
             if (!target) return;
-            // DIARY는 팝업 없이 바로 저장
             if (target === 'DIARY') { submitRoute(memo, 'DIARY', {}); return; }
             showDropPopup(target, memo, cx, cy);
           } else {
-            // 클릭 → 폴더 선택 팝업
             showDropPopup(memo.category || 'ETC', memo, cx, cy);
           }
         });
@@ -610,7 +679,7 @@
       drag.memo = null; drag.bubble = null; drag.dragArea = null; drag.active = false;
     }
 
-    /* ── 팝업 ── */
+    /* ── 폴더 이동 팝업 ── */
     function closePopup() {
       document.getElementById('drop-popup').classList.remove('visible');
       pendingDrop = null;
