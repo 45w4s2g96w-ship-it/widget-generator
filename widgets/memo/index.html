@@ -240,13 +240,13 @@
     .trash-menu-item:hover { background: #f7f5ff; color: var(--accent); }
     .trash-menu-item.danger:hover { background: #fff5f5; color: #e74c3c; }
 
-    /* ── 폴더 이동 팝업 + 백드륩 ── */
+    /* ── 폴더 이동 팝업 + 백드롭 ── */
     .popup-backdrop {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 490;
-      background: transparent;
+      background: rgba(0,0,0,0.001);
       -webkit-tap-highlight-color: transparent;
     }
     .popup-backdrop.visible { display: block; }
@@ -265,10 +265,11 @@
     }
     .drop-popup-header label { font-size: 9.5px; color: #888; margin: 0; }
     .drop-popup-close {
-      background: none; border: none; padding: 4px 6px;
+      background: none; border: none; padding: 6px 8px;
       font-size: 15px; line-height: 1; color: #bbb;
       cursor: pointer; display: flex; align-items: center;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .drop-popup-close:hover { color: #888; }
     .drop-popup select,
@@ -290,8 +291,9 @@
     .drop-btns { display: flex; gap: 5px; margin-top: 2px; }
     .drop-btns button {
       flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 11px;
-      padding: 7px 4px; cursor: pointer; border-radius: 0;
+      padding: 9px 4px; cursor: pointer; border-radius: 0;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     #drop-ok { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
     #drop-cancel { border: 1px solid #ddd; background: #fff; color: #888; }
@@ -372,7 +374,7 @@ MARK</span>
     </div>
   </div>
 
-  <!-- 팝업 백드륩: 팝업 뒤 탭 이벤트 차단 -->
+  <!-- 팝업 뒤 터치 이벤트 차단 백드롭 -->
   <div class="popup-backdrop" id="popup-backdrop"></div>
 
   <!-- 폴더 이동 팝업 -->
@@ -452,7 +454,7 @@ MARK</span>
       renderMemos();
     });
 
-    /* ── 싸레기통 메뉴 ── */
+    /* ── 쓰레기통 메뉴 ── */
     const trashMenu = document.getElementById('trash-menu');
 
     document.getElementById('trash-btn').addEventListener('click', e => {
@@ -465,14 +467,12 @@ MARK</span>
     document.getElementById('del-categorized').addEventListener('click', async () => {
       const ids = memos.filter(m => m.category).map(m => m.id);
       if (!ids.length) { alert('분류된 항목이 없어요.'); return; }
-      if (!confirm(`분류 완료된 항목 ${ids.length}개를 삭제할까요?`)) return;
       await deleteMemos(ids);
     });
 
     document.getElementById('del-uncategorized').addEventListener('click', async () => {
       const ids = memos.filter(m => !m.category).map(m => m.id);
       if (!ids.length) { alert('미분류 항목이 없어요.'); return; }
-      if (!confirm(`미분류 항목 ${ids.length}개를 삭제할까요?`)) return;
       await deleteMemos(ids);
     });
 
@@ -496,7 +496,6 @@ MARK</span>
 
     document.getElementById('del-selected-btn').addEventListener('click', async () => {
       if (!selectedIds.size) return;
-      if (!confirm(`선택한 ${selectedIds.size}개를 삭제할까요?`)) return;
       await deleteMemos([...selectedIds]);
     });
 
@@ -654,19 +653,22 @@ MARK</span>
 
         dragArea.addEventListener('pointerdown', e => {
           if (e.button !== 0 && e.button !== undefined) return;
-          e.preventDefault();
-          dragArea.setPointerCapture(e.pointerId);
+          // Do NOT call e.preventDefault() here — it blocks tap/click events on mobile
           drag.memo = m; drag.bubble = bub; drag.dragArea = dragArea;
           drag.startX = e.clientX; drag.startY = e.clientY; drag.active = false;
         });
         dragArea.addEventListener('pointermove', e => {
           if (drag.memo?.id !== m.id) return;
           const dist = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
-          if (!drag.active && dist > DRAG_THRESHOLD) drag.active = true;
+          if (!drag.active && dist > DRAG_THRESHOLD) {
+            drag.active = true;
+            try { dragArea.setPointerCapture(e.pointerId); } catch (_) {}
+          }
           if (drag.active) updateFolderHighlight(e.clientX, e.clientY);
         });
         dragArea.addEventListener('pointerup', e => {
           if (drag.memo?.id !== m.id) return;
+          e.preventDefault(); // suppress synthetic click after pointer gesture
           const memo = m, wasActive = drag.active, cx = e.clientX, cy = e.clientY;
           cleanupDrag();
           if (wasActive) {
@@ -712,7 +714,9 @@ MARK</span>
     const backdrop = document.getElementById('popup-backdrop');
 
     function closePopup() {
-      document.getElementById('drop-popup').classList.remove('visible');
+      const popup = document.getElementById('drop-popup');
+      popup.classList.remove('visible');
+      popup.style.display = ''; // inline style 초기화
       backdrop.classList.remove('visible');
       pendingDrop = null;
     }
@@ -745,7 +749,7 @@ MARK</span>
       backdrop.classList.add('visible');
       const popup = document.getElementById('drop-popup');
       popup.style.display = 'block';
-      const pw = popup.offsetWidth || 210, ph = popup.offsetHeight || 140;
+      const pw = popup.offsetWidth || 210, ph = popup.offsetHeight || 160;
       const vw = window.innerWidth, vh = window.innerHeight;
       popup.style.left = Math.max(8, Math.min(x - pw / 2, vw - pw - 8)) + 'px';
       popup.style.top  = Math.max(8, Math.min(y + 12, vh - ph - 8)) + 'px';
