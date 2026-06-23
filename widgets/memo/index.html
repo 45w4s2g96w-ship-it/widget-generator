@@ -22,7 +22,7 @@
 
     .window {
       width: 100%;
-      max-width: 300px;
+      max-width: 420px;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -148,7 +148,6 @@
       cursor: pointer;
     }
     .bubble:hover { background: rgba(155,143,199,0.2); }
-    /* TO-DO, CART, IDEA 만 완료 스타일 */
     .bubble.is-done { opacity: 0.5; }
     .bubble.is-done .bubble-text { text-decoration: line-through; color: #bbb; }
 
@@ -558,12 +557,10 @@
           const memo = m, wasActive = drag.active, cx = e.clientX, cy = e.clientY;
           cleanupDrag();
           if (wasActive) {
-            // drag-to-folder
             const target = getFolderAt(cx, cy);
             if (!target) return;
             showDropPopup(target, memo, cx, cy);
           } else {
-            // 클릭 → 폴더 선택 팝업
             showDropPopup(memo.category || 'ETC', memo, cx, cy);
           }
         });
