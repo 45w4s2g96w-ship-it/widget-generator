@@ -64,7 +64,7 @@
       overflow: hidden;
     }
 
-    /* ─ Left folder panel (fixed, no scroll) ─ */
+    /* ─ Left folder panel ─ */
     .folder-panel {
       width: 52px;
       flex-shrink: 0;
@@ -127,7 +127,7 @@
       line-height: 1.2;
     }
 
-    /* ─ Chat area (scrollable) ─ */
+    /* ─ Chat area ─ */
     .chat-area {
       flex: 1;
       min-width: 0;
@@ -171,11 +171,8 @@
       border: 1px solid rgba(155, 143, 199, 0.3);
       border-radius: 12px 12px 2px 12px;
       padding: 6px 9px;
-      touch-action: none;
-      user-select: none;
       position: relative;
     }
-    .bubble.can-drag { cursor: grab; }
     .bubble.dragging { opacity: 0.3; }
     .bubble.is-done { opacity: 0.5; }
     .bubble.is-done .bubble-text { text-decoration: line-through; color: #bbb; }
@@ -200,9 +197,18 @@
       opacity: 0.22;
       cursor: pointer;
       line-height: 1;
+      user-select: none;
     }
     .bubble-star.on { opacity: 1; }
-    .bubble-time { font-size: 9px; color: #c0c0c0; }
+    .bubble-time { font-size: 9px; color: #c0c0c0; user-select: none; }
+
+    /* 텍스트 영역만 드래그 핸들 */
+    .bubble-drag-area {
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+    .bubble-drag-area.dragging-active { cursor: grabbing; }
 
     .bubble-text {
       font-size: 11.5px;
@@ -236,7 +242,7 @@
       box-shadow: 0 4px 14px rgba(0,0,0,0.22);
     }
 
-    /* ─ Delete bar (fixed) ─ */
+    /* ─ Delete bar ─ */
     .delete-bar {
       flex-shrink: 0;
       display: none;
@@ -252,7 +258,7 @@
     .del-btn { border: 1px solid #ddd; background: #fff; font-family: 'ChosunGu', sans-serif; font-size: 9.5px; padding: 2px 7px; cursor: pointer; color: #888; }
     .del-btn.danger { border-color: #e74c3c; color: #e74c3c; }
 
-    /* ─ Input (fixed at bottom) ─ */
+    /* ─ Input ─ */
     .input-area {
       flex-shrink: 0;
       border-top: 1px solid #e0e0e0;
@@ -431,7 +437,7 @@
     let selectedIds = new Set();
     let pendingDrop = null;
 
-    const drag = { memo: null, bubble: null, ghost: null, startX: 0, startY: 0, active: false };
+    const drag = { memo: null, bubble: null, dragArea: null, ghost: null, startX: 0, startY: 0, active: false };
     const DRAG_THRESHOLD = 7;
 
     (async () => {
@@ -604,7 +610,7 @@
       });
 
       const bub = document.createElement('div');
-      bub.className = 'bubble' + (m.done ? ' is-done' : '') + (deleteMode ? '' : ' can-drag');
+      bub.className = 'bubble' + (m.done ? ' is-done' : '');
 
       const hdr = document.createElement('div'); hdr.className = 'bubble-header';
       if (m.category) {
@@ -627,18 +633,23 @@
       const time = document.createElement('span'); time.className = 'bubble-time'; time.textContent = formatTime(m.createdAt);
       hdr.appendChild(star); hdr.appendChild(time);
       bub.appendChild(hdr);
-      bub.appendChild(makeTextNode(m.text));
 
+      // 텍스트 영역을 감싸는 드래그 핸들 — 이 영역에서만 드래그 시작
+      const textNode = makeTextNode(m.text);
       if (!deleteMode) {
-        bub.addEventListener('pointerdown', e => {
+        const dragArea = document.createElement('div');
+        dragArea.className = 'bubble-drag-area';
+        dragArea.appendChild(textNode);
+
+        dragArea.addEventListener('pointerdown', e => {
           if (e.button !== 0 && e.button !== undefined) return;
           e.preventDefault();
-          bub.setPointerCapture(e.pointerId);
-          drag.memo = m; drag.bubble = bub;
+          dragArea.setPointerCapture(e.pointerId);
+          drag.memo = m; drag.bubble = bub; drag.dragArea = dragArea;
           drag.startX = e.clientX; drag.startY = e.clientY;
           drag.active = false;
         });
-        bub.addEventListener('pointermove', e => {
+        dragArea.addEventListener('pointermove', e => {
           if (drag.memo?.id !== m.id) return;
           const dist = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
           if (!drag.active && dist > DRAG_THRESHOLD) {
@@ -648,6 +659,7 @@
             drag.ghost.textContent = m.text.slice(0, 22) + (m.text.length > 22 ? '...' : '');
             document.body.appendChild(drag.ghost);
             bub.classList.add('dragging');
+            dragArea.classList.add('dragging-active');
           }
           if (drag.active) {
             drag.ghost.style.left = e.clientX + 'px';
@@ -655,7 +667,7 @@
             updateFolderHighlight(e.clientX, e.clientY);
           }
         });
-        bub.addEventListener('pointerup', e => {
+        dragArea.addEventListener('pointerup', e => {
           if (drag.memo?.id !== m.id) return;
           const memo = m;
           const wasActive = drag.active;
@@ -670,7 +682,11 @@
             submitRoute(memo, target, {});
           }
         });
-        bub.addEventListener('pointercancel', cleanupDrag);
+        dragArea.addEventListener('pointercancel', cleanupDrag);
+
+        bub.appendChild(dragArea);
+      } else {
+        bub.appendChild(textNode);
       }
 
       row.appendChild(cb);
@@ -696,8 +712,9 @@
     function cleanupDrag() {
       if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
       if (drag.bubble) drag.bubble.classList.remove('dragging');
+      if (drag.dragArea) drag.dragArea.classList.remove('dragging-active');
       document.querySelectorAll('.folder-target').forEach(f => f.classList.remove('drag-over'));
-      drag.memo = null; drag.bubble = null; drag.active = false;
+      drag.memo = null; drag.bubble = null; drag.dragArea = null; drag.active = false;
     }
 
     function showDropPopup(target, memo, x, y) {
