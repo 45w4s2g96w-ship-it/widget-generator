@@ -145,7 +145,9 @@
       border-radius: 12px 12px 2px 12px;
       padding: 6px 9px;
       position: relative;
+      cursor: pointer;
     }
+    .bubble:hover { background: rgba(155,143,199,0.2); }
     /* TO-DO, CART, IDEA 만 완료 스타일 */
     .bubble.is-done { opacity: 0.5; }
     .bubble.is-done .bubble-text { text-decoration: line-through; color: #bbb; }
@@ -212,21 +214,27 @@
     .trash-btn:hover { opacity: 0.9; }
     .trash-btn.active { opacity: 1; }
 
+    /* ── 팝업 ── */
     .drop-popup {
       display: none; position: fixed; z-index: 500;
       background: #fff; border: 1px solid var(--border);
-      padding: 10px 12px; width: 195px;
+      padding: 12px 13px 10px; width: 195px;
       font-family: 'ChosunGu', sans-serif;
       box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     }
     .drop-popup.visible { display: block; }
-    .drop-popup-title { font-size: 10.5px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
     .drop-popup label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
     .drop-popup select, .drop-popup input[type=date] {
       width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
       font-size: 11px; padding: 3px 5px; margin-bottom: 8px; color: var(--ink); background: #fff;
+      box-sizing: border-box;
     }
     .drop-popup select:focus, .drop-popup input:focus { outline: none; border-color: var(--accent); }
+    #drop-folder {
+      font-weight: 700; color: var(--accent); border-color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .drop-divider { border: none; border-top: 1px solid #eee; margin: 0 0 9px; }
     .drop-btns { display: flex; gap: 5px; }
     .drop-btns button { flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 10px; padding: 4px; cursor: pointer; }
     #drop-ok { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
@@ -296,8 +304,17 @@
     </div>
   </div>
 
+  <!-- 폴더 이동 팝업 -->
   <div class="drop-popup" id="drop-popup">
-    <div class="drop-popup-title" id="drop-popup-title">옵션</div>
+    <label>폴더 선택</label>
+    <select id="drop-folder">
+      <option value="DIARY">DIARY</option>
+      <option value="TO-DO">TO-DO</option>
+      <option value="IDEA">IDEA</option>
+      <option value="CART">CART</option>
+      <option value="ETC">ETC</option>
+    </select>
+    <hr class="drop-divider" id="drop-divider" style="display:none" />
     <div id="drop-form-idea" style="display:none">
       <label>영역</label>
       <select id="drop-idea-area">
@@ -494,7 +511,6 @@
         cb.classList.toggle('checked', selectedIds.has(m.id)); updateSelCount();
       });
 
-      // DIARY는 처리완료 스타일 제외
       const isDone = m.done && m.category !== 'DIARY';
       const bub = document.createElement('div');
       bub.className = 'bubble' + (isDone ? ' is-done' : '');
@@ -541,11 +557,15 @@
           if (drag.memo?.id !== m.id) return;
           const memo = m, wasActive = drag.active, cx = e.clientX, cy = e.clientY;
           cleanupDrag();
-          if (!wasActive) return;
-          const target = getFolderAt(cx, cy);
-          if (!target) return;
-          if (['IDEA', 'TO-DO', 'CART'].includes(target)) showDropPopup(target, memo, cx, cy);
-          else submitRoute(memo, target, {});
+          if (wasActive) {
+            // drag-to-folder
+            const target = getFolderAt(cx, cy);
+            if (!target) return;
+            showDropPopup(target, memo, cx, cy);
+          } else {
+            // 클릭 → 폴더 선택 팝업
+            showDropPopup(memo.category || 'ETC', memo, cx, cy);
+          }
         });
         dragArea.addEventListener('pointercancel', cleanupDrag);
         bub.appendChild(dragArea);
@@ -577,26 +597,39 @@
       drag.memo = null; drag.bubble = null; drag.dragArea = null; drag.active = false;
     }
 
-    function showDropPopup(target, memo, x, y) {
-      pendingDrop = { memo, target };
-      const titles = { 'IDEA': 'IDEA로 이동', 'TO-DO': 'TO-DO로 이동', 'CART': 'CART로 이동' };
-      document.getElementById('drop-popup-title').textContent = titles[target];
-      document.getElementById('drop-form-idea').style.display = target === 'IDEA'  ? 'block' : 'none';
-      document.getElementById('drop-form-todo').style.display = target === 'TO-DO' ? 'block' : 'none';
-      document.getElementById('drop-form-cart').style.display = target === 'CART'  ? 'block' : 'none';
+    /* ── 팝업 ── */
+    function updateDropForm(folder) {
+      const hasExtra = ['IDEA', 'TO-DO', 'CART'].includes(folder);
+      document.getElementById('drop-divider').style.display = hasExtra ? 'block' : 'none';
+      document.getElementById('drop-form-idea').style.display = folder === 'IDEA'  ? 'block' : 'none';
+      document.getElementById('drop-form-todo').style.display = folder === 'TO-DO' ? 'block' : 'none';
+      document.getElementById('drop-form-cart').style.display = folder === 'CART'  ? 'block' : 'none';
+    }
+
+    document.getElementById('drop-folder').addEventListener('change', e => {
+      updateDropForm(e.target.value);
+    });
+
+    function showDropPopup(initialFolder, memo, x, y) {
+      pendingDrop = { memo };
+      const sel = document.getElementById('drop-folder');
+      sel.value = initialFolder;
       document.getElementById('drop-todo-due').value = '';
+      updateDropForm(initialFolder);
+
       const popup = document.getElementById('drop-popup');
       popup.style.display = 'block';
-      const pw = popup.offsetWidth || 195, ph = popup.offsetHeight || 110;
+      const pw = popup.offsetWidth || 195, ph = popup.offsetHeight || 130;
       const vw = window.innerWidth, vh = window.innerHeight;
-      popup.style.left = Math.max(8, Math.min(x - pw/2, vw - pw - 8)) + 'px';
-      popup.style.top  = Math.max(8, Math.min(y + 12,  vh - ph - 8)) + 'px';
+      popup.style.left = Math.max(8, Math.min(x - pw / 2, vw - pw - 8)) + 'px';
+      popup.style.top  = Math.max(8, Math.min(y + 12, vh - ph - 8)) + 'px';
       popup.classList.add('visible');
     }
 
     document.getElementById('drop-ok').addEventListener('click', async () => {
       if (!pendingDrop) return;
-      const { memo, target } = pendingDrop;
+      const { memo } = pendingDrop;
+      const target = document.getElementById('drop-folder').value;
       const opts = {};
       if (target === 'IDEA')  opts.ideaArea = document.getElementById('drop-idea-area').value;
       if (target === 'TO-DO') opts.dueDate  = document.getElementById('drop-todo-due').value || null;
