@@ -12,10 +12,7 @@
       font-display: swap;
     }
 
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
+    html, body { height: 100%; margin: 0; }
 
     body {
       display: flex;
@@ -110,10 +107,8 @@
     .folder-shape::before {
       content: '';
       position: absolute;
-      top: -5px;
-      left: 0;
-      width: 11px;
-      height: 6px;
+      top: -5px; left: 0;
+      width: 11px; height: 6px;
       background: #ccc;
       border-radius: 2px 4px 0 0;
     }
@@ -154,8 +149,7 @@
 
     .bubble-cb {
       flex-shrink: 0;
-      width: 13px;
-      height: 13px;
+      width: 13px; height: 13px;
       border: 1px solid #ccc;
       cursor: pointer;
       background: #fff;
@@ -173,7 +167,6 @@
       padding: 6px 9px;
       position: relative;
     }
-    .bubble.dragging { opacity: 0.3; }
     .bubble.is-done { opacity: 0.5; }
     .bubble.is-done .bubble-text { text-decoration: line-through; color: #bbb; }
 
@@ -202,13 +195,11 @@
     .bubble-star.on { opacity: 1; }
     .bubble-time { font-size: 9px; color: #c0c0c0; user-select: none; }
 
-    /* 텍스트 영역만 드래그 핸들 */
     .bubble-drag-area {
       touch-action: none;
       user-select: none;
       cursor: grab;
     }
-    .bubble-drag-area.dragging-active { cursor: grabbing; }
 
     .bubble-text {
       font-size: 11.5px;
@@ -221,26 +212,6 @@
     .bubble-checklist { display: flex; flex-direction: column; gap: 2px; }
     .bubble-checklist-item { display: flex; gap: 5px; align-items: flex-start; font-size: 11.5px; line-height: 1.5; }
     .bubble-checklist-item input { margin-top: 3px; flex-shrink: 0; }
-
-    /* ─ Drag ghost ─ */
-    .drag-ghost {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 10.5px;
-      padding: 5px 10px;
-      border-radius: 10px;
-      max-width: 150px;
-      transform: translate(-50%, -50%);
-      opacity: 0.9;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.22);
-    }
 
     /* ─ Delete bar ─ */
     .delete-bar {
@@ -349,7 +320,6 @@
       <div class="tab" data-folder="TO-DO">TO-DO</div>
       <div class="tab" data-folder="CART">CART</div>
       <div class="tab" data-folder="DIARY">DIARY</div>
-      <div class="tab" data-folder="LOG">LOG</div>
       <div class="tab" data-folder="ETC">ETC</div>
       <div class="tab" data-folder="★">★</div>
     </div>
@@ -371,10 +341,6 @@
         <div class="folder-target" data-target="DIARY">
           <div class="folder-shape"></div>
           <span class="folder-label">DIARY</span>
-        </div>
-        <div class="folder-target" data-target="LOG">
-          <div class="folder-shape"></div>
-          <span class="folder-label">LOG</span>
         </div>
         <div class="folder-target" data-target="ETC">
           <div class="folder-shape"></div>
@@ -437,7 +403,7 @@
     let selectedIds = new Set();
     let pendingDrop = null;
 
-    const drag = { memo: null, bubble: null, dragArea: null, ghost: null, startX: 0, startY: 0, active: false };
+    const drag = { memo: null, bubble: null, dragArea: null, startX: 0, startY: 0, active: false };
     const DRAG_THRESHOLD = 7;
 
     (async () => {
@@ -634,7 +600,6 @@
       hdr.appendChild(star); hdr.appendChild(time);
       bub.appendChild(hdr);
 
-      // 텍스트 영역을 감싸는 드래그 핸들 — 이 영역에서만 드래그 시작
       const textNode = makeTextNode(m.text);
       if (!deleteMode) {
         const dragArea = document.createElement('div');
@@ -654,16 +619,8 @@
           const dist = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
           if (!drag.active && dist > DRAG_THRESHOLD) {
             drag.active = true;
-            drag.ghost = document.createElement('div');
-            drag.ghost.className = 'drag-ghost';
-            drag.ghost.textContent = m.text.slice(0, 22) + (m.text.length > 22 ? '...' : '');
-            document.body.appendChild(drag.ghost);
-            bub.classList.add('dragging');
-            dragArea.classList.add('dragging-active');
           }
           if (drag.active) {
-            drag.ghost.style.left = e.clientX + 'px';
-            drag.ghost.style.top  = e.clientY + 'px';
             updateFolderHighlight(e.clientX, e.clientY);
           }
         });
@@ -710,9 +667,6 @@
     }
 
     function cleanupDrag() {
-      if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
-      if (drag.bubble) drag.bubble.classList.remove('dragging');
-      if (drag.dragArea) drag.dragArea.classList.remove('dragging-active');
       document.querySelectorAll('.folder-target').forEach(f => f.classList.remove('drag-over'));
       drag.memo = null; drag.bubble = null; drag.dragArea = null; drag.active = false;
     }
@@ -762,7 +716,8 @@
         const d = await r.json();
         if (!r.ok) throw new Error(d.error);
         memo.category = target;
-        if (['DIARY', 'TO-DO', 'CART', 'IDEA'].includes(target)) memo.done = true;
+        // DIARY는 단순 분류이므로 처리완료 표시 안 함
+        if (['TO-DO', 'CART', 'IDEA'].includes(target)) memo.done = true;
         renderMemos();
       } catch (err) { alert(err.message); }
     }
