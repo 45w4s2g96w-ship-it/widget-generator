@@ -298,7 +298,6 @@
     #drop-cancel:active { background: #f5f5f5; }
     #drop-ok:disabled { opacity: 0.45; cursor: default; }
 
-    /* 토스트 알림 */
     #toast {
       display: none; position: fixed; bottom: 70px; left: 50%;
       transform: translateX(-50%); z-index: 800;
@@ -308,6 +307,7 @@
     }
     #toast.ok  { background: #27ae60; }
     #toast.err { background: #e74c3c; }
+    #toast.pending { background: #888; }
     #toast.show { display: block; }
   </style>
 </head>
@@ -433,11 +433,14 @@ MARK</span></div>
       el.textContent = msg;
       el.className = 'show ' + type;
       clearTimeout(_toastTimer);
-      _toastTimer = setTimeout(() => { el.className = ''; }, 3500);
+      const dur = type === 'err' ? 6000 : type === 'pending' ? 60000 : 3500;
+      _toastTimer = setTimeout(() => { el.className = ''; }, dur);
+    }
+    function hideToast() {
+      clearTimeout(_toastTimer);
+      document.getElementById('toast').className = '';
     }
 
-    // touchstart fires immediately on contact — most reliable in Notion WKWebView.
-    // e.preventDefault() blocks scroll and synthetic click so fn fires exactly once.
     function addTap(el, fn, opts = {}) {
       el.addEventListener('touchstart', e => {
         e.preventDefault();
@@ -674,7 +677,6 @@ MARK</span></div>
         dragArea.className = 'bubble-drag-area';
         dragArea.appendChild(textNode);
 
-        // ── Touch drag ──
         dragArea.addEventListener('touchstart', e => {
           const t = e.touches[0];
           drag.memo = m; drag.active = false;
@@ -706,7 +708,6 @@ MARK</span></div>
           }
         }, { passive: false });
 
-        // ── Mouse drag (desktop) ──
         dragArea.addEventListener('mousedown', e => {
           if (e.button !== 0) return;
           drag.memo = m; drag.active = false;
@@ -809,8 +810,12 @@ MARK</span></div>
       popup.classList.add('visible');
     }
 
+    let _submitting = false;
+
     async function handleOk() {
-      if (!pendingDrop) return;
+      if (_submitting || !pendingDrop) return;
+      _submitting = true;
+
       const { memo } = pendingDrop;
       const target = document.getElementById('drop-folder').value;
       const opts = {};
@@ -819,15 +824,33 @@ MARK</span></div>
       if (target === 'CART')     opts.cartType      = document.getElementById('drop-cart-type').value;
       if (target === 'BOOKMARK') {
         const title = document.getElementById('drop-bookmark-title').value.trim();
-        if (!title) { document.getElementById('drop-bookmark-title').focus(); return; }
+        if (!title) {
+          document.getElementById('drop-bookmark-title').focus();
+          _submitting = false;
+          return;
+        }
         opts.bookmarkTitle = title;
         opts.bookmarkLink  = document.getElementById('drop-bookmark-link').value.trim() || null;
       }
+
+      showToast(target + ' 저장 중...', 'pending');
       closePopup();
+
       await submitRoute(memo, target, opts);
+      _submitting = false;
     }
 
-    addTap(document.getElementById('drop-ok'), handleOk);
+    /* OK 버튼: touchstart + click 양쪽 처리, stopPropagation으로 backdrop 닫힘 방지 */
+    const dropOk = document.getElementById('drop-ok');
+    dropOk.addEventListener('touchstart', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleOk();
+    }, { passive: false });
+    dropOk.addEventListener('click', e => {
+      e.stopPropagation();
+      handleOk();
+    });
 
     async function submitRoute(memo, target, opts) {
       try {
@@ -841,6 +864,7 @@ MARK</span></div>
         memo.category = target;
         if (['TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target)) memo.done = true;
         renderMemos();
+        hideToast();
         showToast(target + ' 저장됨 ✓', 'ok');
       } catch (err) {
         showToast('오류: ' + err.message, 'err');
