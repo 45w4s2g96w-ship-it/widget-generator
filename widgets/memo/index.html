@@ -362,7 +362,7 @@ MARK</span></div>
     </div>
 
     <div class="input-area" id="input-area">
-      <textarea id="memo-input" placeholder="생각을 던져보세요... (Enter=전송)" rows="2"></textarea>
+      <textarea id="memo-input" placeholder="생각을 던져보세요..." rows="2"></textarea>
       <button id="send-btn">SEND</button>
     </div>
   </div>
@@ -421,6 +421,8 @@ MARK</span></div>
 
   <script src="../../shared/config-loader.js"></script>
   <script>
+    const isMobile = navigator.maxTouchPoints > 0;
+
     let cfg = {};
     let memos = [];
     let activeFolder = 'ALL';
@@ -549,8 +551,13 @@ MARK</span></div>
 
     /* ── 입력 ── */
     addTap(document.getElementById('send-btn'), sendMemo);
+
     document.getElementById('memo-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMemo(); }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        if (isMobile) return; // 모바일: 키보드 엔터 = 줄바꿼
+        e.preventDefault();
+        sendMemo();
+      }
     });
 
     async function sendMemo() {
