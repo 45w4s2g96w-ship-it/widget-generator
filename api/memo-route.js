@@ -76,14 +76,14 @@ async function routeDiary(text) {
   });
 }
 
-async function routeTodo(text, dueDate, todoMemo) {
+async function routeTodo(text, dueDate, todoMemo, quadrant) {
   const today = todayStr();
-  const quadrant = calcQuadrant(dueDate, today);
+  const resolvedQuadrant = quadrant || calcQuadrant(dueDate, today);
   const properties = {
     '이름': { title: [{ text: { content: text } }] },
     '추가일': { date: { start: today } },
     '완료': { checkbox: false },
-    '사분면': { select: { name: quadrant } },
+    '사분면': { select: { name: resolvedQuadrant } },
   };
   if (dueDate) properties['마감일'] = { date: { start: dueDate } };
   if (todoMemo) properties['메모'] = { rich_text: [{ text: { content: todoMemo } }] };
@@ -118,13 +118,13 @@ async function routeBookmark(text, title, link) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { memoId, text, target, dueDate, todoMemo, cartType, ideaArea, bookmarkTitle, bookmarkLink } = req.body;
+  const { memoId, text, target, dueDate, todoMemo, quadrant, cartType, ideaArea, bookmarkTitle, bookmarkLink } = req.body;
   if (!text || !target) return res.status(400).json({ error: 'text, target required' });
 
   try {
     switch (target) {
       case 'DIARY':    await routeDiary(text); break;
-      case 'TO-DO':    await routeTodo(text, dueDate, todoMemo); break;
+      case 'TO-DO':    await routeTodo(text, dueDate, todoMemo, quadrant); break;
       case 'CART':     await routeCart(text, cartType); break;
       case 'IDEA':     await routeIdea(text, ideaArea); break;
       case 'BOOKMARK': await routeBookmark(text, bookmarkTitle, bookmarkLink); break;

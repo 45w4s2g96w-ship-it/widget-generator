@@ -393,6 +393,14 @@ MARK</span></div>
       </select>
     </div>
     <div id="drop-form-todo" style="display:none">
+      <label class="field-label">사분면</label>
+      <select id="drop-todo-quadrant">
+        <option value="">-- 자동 (마감일 기준) --</option>
+        <option value="1사분면">Today</option>
+        <option value="2사분면">This Week</option>
+        <option value="3사분면">This Month</option>
+        <option value="4사분면">Someday</option>
+      </select>
       <label class="field-label">메모 (선택)</label>
       <textarea id="drop-todo-memo" rows="2" placeholder="추가 메모..."></textarea>
       <label class="field-label">마감일 (선택)</label>
@@ -554,7 +562,7 @@ MARK</span></div>
 
     document.getElementById('memo-input').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
-        if (isMobile) return; // 모바일: 키보드 엔터 = 줄바꿼
+        if (isMobile) return;
         e.preventDefault();
         sendMemo();
       }
@@ -808,6 +816,7 @@ MARK</span></div>
     function showDropPopup(initialFolder, memo, x, y) {
       pendingDrop = { memo };
       document.getElementById('drop-folder').value = initialFolder;
+      document.getElementById('drop-todo-quadrant').value = '';
       document.getElementById('drop-todo-memo').value = '';
       document.getElementById('drop-todo-due').value = '';
       document.getElementById('drop-bookmark-title').value = '';
@@ -834,6 +843,7 @@ MARK</span></div>
       const opts = {};
       if (target === 'IDEA')     opts.ideaArea      = document.getElementById('drop-idea-area').value;
       if (target === 'TO-DO') {
+        opts.quadrant = document.getElementById('drop-todo-quadrant').value || null;
         opts.todoMemo = document.getElementById('drop-todo-memo').value.trim() || null;
         opts.dueDate  = document.getElementById('drop-todo-due').value || null;
       }
