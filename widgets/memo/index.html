@@ -46,8 +46,8 @@
       cursor: pointer;
       border-bottom: 2px solid transparent;
       font-family: 'ChosunGu', sans-serif;
-      user-select: none;
       -webkit-user-select: none;
+      user-select: none;
     }
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
     .tab:hover:not(.active) { color: var(--ink); }
@@ -135,7 +135,6 @@
       flex-shrink: 0; width: 13px; height: 13px;
       border: 1px solid #ccc; cursor: pointer;
       background: #fff; display: none; align-self: center;
-      touch-action: manipulation;
     }
     .bubble-cb.checked { background: var(--accent); border-color: var(--accent); }
     .delete-mode .bubble-cb { display: block; }
@@ -168,12 +167,10 @@
       font-size: 9px; color: #f0c040; opacity: 0.22;
       cursor: pointer; line-height: 1;
       -webkit-user-select: none; user-select: none;
-      touch-action: manipulation;
     }
     .bubble-star.on { opacity: 1; }
     .bubble-time { font-size: 9px; color: #c0c0c0; -webkit-user-select: none; user-select: none; }
 
-    /* touch-action: none removed — we handle preventDefault in touchmove only when dragging */
     .bubble-drag-area {
       -webkit-user-select: none;
       user-select: none;
@@ -198,8 +195,8 @@
     .delete-bar span { flex: 1; color: #888; }
     .del-btn {
       border: 1px solid #ddd; background: #fff; font-family: 'ChosunGu', sans-serif;
-      font-size: 9.5px; padding: 6px 7px; cursor: pointer; color: #888;
-      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      font-size: 9.5px; padding: 8px 7px; cursor: pointer; color: #888;
+      -webkit-tap-highlight-color: transparent;
     }
     .del-btn.danger { border-color: #e74c3c; color: #e74c3c; }
     .del-btn.done-btn { border-color: var(--accent); color: var(--accent); }
@@ -221,7 +218,7 @@
       flex-shrink: 0; border: 1px solid var(--accent); background: var(--accent);
       color: #fff; font-family: 'ChosunGu', sans-serif; font-size: 10.5px;
       padding: 5px 8px; cursor: pointer; align-self: flex-end;
-      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color: transparent;
     }
     #send-btn:hover { filter: brightness(1.1); }
     #send-btn:active { filter: brightness(0.9); }
@@ -232,7 +229,7 @@
     .trash-btn {
       font-size: 12px; opacity: 0.55; cursor: pointer; background: none; border: none;
       padding: 4px; color: var(--win-text); line-height: 1;
-      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color: transparent;
     }
     .trash-btn:hover { opacity: 0.9; }
 
@@ -251,13 +248,12 @@
     }
     .trash-menu.visible { display: block; }
     .trash-menu-item {
-      padding: 11px 13px;
+      padding: 12px 13px;
       font-size: 11px;
       color: var(--ink);
       cursor: pointer;
       border-bottom: 1px solid #f0f0f0;
       white-space: nowrap;
-      touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
     .trash-menu-item:last-child { border-bottom: none; }
@@ -277,7 +273,7 @@
     .drop-popup {
       display: none; position: fixed; z-index: 500;
       background: #fff; border: 1px solid var(--border);
-      padding: 10px 13px 10px; width: 210px;
+      padding: 10px 13px 12px; width: 210px;
       font-family: 'ChosunGu', sans-serif;
       box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     }
@@ -292,7 +288,6 @@
       font-size: 15px; line-height: 1; color: #bbb;
       cursor: pointer; display: flex; align-items: center;
       -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
     }
     .drop-popup-close:hover { color: #888; }
     .drop-popup select,
@@ -311,12 +306,11 @@
     }
     .drop-popup label.field-label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
     .drop-divider { border: none; border-top: 1px solid #eee; margin: 0 0 9px; }
-    .drop-btns { display: flex; gap: 5px; margin-top: 2px; }
+    .drop-btns { display: flex; gap: 5px; margin-top: 4px; }
     .drop-btns button {
       flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 11px;
-      padding: 10px 4px; cursor: pointer; border-radius: 0;
+      padding: 11px 4px; cursor: pointer; border-radius: 0;
       -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
     }
     #drop-ok { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
     #drop-cancel { border: 1px solid #ddd; background: #fff; color: #888; }
@@ -455,13 +449,14 @@ MARK</span>
     let selectedIds = new Set();
     let pendingDrop = null;
 
-    // active drag state
     const drag = { memo: null, active: false, startX: 0, startY: 0 };
     const DRAG_THRESHOLD = 8;
 
-    // Attach both touchend (with preventDefault to suppress ghost click) and click
+    // touchstart fires immediately on contact — most reliable in Notion WKWebView.
+    // e.preventDefault() in touchstart blocks scroll and the subsequent click,
+    // so the handler fires exactly once (touch or mouse, not both).
     function addTap(el, fn, opts = {}) {
-      el.addEventListener('touchend', e => {
+      el.addEventListener('touchstart', e => {
         e.preventDefault();
         if (opts.stopProp) e.stopPropagation();
         fn();
@@ -489,7 +484,7 @@ MARK</span>
     document.getElementById('tabs').addEventListener('click', e => {
       const tab = e.target.closest('.tab'); if (tab) activateTab(tab.dataset.folder);
     });
-    document.getElementById('tabs').addEventListener('touchend', e => {
+    document.getElementById('tabs').addEventListener('touchstart', e => {
       const tab = e.target.closest('.tab'); if (!tab) return;
       e.preventDefault(); activateTab(tab.dataset.folder);
     }, { passive: false });
@@ -501,9 +496,8 @@ MARK</span>
       trashMenu.classList.toggle('visible');
     }, { stopProp: true });
 
-    // Close trash menu on outside touch/click
     document.addEventListener('click', () => trashMenu.classList.remove('visible'));
-    document.addEventListener('touchend', () => trashMenu.classList.remove('visible'));
+    document.addEventListener('touchstart', () => trashMenu.classList.remove('visible'), { passive: true });
 
     addTap(document.getElementById('del-categorized'), async () => {
       trashMenu.classList.remove('visible');
@@ -665,7 +659,7 @@ MARK</span>
         cb.classList.toggle('checked', selectedIds.has(m.id)); updateSelCount();
       }
       cb.addEventListener('click', toggleCb);
-      cb.addEventListener('touchend', e => { e.preventDefault(); toggleCb(); }, { passive: false });
+      cb.addEventListener('touchstart', e => { e.preventDefault(); toggleCb(); }, { passive: false });
 
       const isDone = m.done && m.category !== 'DIARY';
       const bub = document.createElement('div');
@@ -687,7 +681,7 @@ MARK</span>
         });
       }
       star.addEventListener('click', doStar);
-      star.addEventListener('touchend', e => { e.preventDefault(); doStar(e); }, { passive: false });
+      star.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); doStar(e); }, { passive: false });
 
       const time = document.createElement('span'); time.className = 'bubble-time'; time.textContent = formatTime(m.createdAt);
       hdr.appendChild(star); hdr.appendChild(time);
@@ -700,11 +694,12 @@ MARK</span>
         dragArea.className = 'bubble-drag-area';
         dragArea.appendChild(textNode);
 
-        // ── Touch drag (mobile) ──
+        // ── Touch drag ──
         dragArea.addEventListener('touchstart', e => {
           const t = e.touches[0];
           drag.memo = m; drag.active = false;
           drag.startX = t.clientX; drag.startY = t.clientY;
+          // passive: allow scroll unless drag is confirmed in touchmove
         }, { passive: true });
 
         dragArea.addEventListener('touchmove', e => {
@@ -713,7 +708,7 @@ MARK</span>
           const dist = Math.hypot(t.clientX - drag.startX, t.clientY - drag.startY);
           if (!drag.active && dist > DRAG_THRESHOLD) drag.active = true;
           if (drag.active) {
-            e.preventDefault(); // block scroll only while dragging
+            e.preventDefault();
             updateFolderHighlight(t.clientX, t.clientY);
           }
         }, { passive: false });
@@ -725,14 +720,12 @@ MARK</span>
           const cx = t.clientX, cy = t.clientY;
           const wasDragging = drag.active;
           cleanupDrag();
-
           if (wasDragging) {
             const target = getFolderAt(cx, cy);
             if (!target) return;
             if (target === 'DIARY') { submitRoute(m, 'DIARY', {}); return; }
             showDropPopup(target, m, cx, cy);
           } else {
-            // tap → show popup
             showDropPopup(m.category || 'ETC', m, cx, cy);
           }
         }, { passive: false });
@@ -742,7 +735,6 @@ MARK</span>
           if (e.button !== 0) return;
           drag.memo = m; drag.active = false;
           drag.startX = e.clientX; drag.startY = e.clientY;
-
           function onMove(ev) {
             const dist = Math.hypot(ev.clientX - drag.startX, ev.clientY - drag.startY);
             if (!drag.active && dist > DRAG_THRESHOLD) drag.active = true;
@@ -836,7 +828,7 @@ MARK</span>
       backdrop.classList.add('visible');
       const popup = document.getElementById('drop-popup');
       popup.style.display = 'block';
-      const pw = popup.offsetWidth || 210, ph = popup.offsetHeight || 160;
+      const pw = popup.offsetWidth || 210, ph = popup.offsetHeight || 170;
       const vw = window.innerWidth, vh = window.innerHeight;
       popup.style.left = Math.max(8, Math.min(x - pw / 2, vw - pw - 8)) + 'px';
       popup.style.top  = Math.max(8, Math.min(y + 12, vh - ph - 8)) + 'px';
