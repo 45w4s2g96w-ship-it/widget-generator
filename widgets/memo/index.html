@@ -417,11 +417,15 @@ MARK</span></div>
       <button id="drop-cancel">취소</button>
       <button id="drop-ok">확인</button>
     </div>
-</div>
+  </div>
 
   <script src="../../shared/config-loader.js"></script>
   <script>
-    const isMobile = navigator.maxTouchPoints > 0;
+    // iPad: Enter=전송, Shift+Enter=줄바꿈 (PC와 동일)
+    // iPhone/Android: 키보드 Enter=줄바꿈, 버튼=전송
+    const isIPad = /iPad/.test(navigator.userAgent) ||
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isMobileOnly = !isIPad && navigator.maxTouchPoints > 0;
 
     let cfg = {};
     let memos = [];
@@ -550,7 +554,7 @@ MARK</span></div>
 
     document.getElementById('memo-input').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
-        if (isMobile) return;
+        if (isMobileOnly) return; // iPhone/Android: 엔터는 줄바꿈
         e.preventDefault();
         sendMemo();
       }
