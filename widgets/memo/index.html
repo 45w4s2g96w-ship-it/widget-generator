@@ -426,7 +426,7 @@ MARK</span></div>
     const drag = { memo: null, active: false, startX: 0, startY: 0 };
     const DRAG_THRESHOLD = 8;
 
-    /* ── 토스트 (alert 대체) ── */
+    /* ── 토스트 ── */
     let _toastTimer;
     function showToast(msg, type = 'ok') {
       const el = document.getElementById('toast');
@@ -644,7 +644,8 @@ MARK</span></div>
       cb.addEventListener('click', toggleCb);
       cb.addEventListener('touchstart', e => { e.preventDefault(); toggleCb(); }, { passive: false });
 
-      const isDone = m.done && m.category !== 'DIARY';
+      // DIARY, BOOKMARK: done 상태여도 취소선 없음
+      const isDone = m.done && m.category !== 'DIARY' && m.category !== 'BOOKMARK';
       const bub = document.createElement('div');
       bub.className = 'bubble' + (isDone ? ' is-done' : '');
 
@@ -840,7 +841,6 @@ MARK</span></div>
       _submitting = false;
     }
 
-    /* OK 버튼: touchstart + click 양쪽 처리, stopPropagation으로 backdrop 닫힘 방지 */
     const dropOk = document.getElementById('drop-ok');
     dropOk.addEventListener('touchstart', e => {
       e.preventDefault();
@@ -862,7 +862,8 @@ MARK</span></div>
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         memo.category = target;
-        if (['TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target)) memo.done = true;
+        // DIARY, BOOKMARK는 done 표시 안 함 (취소선 없음)
+        if (['TO-DO', 'CART', 'IDEA'].includes(target)) memo.done = true;
         renderMemos();
         hideToast();
         showToast(target + ' 저장됨 ✓', 'ok');
