@@ -8,7 +8,7 @@ const DIARY_DB_ID    = '37451f4140c5808e9141c8804e892661';
 const TODO_DB_ID     = '37651f4140c5805e875cdc92a5715d21';
 const CART_DB_ID     = '37751f4140c580598f09f7903db2248f';
 const IDEA_DB_ID     = '37a51f4140c580e4bcf9f6279769ae26';
-const BOOKMARK_DB_ID = 'ac98568f39fc489c89ca3844122b7266';
+const BOOKMARK_DB_ID = '638c790c1ad7406ca8bfbe87d965e687';
 
 function getSeoulNow() {
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
@@ -132,7 +132,6 @@ export default async function handler(req, res) {
       const markDone = ['DIARY', 'TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target);
       const properties = { '분류': { select: { name: target } } };
       if (markDone) properties['처리완료'] = { checkbox: true };
-      // Update source memo — errors here are logged but don't fail the request
       try {
         await notionFetch(`https://api.notion.com/v1/pages/${memoId}`, 'PATCH', { properties });
       } catch (patchErr) {
