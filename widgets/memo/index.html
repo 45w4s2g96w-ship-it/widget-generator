@@ -234,26 +234,15 @@
     .trash-btn:hover { opacity: 0.9; }
 
     .trash-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      right: 20px;
-      margin-top: 6px;
-      background: #fff;
-      border: 1px solid #ddd;
+      display: none; position: absolute; top: 100%; right: 20px; margin-top: 6px;
+      background: #fff; border: 1px solid #ddd;
       box-shadow: 0 4px 14px rgba(0,0,0,0.14);
-      z-index: 600;
-      min-width: 160px;
-      font-family: 'ChosunGu', sans-serif;
+      z-index: 600; min-width: 160px; font-family: 'ChosunGu', sans-serif;
     }
     .trash-menu.visible { display: block; }
     .trash-menu-item {
-      padding: 12px 13px;
-      font-size: 11px;
-      color: var(--ink);
-      cursor: pointer;
-      border-bottom: 1px solid #f0f0f0;
-      white-space: nowrap;
+      padding: 12px 13px; font-size: 11px; color: var(--ink); cursor: pointer;
+      border-bottom: 1px solid #f0f0f0; white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
     }
     .trash-menu-item:last-child { border-bottom: none; }
@@ -261,12 +250,8 @@
     .trash-menu-item.danger:hover { background: #fff5f5; color: #e74c3c; }
 
     .popup-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 490;
-      background: rgba(0,0,0,0.001);
-      -webkit-tap-highlight-color: transparent;
+      display: none; position: fixed; inset: 0; z-index: 490;
+      background: rgba(0,0,0,0.001); -webkit-tap-highlight-color: transparent;
     }
     .popup-backdrop.visible { display: block; }
 
@@ -285,9 +270,8 @@
     .drop-popup-header label { font-size: 9.5px; color: #888; margin: 0; }
     .drop-popup-close {
       background: none; border: none; padding: 6px 8px;
-      font-size: 15px; line-height: 1; color: #bbb;
-      cursor: pointer; display: flex; align-items: center;
-      -webkit-tap-highlight-color: transparent;
+      font-size: 15px; line-height: 1; color: #bbb; cursor: pointer;
+      display: flex; align-items: center; -webkit-tap-highlight-color: transparent;
     }
     .drop-popup-close:hover { color: #888; }
     .drop-popup select,
@@ -295,15 +279,11 @@
     .drop-popup input[type=text],
     .drop-popup input[type=url] {
       width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
-      font-size: 11px; padding: 4px 6px; margin-bottom: 8px; color: var(--ink); background: #fff;
-      box-sizing: border-box; -webkit-appearance: none; border-radius: 0;
+      font-size: 11px; padding: 4px 6px; margin-bottom: 8px; color: var(--ink);
+      background: #fff; box-sizing: border-box; -webkit-appearance: none; border-radius: 0;
     }
-    .drop-popup select:focus,
-    .drop-popup input:focus { outline: none; border-color: var(--accent); }
-    #drop-folder {
-      font-weight: 700; color: var(--accent); border-color: var(--accent);
-      margin-bottom: 10px;
-    }
+    .drop-popup select:focus, .drop-popup input:focus { outline: none; border-color: var(--accent); }
+    #drop-folder { font-weight: 700; color: var(--accent); border-color: var(--accent); margin-bottom: 10px; }
     .drop-popup label.field-label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
     .drop-divider { border: none; border-top: 1px solid #eee; margin: 0 0 9px; }
     .drop-btns { display: flex; gap: 5px; margin-top: 4px; }
@@ -317,6 +297,18 @@
     #drop-ok:active { filter: brightness(0.9); }
     #drop-cancel:active { background: #f5f5f5; }
     #drop-ok:disabled { opacity: 0.45; cursor: default; }
+
+    /* 토스트 알림 */
+    #toast {
+      display: none; position: fixed; bottom: 70px; left: 50%;
+      transform: translateX(-50%); z-index: 800;
+      padding: 8px 16px; font-size: 11px; font-family: 'ChosunGu', sans-serif;
+      border-radius: 3px; color: #fff; white-space: nowrap;
+      pointer-events: none;
+    }
+    #toast.ok  { background: #27ae60; }
+    #toast.err { background: #e74c3c; }
+    #toast.show { display: block; }
   </style>
 </head>
 <body>
@@ -347,33 +339,14 @@
 
     <div class="content">
       <div class="folder-panel" id="folder-panel">
-        <div class="folder-target" data-target="DIARY">
-          <div class="folder-shape"></div>
-          <span class="folder-label">DIARY</span>
-        </div>
-        <div class="folder-target" data-target="TO-DO">
-          <div class="folder-shape"></div>
-          <span class="folder-label">TO-DO</span>
-        </div>
-        <div class="folder-target" data-target="IDEA">
-          <div class="folder-shape"></div>
-          <span class="folder-label">IDEA</span>
-        </div>
-        <div class="folder-target" data-target="CART">
-          <div class="folder-shape"></div>
-          <span class="folder-label">CART</span>
-        </div>
-        <div class="folder-target" data-target="BOOKMARK">
-          <div class="folder-shape"></div>
-          <span class="folder-label">BOOK
-MARK</span>
-        </div>
-        <div class="folder-target" data-target="ETC">
-          <div class="folder-shape"></div>
-          <span class="folder-label">ETC</span>
-        </div>
+        <div class="folder-target" data-target="DIARY"><div class="folder-shape"></div><span class="folder-label">DIARY</span></div>
+        <div class="folder-target" data-target="TO-DO"><div class="folder-shape"></div><span class="folder-label">TO-DO</span></div>
+        <div class="folder-target" data-target="IDEA"><div class="folder-shape"></div><span class="folder-label">IDEA</span></div>
+        <div class="folder-target" data-target="CART"><div class="folder-shape"></div><span class="folder-label">CART</span></div>
+        <div class="folder-target" data-target="BOOKMARK"><div class="folder-shape"></div><span class="folder-label">BOOK
+MARK</span></div>
+        <div class="folder-target" data-target="ETC"><div class="folder-shape"></div><span class="folder-label">ETC</span></div>
       </div>
-
       <div class="chat-area" id="chat-area">
         <div class="loading-indicator">불러오는 중...</div>
       </div>
@@ -391,6 +364,7 @@ MARK</span>
     </div>
   </div>
 
+  <div id="toast"></div>
   <div class="popup-backdrop" id="popup-backdrop"></div>
 
   <div class="drop-popup" id="drop-popup">
@@ -452,9 +426,18 @@ MARK</span>
     const drag = { memo: null, active: false, startX: 0, startY: 0 };
     const DRAG_THRESHOLD = 8;
 
+    /* ── 토스트 (alert 대체) ── */
+    let _toastTimer;
+    function showToast(msg, type = 'ok') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'show ' + type;
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => { el.className = ''; }, 3500);
+    }
+
     // touchstart fires immediately on contact — most reliable in Notion WKWebView.
-    // e.preventDefault() in touchstart blocks scroll and the subsequent click,
-    // so the handler fires exactly once (touch or mouse, not both).
+    // e.preventDefault() blocks scroll and synthetic click so fn fires exactly once.
     function addTap(el, fn, opts = {}) {
       el.addEventListener('touchstart', e => {
         e.preventDefault();
@@ -478,8 +461,7 @@ MARK</span>
     function activateTab(folder) {
       document.querySelectorAll('.tab').forEach(t =>
         t.classList.toggle('active', t.dataset.folder === folder));
-      activeFolder = folder;
-      renderMemos();
+      activeFolder = folder; renderMemos();
     }
     document.getElementById('tabs').addEventListener('click', e => {
       const tab = e.target.closest('.tab'); if (tab) activateTab(tab.dataset.folder);
@@ -502,14 +484,14 @@ MARK</span>
     addTap(document.getElementById('del-categorized'), async () => {
       trashMenu.classList.remove('visible');
       const ids = memos.filter(m => m.category).map(m => m.id);
-      if (!ids.length) { alert('분류된 항목이 없어요.'); return; }
+      if (!ids.length) { showToast('분류된 항목이 없어요.', 'err'); return; }
       await deleteMemos(ids);
     }, { stopProp: true });
 
     addTap(document.getElementById('del-uncategorized'), async () => {
       trashMenu.classList.remove('visible');
       const ids = memos.filter(m => !m.category).map(m => m.id);
-      if (!ids.length) { alert('미분류 항목이 없어요.'); return; }
+      if (!ids.length) { showToast('미분류 항목이 없어요.', 'err'); return; }
       await deleteMemos(ids);
     }, { stopProp: true });
 
@@ -549,7 +531,8 @@ MARK</span>
         if (!r.ok) throw new Error(d.error);
         memos = memos.filter(m => !ids.includes(m.id));
         if (deleteMode) exitDeleteMode(); else renderMemos();
-      } catch (err) { alert(err.message); }
+        showToast('삭제됨', 'ok');
+      } catch (err) { showToast(err.message, 'err'); }
     }
 
     function updateSelCount() {
@@ -578,7 +561,7 @@ MARK</span>
         document.getElementById('memo-input').value = '';
         memos = [...d.created, ...memos];
         renderMemos(); scrollBottom();
-      } catch (err) { alert(err.message); }
+      } catch (err) { showToast(err.message, 'err'); }
       finally { btn.disabled = false; }
     }
 
@@ -611,10 +594,7 @@ MARK</span>
       const area = document.getElementById('chat-area');
       area.className = 'chat-area' + (deleteMode ? ' delete-mode' : '');
       const list = filteredMemos().slice().reverse();
-      if (!list.length) {
-        area.innerHTML = '<div class="chat-empty">메모가 없어요.</div>';
-        return;
-      }
+      if (!list.length) { area.innerHTML = '<div class="chat-empty">메모가 없어요.</div>'; return; }
       area.innerHTML = '';
       list.forEach(m => area.appendChild(buildBubble(m)));
     }
@@ -699,7 +679,6 @@ MARK</span>
           const t = e.touches[0];
           drag.memo = m; drag.active = false;
           drag.startX = t.clientX; drag.startY = t.clientY;
-          // passive: allow scroll unless drag is confirmed in touchmove
         }, { passive: true });
 
         dragArea.addEventListener('touchmove', e => {
@@ -707,10 +686,7 @@ MARK</span>
           const t = e.touches[0];
           const dist = Math.hypot(t.clientX - drag.startX, t.clientY - drag.startY);
           if (!drag.active && dist > DRAG_THRESHOLD) drag.active = true;
-          if (drag.active) {
-            e.preventDefault();
-            updateFolderHighlight(t.clientX, t.clientY);
-          }
+          if (drag.active) { e.preventDefault(); updateFolderHighlight(t.clientX, t.clientY); }
         }, { passive: false });
 
         dragArea.addEventListener('touchend', e => {
@@ -813,9 +789,7 @@ MARK</span>
       document.getElementById('drop-form-bookmark').style.display = folder === 'BOOKMARK' ? 'block' : 'none';
     }
 
-    document.getElementById('drop-folder').addEventListener('change', e => {
-      updateDropForm(e.target.value);
-    });
+    document.getElementById('drop-folder').addEventListener('change', e => updateDropForm(e.target.value));
 
     function showDropPopup(initialFolder, memo, x, y) {
       pendingDrop = { memo };
@@ -863,11 +837,14 @@ MARK</span>
           body: JSON.stringify({ memoId: memo.id, text: memo.text, target, ...opts }),
         });
         const d = await r.json();
-        if (!r.ok) throw new Error(d.error);
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         memo.category = target;
         if (['TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target)) memo.done = true;
         renderMemos();
-      } catch (err) { alert(err.message); }
+        showToast(target + ' 저장됨 ✓', 'ok');
+      } catch (err) {
+        showToast('오류: ' + err.message, 'err');
+      }
     }
 
     function escHtml(s) {

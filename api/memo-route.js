@@ -36,56 +36,49 @@ function calcQuadrant(dueDateStr, today) {
   return '4사분면';
 }
 
+async function notionFetch(url, method, body) {
+  const r = await fetch(url, { method, headers: HEADERS, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json();
+  if (d.object === 'error') throw new Error(`Notion error: ${d.message}`);
+  return d;
+}
+
 async function routeDiary(text) {
   const today = todayStr();
   const now = getSeoulNow();
   const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
-  const qr = await fetch(`https://api.notion.com/v1/databases/${DIARY_DB_ID}/query`, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ filter: { property: '날짜', date: { equals: today } } }),
-  });
-  const qd = await qr.json();
-  if (qd.object === 'error') throw new Error(qd.message);
+  const qd = await notionFetch(
+    `https://api.notion.com/v1/databases/${DIARY_DB_ID}/query`,
+    'POST',
+    { filter: { property: '날짜', date: { equals: today } } }
+  );
 
   let pageId = qd.results?.[0]?.id;
-
   if (!pageId) {
-    const cr = await fetch('https://api.notion.com/v1/pages', {
-      method: 'POST',
-      headers: HEADERS,
-      body: JSON.stringify({
-        parent: { database_id: DIARY_DB_ID },
-        properties: { '날짜': { date: { start: today } } },
-      }),
+    const cd = await notionFetch('https://api.notion.com/v1/pages', 'POST', {
+      parent: { database_id: DIARY_DB_ID },
+      properties: { '날짜': { date: { start: today } } },
     });
-    const cd = await cr.json();
-    if (cd.object === 'error') throw new Error(cd.message);
     pageId = cd.id;
   }
 
-  await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
-    method: 'PATCH',
-    headers: HEADERS,
-    body: JSON.stringify({
-      children: [{
-        type: 'quote',
-        quote: {
-          rich_text: [
-            { type: 'text', text: { content: timeStr }, annotations: { color: 'gray' } },
-            { type: 'text', text: { content: '\n' + text } },
-          ],
-        },
-      }],
-    }),
+  await notionFetch(`https://api.notion.com/v1/blocks/${pageId}/children`, 'PATCH', {
+    children: [{
+      type: 'quote',
+      quote: {
+        rich_text: [
+          { type: 'text', text: { content: timeStr }, annotations: { color: 'gray' } },
+          { type: 'text', text: { content: '\n' + text } },
+        ],
+      },
+    }],
   });
 }
 
 async function routeTodo(text, dueDate) {
   const today = todayStr();
   const quadrant = calcQuadrant(dueDate, today);
-
   const properties = {
     '이름': { title: [{ text: { content: text } }] },
     '추가일': { date: { start: today } },
@@ -93,44 +86,19 @@ async function routeTodo(text, dueDate) {
     '사분면': { select: { name: quadrant } },
   };
   if (dueDate) properties['마감일'] = { date: { start: dueDate } };
-
-  const r = await fetch('https://api.notion.com/v1/pages', {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ parent: { database_id: TODO_DB_ID }, properties }),
-  });
-  const d = await r.json();
-  if (d.object === 'error') throw new Error(d.message);
+  await notionFetch('https://api.notion.com/v1/pages', 'POST', { parent: { database_id: TODO_DB_ID }, properties });
 }
 
 async function routeCart(text, cartType) {
-  const properties = {
-    '이름': { title: [{ text: { content: text } }] },
-  };
+  const properties = { '이름': { title: [{ text: { content: text } }] } };
   if (cartType) properties['종류'] = { select: { name: cartType } };
-
-  const r = await fetch('https://api.notion.com/v1/pages', {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ parent: { database_id: CART_DB_ID }, properties }),
-  });
-  const d = await r.json();
-  if (d.object === 'error') throw new Error(d.message);
+  await notionFetch('https://api.notion.com/v1/pages', 'POST', { parent: { database_id: CART_DB_ID }, properties });
 }
 
 async function routeIdea(text, area) {
-  const properties = {
-    '이름': { title: [{ text: { content: text } }] },
-  };
+  const properties = { '이름': { title: [{ text: { content: text } }] } };
   if (area) properties['영역'] = { select: { name: area } };
-
-  const r = await fetch('https://api.notion.com/v1/pages', {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ parent: { database_id: IDEA_DB_ID }, properties }),
-  });
-  const d = await r.json();
-  if (d.object === 'error') throw new Error(d.message);
+  await notionFetch('https://api.notion.com/v1/pages', 'POST', { parent: { database_id: IDEA_DB_ID }, properties });
 }
 
 async function routeBookmark(text, title, link) {
@@ -139,14 +107,7 @@ async function routeBookmark(text, title, link) {
     '내용': { rich_text: [{ text: { content: text } }] },
   };
   if (link) properties['링크'] = { url: link };
-
-  const r = await fetch('https://api.notion.com/v1/pages', {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ parent: { database_id: BOOKMARK_DB_ID }, properties }),
-  });
-  const d = await r.json();
-  if (d.object === 'error') throw new Error(d.message);
+  await notionFetch('https://api.notion.com/v1/pages', 'POST', { parent: { database_id: BOOKMARK_DB_ID }, properties });
 }
 
 export default async function handler(req, res) {
@@ -169,20 +130,19 @@ export default async function handler(req, res) {
 
     if (memoId) {
       const markDone = ['DIARY', 'TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target);
-      const properties = {
-        '분류': { select: { name: target } },
-      };
+      const properties = { '분류': { select: { name: target } } };
       if (markDone) properties['처리완료'] = { checkbox: true };
-
-      await fetch(`https://api.notion.com/v1/pages/${memoId}`, {
-        method: 'PATCH',
-        headers: HEADERS,
-        body: JSON.stringify({ properties }),
-      });
+      // Update source memo — errors here are logged but don't fail the request
+      try {
+        await notionFetch(`https://api.notion.com/v1/pages/${memoId}`, 'PATCH', { properties });
+      } catch (patchErr) {
+        console.error('memo patch failed:', patchErr.message);
+      }
     }
 
     return res.status(200).json({ ok: true });
   } catch (err) {
+    console.error('memo-route error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
