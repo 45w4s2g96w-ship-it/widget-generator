@@ -7,8 +7,6 @@ const HEADERS = {
 const TODO_DB_ID = '37651f4140c5805e875cdc92a5715d21';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
-
   let updated = 0;
   let errors = [];
   let cursor;
