@@ -86,7 +86,11 @@ async function routeTodo(text, dueDate) {
     '사분면': { select: { name: quadrant } },
   };
   if (dueDate) properties['마감일'] = { date: { start: dueDate } };
-  await notionFetch('https://api.notion.com/v1/pages', 'POST', { parent: { database_id: TODO_DB_ID }, properties });
+  await notionFetch('https://api.notion.com/v1/pages', 'POST', {
+    parent: { database_id: TODO_DB_ID },
+    icon: { type: 'emoji', emoji: '▪️' },
+    properties,
+  });
 }
 
 async function routeCart(text, cartType) {
@@ -129,10 +133,7 @@ export default async function handler(req, res) {
     }
 
     if (memoId) {
-      // DIARY, BOOKMARK: 분류만 업데이트, 처리완료 체크 안 함
-      const markDone = ['TO-DO', 'CART', 'IDEA'].includes(target);
       const properties = { '분류': { select: { name: target } } };
-      if (markDone) properties['처리완료'] = { checkbox: true };
       try {
         await notionFetch(`https://api.notion.com/v1/pages/${memoId}`, 'PATCH', { properties });
       } catch (patchErr) {

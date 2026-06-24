@@ -151,8 +151,6 @@
       user-select: none;
     }
     .bubble:hover { background: rgba(155,143,199,0.2); }
-    .bubble.is-done { opacity: 0.5; }
-    .bubble.is-done .bubble-text { text-decoration: line-through; color: #bbb; }
 
     .bubble-header {
       display: flex; justify-content: flex-end; align-items: center;
@@ -644,10 +642,8 @@ MARK</span></div>
       cb.addEventListener('click', toggleCb);
       cb.addEventListener('touchstart', e => { e.preventDefault(); toggleCb(); }, { passive: false });
 
-      // DIARY, BOOKMARK: done 상태여도 취소선 없음
-      const isDone = m.done && m.category !== 'DIARY' && m.category !== 'BOOKMARK';
       const bub = document.createElement('div');
-      bub.className = 'bubble' + (isDone ? ' is-done' : '');
+      bub.className = 'bubble';
 
       const hdr = document.createElement('div'); hdr.className = 'bubble-header';
       if (m.category) {
@@ -769,16 +765,21 @@ MARK</span></div>
 
     /* ── 폴더 이동 팝업 ── */
     const backdrop = document.getElementById('popup-backdrop');
+    const dropPopup = document.getElementById('drop-popup');
 
     function closePopup() {
-      const popup = document.getElementById('drop-popup');
-      popup.classList.remove('visible');
-      popup.style.display = '';
+      dropPopup.classList.remove('visible');
+      dropPopup.style.display = '';
       backdrop.classList.remove('visible');
       pendingDrop = null;
     }
 
-    addTap(backdrop, closePopup);
+    // backdrop: click만 사용 (touchstart는 팝업 폼 입력 방해함)
+    backdrop.addEventListener('click', closePopup);
+
+    // 팝업 내부 터치는 외부로 버블링 안 됨
+    dropPopup.addEventListener('touchstart', e => { e.stopPropagation(); }, { passive: true });
+
     addTap(document.getElementById('drop-close'), closePopup);
     addTap(document.getElementById('drop-cancel'), closePopup);
 
@@ -802,13 +803,12 @@ MARK</span></div>
       updateDropForm(initialFolder);
 
       backdrop.classList.add('visible');
-      const popup = document.getElementById('drop-popup');
-      popup.style.display = 'block';
-      const pw = popup.offsetWidth || 210, ph = popup.offsetHeight || 170;
+      dropPopup.style.display = 'block';
+      const pw = dropPopup.offsetWidth || 210, ph = dropPopup.offsetHeight || 170;
       const vw = window.innerWidth, vh = window.innerHeight;
-      popup.style.left = Math.max(8, Math.min(x - pw / 2, vw - pw - 8)) + 'px';
-      popup.style.top  = Math.max(8, Math.min(y + 12, vh - ph - 8)) + 'px';
-      popup.classList.add('visible');
+      dropPopup.style.left = Math.max(8, Math.min(x - pw / 2, vw - pw - 8)) + 'px';
+      dropPopup.style.top  = Math.max(8, Math.min(y + 12, vh - ph - 8)) + 'px';
+      dropPopup.classList.add('visible');
     }
 
     let _submitting = false;
@@ -862,8 +862,6 @@ MARK</span></div>
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         memo.category = target;
-        // DIARY, BOOKMARK는 done 표시 안 함 (취소선 없음)
-        if (['TO-DO', 'CART', 'IDEA'].includes(target)) memo.done = true;
         renderMemos();
         hideToast();
         showToast(target + ' 저장됨 ✓', 'ok');
