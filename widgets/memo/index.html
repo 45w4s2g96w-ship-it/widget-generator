@@ -164,12 +164,17 @@
       border: 1px solid var(--accent);
       padding: 0 3px; line-height: 1.4;
     }
-    .bubble-star { font-size: 9px; color: #f0c040; opacity: 0.22; cursor: pointer; line-height: 1; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+    .bubble-star {
+      font-size: 9px; color: #f0c040; opacity: 0.22;
+      cursor: pointer; line-height: 1;
+      -webkit-user-select: none; user-select: none;
+      touch-action: manipulation;
+    }
     .bubble-star.on { opacity: 1; }
-    .bubble-time { font-size: 9px; color: #c0c0c0; user-select: none; -webkit-user-select: none; }
+    .bubble-time { font-size: 9px; color: #c0c0c0; -webkit-user-select: none; user-select: none; }
 
+    /* touch-action: none removed — we handle preventDefault in touchmove only when dragging */
     .bubble-drag-area {
-      touch-action: none;
       -webkit-user-select: none;
       user-select: none;
       cursor: grab;
@@ -450,11 +455,11 @@ MARK</span>
     let selectedIds = new Set();
     let pendingDrop = null;
 
-    const drag = { memo: null, bubble: null, dragArea: null, startX: 0, startY: 0, active: false };
-    const DRAG_THRESHOLD = 7;
+    // active drag state
+    const drag = { memo: null, active: false, startX: 0, startY: 0 };
+    const DRAG_THRESHOLD = 8;
 
-    // Works for both mouse (click) and touch (touchend).
-    // e.preventDefault() in touchend suppresses the synthetic click so handler fires only once.
+    // Attach both touchend (with preventDefault to suppress ghost click) and click
     function addTap(el, fn, opts = {}) {
       el.addEventListener('touchend', e => {
         e.preventDefault();
@@ -475,22 +480,18 @@ MARK</span>
     function pad(n) { return String(n).padStart(2, '0'); }
 
     /* ── 탭 ── */
-    document.getElementById('tabs').addEventListener('click', e => {
-      const tab = e.target.closest('.tab');
-      if (!tab) return;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeFolder = tab.dataset.folder;
+    function activateTab(folder) {
+      document.querySelectorAll('.tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.folder === folder));
+      activeFolder = folder;
       renderMemos();
+    }
+    document.getElementById('tabs').addEventListener('click', e => {
+      const tab = e.target.closest('.tab'); if (tab) activateTab(tab.dataset.folder);
     });
     document.getElementById('tabs').addEventListener('touchend', e => {
-      const tab = e.target.closest('.tab');
-      if (!tab) return;
-      e.preventDefault();
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeFolder = tab.dataset.folder;
-      renderMemos();
+      const tab = e.target.closest('.tab'); if (!tab) return;
+      e.preventDefault(); activateTab(tab.dataset.folder);
     }, { passive: false });
 
     /* ── 쓰레기통 메뉴 ── */
@@ -500,6 +501,7 @@ MARK</span>
       trashMenu.classList.toggle('visible');
     }, { stopProp: true });
 
+    // Close trash menu on outside touch/click
     document.addEventListener('click', () => trashMenu.classList.remove('visible'));
     document.addEventListener('touchend', () => trashMenu.classList.remove('visible'));
 
@@ -526,23 +528,20 @@ MARK</span>
       deleteMode = true;
       document.getElementById('delete-bar').classList.add('visible');
       document.getElementById('input-area').style.display = 'none';
-      selectedIds.clear(); updateSelCount();
-      renderMemos();
+      selectedIds.clear(); updateSelCount(); renderMemos();
     }
 
     function exitDeleteMode() {
       deleteMode = false;
       document.getElementById('delete-bar').classList.remove('visible');
       document.getElementById('input-area').style.display = '';
-      selectedIds.clear(); updateSelCount();
-      renderMemos();
+      selectedIds.clear(); updateSelCount(); renderMemos();
     }
 
     addTap(document.getElementById('del-selected-btn'), async () => {
       if (!selectedIds.size) return;
       await deleteMemos([...selectedIds]);
     });
-
     addTap(document.getElementById('del-done-btn'), exitDeleteMode);
 
     async function deleteMemos(ids) {
@@ -679,7 +678,7 @@ MARK</span>
       }
       const star = document.createElement('span');
       star.className = 'bubble-star' + (m.important ? ' on' : ''); star.textContent = '★';
-      async function toggleStar(e) {
+      async function doStar(e) {
         e.stopPropagation(); if (drag.active) return;
         m.important = !m.important; star.classList.toggle('on', m.important);
         await fetch('/api/memo', {
@@ -687,48 +686,88 @@ MARK</span>
           body: JSON.stringify({ pageId: m.id, important: m.important }),
         });
       }
-      star.addEventListener('click', toggleStar);
-      star.addEventListener('touchend', e => { e.preventDefault(); toggleStar(e); }, { passive: false });
+      star.addEventListener('click', doStar);
+      star.addEventListener('touchend', e => { e.preventDefault(); doStar(e); }, { passive: false });
 
       const time = document.createElement('span'); time.className = 'bubble-time'; time.textContent = formatTime(m.createdAt);
       hdr.appendChild(star); hdr.appendChild(time);
       bub.appendChild(hdr);
 
       const textNode = makeTextNode(m.text);
+
       if (!deleteMode) {
         const dragArea = document.createElement('div');
         dragArea.className = 'bubble-drag-area';
         dragArea.appendChild(textNode);
 
-        dragArea.addEventListener('pointerdown', e => {
-          if (e.button !== 0 && e.button !== undefined) return;
-          drag.memo = m; drag.bubble = bub; drag.dragArea = dragArea;
-          drag.startX = e.clientX; drag.startY = e.clientY; drag.active = false;
-        });
-        dragArea.addEventListener('pointermove', e => {
-          if (drag.memo?.id !== m.id) return;
-          const dist = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
-          if (!drag.active && dist > DRAG_THRESHOLD) {
-            drag.active = true;
-            try { dragArea.setPointerCapture(e.pointerId); } catch (_) {}
+        // ── Touch drag (mobile) ──
+        dragArea.addEventListener('touchstart', e => {
+          const t = e.touches[0];
+          drag.memo = m; drag.active = false;
+          drag.startX = t.clientX; drag.startY = t.clientY;
+        }, { passive: true });
+
+        dragArea.addEventListener('touchmove', e => {
+          if (!drag.memo || drag.memo.id !== m.id) return;
+          const t = e.touches[0];
+          const dist = Math.hypot(t.clientX - drag.startX, t.clientY - drag.startY);
+          if (!drag.active && dist > DRAG_THRESHOLD) drag.active = true;
+          if (drag.active) {
+            e.preventDefault(); // block scroll only while dragging
+            updateFolderHighlight(t.clientX, t.clientY);
           }
-          if (drag.active) updateFolderHighlight(e.clientX, e.clientY);
-        });
-        dragArea.addEventListener('pointerup', e => {
-          if (drag.memo?.id !== m.id) return;
+        }, { passive: false });
+
+        dragArea.addEventListener('touchend', e => {
+          if (!drag.memo || drag.memo.id !== m.id) return;
           e.preventDefault();
-          const memo = m, wasActive = drag.active, cx = e.clientX, cy = e.clientY;
+          const t = e.changedTouches[0];
+          const cx = t.clientX, cy = t.clientY;
+          const wasDragging = drag.active;
           cleanupDrag();
-          if (wasActive) {
+
+          if (wasDragging) {
             const target = getFolderAt(cx, cy);
             if (!target) return;
-            if (target === 'DIARY') { submitRoute(memo, 'DIARY', {}); return; }
-            showDropPopup(target, memo, cx, cy);
+            if (target === 'DIARY') { submitRoute(m, 'DIARY', {}); return; }
+            showDropPopup(target, m, cx, cy);
           } else {
-            showDropPopup(memo.category || 'ETC', memo, cx, cy);
+            // tap → show popup
+            showDropPopup(m.category || 'ETC', m, cx, cy);
           }
+        }, { passive: false });
+
+        // ── Mouse drag (desktop) ──
+        dragArea.addEventListener('mousedown', e => {
+          if (e.button !== 0) return;
+          drag.memo = m; drag.active = false;
+          drag.startX = e.clientX; drag.startY = e.clientY;
+
+          function onMove(ev) {
+            const dist = Math.hypot(ev.clientX - drag.startX, ev.clientY - drag.startY);
+            if (!drag.active && dist > DRAG_THRESHOLD) drag.active = true;
+            if (drag.active) updateFolderHighlight(ev.clientX, ev.clientY);
+          }
+          function onUp(ev) {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            if (!drag.memo || drag.memo.id !== m.id) { cleanupDrag(); return; }
+            const cx = ev.clientX, cy = ev.clientY;
+            const wasDragging = drag.active;
+            cleanupDrag();
+            if (wasDragging) {
+              const target = getFolderAt(cx, cy);
+              if (!target) return;
+              if (target === 'DIARY') { submitRoute(m, 'DIARY', {}); return; }
+              showDropPopup(target, m, cx, cy);
+            } else {
+              showDropPopup(m.category || 'ETC', m, cx, cy);
+            }
+          }
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
         });
-        dragArea.addEventListener('pointercancel', cleanupDrag);
+
         bub.appendChild(dragArea);
       } else {
         bub.appendChild(textNode);
@@ -755,7 +794,7 @@ MARK</span>
 
     function cleanupDrag() {
       document.querySelectorAll('.folder-target').forEach(f => f.classList.remove('drag-over'));
-      drag.memo = null; drag.bubble = null; drag.dragArea = null; drag.active = false;
+      drag.memo = null; drag.active = false;
     }
 
     /* ── 폴더 이동 팝업 ── */
