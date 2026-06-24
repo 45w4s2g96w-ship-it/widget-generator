@@ -280,9 +280,12 @@
       width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
       font-size: 11px; padding: 4px 6px; margin-bottom: 8px; color: var(--ink);
       background: #fff; box-sizing: border-box; -webkit-appearance: none; border-radius: 0;
+      height: 28px;
+    }
+    .drop-popup textarea {
+      height: auto; resize: none;
     }
     .drop-popup select:focus, .drop-popup input:focus, .drop-popup textarea:focus { outline: none; border-color: var(--accent); }
-    .drop-popup textarea { resize: none; }
     #drop-folder { font-weight: 700; color: var(--accent); border-color: var(--accent); margin-bottom: 10px; }
     .drop-popup label.field-label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
     .drop-divider { border: none; border-top: 1px solid #eee; margin: 0 0 9px; }
@@ -778,10 +781,7 @@ MARK</span></div>
       pendingDrop = null;
     }
 
-    // backdrop: click만 사용 (touchstart는 팝업 폼 입력 방해함)
     backdrop.addEventListener('click', closePopup);
-
-    // 팝업 내부 터치는 외부로 버블링 안 됨
     dropPopup.addEventListener('touchstart', e => { e.stopPropagation(); }, { passive: true });
 
     addTap(document.getElementById('drop-close'), closePopup);
