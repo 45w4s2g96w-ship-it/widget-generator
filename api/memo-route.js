@@ -129,7 +129,8 @@ export default async function handler(req, res) {
     }
 
     if (memoId) {
-      const markDone = ['DIARY', 'TO-DO', 'CART', 'IDEA', 'BOOKMARK'].includes(target);
+      // DIARY, BOOKMARK: 분류만 업데이트, 처리완료 체크 안 함
+      const markDone = ['TO-DO', 'CART', 'IDEA'].includes(target);
       const properties = { '분류': { select: { name: target } } };
       if (markDone) properties['처리완료'] = { checkbox: true };
       try {
