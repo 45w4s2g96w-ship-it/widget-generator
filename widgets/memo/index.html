@@ -47,6 +47,7 @@
       border-bottom: 2px solid transparent;
       font-family: 'ChosunGu', sans-serif;
       user-select: none;
+      -webkit-user-select: none;
     }
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
     .tab:hover:not(.active) { color: var(--ink); }
@@ -134,6 +135,7 @@
       flex-shrink: 0; width: 13px; height: 13px;
       border: 1px solid #ccc; cursor: pointer;
       background: #fff; display: none; align-self: center;
+      touch-action: manipulation;
     }
     .bubble-cb.checked { background: var(--accent); border-color: var(--accent); }
     .delete-mode .bubble-cb { display: block; }
@@ -146,6 +148,8 @@
       padding: 6px 9px;
       position: relative;
       cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
     }
     .bubble:hover { background: rgba(155,143,199,0.2); }
     .bubble.is-done { opacity: 0.5; }
@@ -160,11 +164,16 @@
       border: 1px solid var(--accent);
       padding: 0 3px; line-height: 1.4;
     }
-    .bubble-star { font-size: 9px; color: #f0c040; opacity: 0.22; cursor: pointer; line-height: 1; user-select: none; }
+    .bubble-star { font-size: 9px; color: #f0c040; opacity: 0.22; cursor: pointer; line-height: 1; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
     .bubble-star.on { opacity: 1; }
-    .bubble-time { font-size: 9px; color: #c0c0c0; user-select: none; }
+    .bubble-time { font-size: 9px; color: #c0c0c0; user-select: none; -webkit-user-select: none; }
 
-    .bubble-drag-area { touch-action: none; user-select: none; cursor: grab; }
+    .bubble-drag-area {
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: grab;
+    }
 
     .bubble-text {
       font-size: 11.5px; color: var(--ink);
@@ -182,7 +191,11 @@
     }
     .delete-bar.visible { display: flex; }
     .delete-bar span { flex: 1; color: #888; }
-    .del-btn { border: 1px solid #ddd; background: #fff; font-family: 'ChosunGu', sans-serif; font-size: 9.5px; padding: 2px 7px; cursor: pointer; color: #888; }
+    .del-btn {
+      border: 1px solid #ddd; background: #fff; font-family: 'ChosunGu', sans-serif;
+      font-size: 9.5px; padding: 6px 7px; cursor: pointer; color: #888;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
     .del-btn.danger { border-color: #e74c3c; color: #e74c3c; }
     .del-btn.done-btn { border-color: var(--accent); color: var(--accent); }
 
@@ -203,6 +216,7 @@
       flex-shrink: 0; border: 1px solid var(--accent); background: var(--accent);
       color: #fff; font-family: 'ChosunGu', sans-serif; font-size: 10.5px;
       padding: 5px 8px; cursor: pointer; align-self: flex-end;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     }
     #send-btn:hover { filter: brightness(1.1); }
     #send-btn:active { filter: brightness(0.9); }
@@ -210,10 +224,13 @@
 
     .titlebar { flex-shrink: 0; }
     .titlebar-right { position: relative; display: flex; align-items: center; gap: 6px; }
-    .trash-btn { font-size: 12px; opacity: 0.55; cursor: pointer; background: none; border: none; padding: 0; color: var(--win-text); line-height: 1; }
+    .trash-btn {
+      font-size: 12px; opacity: 0.55; cursor: pointer; background: none; border: none;
+      padding: 4px; color: var(--win-text); line-height: 1;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
     .trash-btn:hover { opacity: 0.9; }
 
-    /* ── 삭제 메뉴 ── */
     .trash-menu {
       display: none;
       position: absolute;
@@ -229,18 +246,19 @@
     }
     .trash-menu.visible { display: block; }
     .trash-menu-item {
-      padding: 9px 13px;
+      padding: 11px 13px;
       font-size: 11px;
       color: var(--ink);
       cursor: pointer;
       border-bottom: 1px solid #f0f0f0;
       white-space: nowrap;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .trash-menu-item:last-child { border-bottom: none; }
     .trash-menu-item:hover { background: #f7f5ff; color: var(--accent); }
     .trash-menu-item.danger:hover { background: #fff5f5; color: #e74c3c; }
 
-    /* ── 폴더 이동 팝업 + 백드롭 ── */
     .popup-backdrop {
       display: none;
       position: fixed;
@@ -291,7 +309,7 @@
     .drop-btns { display: flex; gap: 5px; margin-top: 2px; }
     .drop-btns button {
       flex: 1; font-family: 'ChosunGu', sans-serif; font-size: 11px;
-      padding: 9px 4px; cursor: pointer; border-radius: 0;
+      padding: 10px 4px; cursor: pointer; border-radius: 0;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
@@ -374,10 +392,8 @@ MARK</span>
     </div>
   </div>
 
-  <!-- 팝업 뒤 터치 이벤트 차단 백드롭 -->
   <div class="popup-backdrop" id="popup-backdrop"></div>
 
-  <!-- 폴더 이동 팝업 -->
   <div class="drop-popup" id="drop-popup">
     <div class="drop-popup-header">
       <label>폴더 선택</label>
@@ -437,6 +453,20 @@ MARK</span>
     const drag = { memo: null, bubble: null, dragArea: null, startX: 0, startY: 0, active: false };
     const DRAG_THRESHOLD = 7;
 
+    // Works for both mouse (click) and touch (touchend).
+    // e.preventDefault() in touchend suppresses the synthetic click so handler fires only once.
+    function addTap(el, fn, opts = {}) {
+      el.addEventListener('touchend', e => {
+        e.preventDefault();
+        if (opts.stopProp) e.stopPropagation();
+        fn();
+      }, { passive: false });
+      el.addEventListener('click', e => {
+        if (opts.stopProp) e.stopPropagation();
+        fn();
+      });
+    }
+
     (async () => {
       cfg = await loadWidgetConfig();
       await loadMemos();
@@ -453,30 +483,44 @@ MARK</span>
       activeFolder = tab.dataset.folder;
       renderMemos();
     });
+    document.getElementById('tabs').addEventListener('touchend', e => {
+      const tab = e.target.closest('.tab');
+      if (!tab) return;
+      e.preventDefault();
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeFolder = tab.dataset.folder;
+      renderMemos();
+    }, { passive: false });
 
     /* ── 쓰레기통 메뉴 ── */
     const trashMenu = document.getElementById('trash-menu');
 
-    document.getElementById('trash-btn').addEventListener('click', e => {
-      e.stopPropagation();
+    addTap(document.getElementById('trash-btn'), () => {
       trashMenu.classList.toggle('visible');
-    });
+    }, { stopProp: true });
 
     document.addEventListener('click', () => trashMenu.classList.remove('visible'));
+    document.addEventListener('touchend', () => trashMenu.classList.remove('visible'));
 
-    document.getElementById('del-categorized').addEventListener('click', async () => {
+    addTap(document.getElementById('del-categorized'), async () => {
+      trashMenu.classList.remove('visible');
       const ids = memos.filter(m => m.category).map(m => m.id);
       if (!ids.length) { alert('분류된 항목이 없어요.'); return; }
       await deleteMemos(ids);
-    });
+    }, { stopProp: true });
 
-    document.getElementById('del-uncategorized').addEventListener('click', async () => {
+    addTap(document.getElementById('del-uncategorized'), async () => {
+      trashMenu.classList.remove('visible');
       const ids = memos.filter(m => !m.category).map(m => m.id);
       if (!ids.length) { alert('미분류 항목이 없어요.'); return; }
       await deleteMemos(ids);
-    });
+    }, { stopProp: true });
 
-    document.getElementById('del-select').addEventListener('click', enterDeleteMode);
+    addTap(document.getElementById('del-select'), () => {
+      trashMenu.classList.remove('visible');
+      enterDeleteMode();
+    }, { stopProp: true });
 
     function enterDeleteMode() {
       deleteMode = true;
@@ -494,12 +538,12 @@ MARK</span>
       renderMemos();
     }
 
-    document.getElementById('del-selected-btn').addEventListener('click', async () => {
+    addTap(document.getElementById('del-selected-btn'), async () => {
       if (!selectedIds.size) return;
       await deleteMemos([...selectedIds]);
     });
 
-    document.getElementById('del-done-btn').addEventListener('click', exitDeleteMode);
+    addTap(document.getElementById('del-done-btn'), exitDeleteMode);
 
     async function deleteMemos(ids) {
       try {
@@ -520,7 +564,7 @@ MARK</span>
     }
 
     /* ── 입력 ── */
-    document.getElementById('send-btn').addEventListener('click', sendMemo);
+    addTap(document.getElementById('send-btn'), sendMemo);
     document.getElementById('memo-input').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMemo(); }
     });
@@ -617,10 +661,12 @@ MARK</span>
 
       const cb = document.createElement('div');
       cb.className = 'bubble-cb' + (selectedIds.has(m.id) ? ' checked' : '');
-      cb.addEventListener('click', () => {
+      function toggleCb() {
         if (selectedIds.has(m.id)) selectedIds.delete(m.id); else selectedIds.add(m.id);
         cb.classList.toggle('checked', selectedIds.has(m.id)); updateSelCount();
-      });
+      }
+      cb.addEventListener('click', toggleCb);
+      cb.addEventListener('touchend', e => { e.preventDefault(); toggleCb(); }, { passive: false });
 
       const isDone = m.done && m.category !== 'DIARY';
       const bub = document.createElement('div');
@@ -633,14 +679,17 @@ MARK</span>
       }
       const star = document.createElement('span');
       star.className = 'bubble-star' + (m.important ? ' on' : ''); star.textContent = '★';
-      star.addEventListener('click', async e => {
+      async function toggleStar(e) {
         e.stopPropagation(); if (drag.active) return;
         m.important = !m.important; star.classList.toggle('on', m.important);
         await fetch('/api/memo', {
           method: 'PATCH', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ pageId: m.id, important: m.important }),
         });
-      });
+      }
+      star.addEventListener('click', toggleStar);
+      star.addEventListener('touchend', e => { e.preventDefault(); toggleStar(e); }, { passive: false });
+
       const time = document.createElement('span'); time.className = 'bubble-time'; time.textContent = formatTime(m.createdAt);
       hdr.appendChild(star); hdr.appendChild(time);
       bub.appendChild(hdr);
@@ -653,7 +702,6 @@ MARK</span>
 
         dragArea.addEventListener('pointerdown', e => {
           if (e.button !== 0 && e.button !== undefined) return;
-          // Do NOT call e.preventDefault() here — it blocks tap/click events on mobile
           drag.memo = m; drag.bubble = bub; drag.dragArea = dragArea;
           drag.startX = e.clientX; drag.startY = e.clientY; drag.active = false;
         });
@@ -668,7 +716,7 @@ MARK</span>
         });
         dragArea.addEventListener('pointerup', e => {
           if (drag.memo?.id !== m.id) return;
-          e.preventDefault(); // suppress synthetic click after pointer gesture
+          e.preventDefault();
           const memo = m, wasActive = drag.active, cx = e.clientX, cy = e.clientY;
           cleanupDrag();
           if (wasActive) {
@@ -716,14 +764,14 @@ MARK</span>
     function closePopup() {
       const popup = document.getElementById('drop-popup');
       popup.classList.remove('visible');
-      popup.style.display = ''; // inline style 초기화
+      popup.style.display = '';
       backdrop.classList.remove('visible');
       pendingDrop = null;
     }
 
-    backdrop.addEventListener('click', closePopup);
-    document.getElementById('drop-close').addEventListener('click', closePopup);
-    document.getElementById('drop-cancel').addEventListener('click', closePopup);
+    addTap(backdrop, closePopup);
+    addTap(document.getElementById('drop-close'), closePopup);
+    addTap(document.getElementById('drop-cancel'), closePopup);
 
     function updateDropForm(folder) {
       const hasExtra = ['IDEA', 'TO-DO', 'CART', 'BOOKMARK'].includes(folder);
@@ -756,7 +804,7 @@ MARK</span>
       popup.classList.add('visible');
     }
 
-    document.getElementById('drop-ok').addEventListener('click', async () => {
+    async function handleOk() {
       if (!pendingDrop) return;
       const { memo } = pendingDrop;
       const target = document.getElementById('drop-folder').value;
@@ -772,7 +820,9 @@ MARK</span>
       }
       closePopup();
       await submitRoute(memo, target, opts);
-    });
+    }
+
+    addTap(document.getElementById('drop-ok'), handleOk);
 
     async function submitRoute(memo, target, opts) {
       try {
