@@ -393,14 +393,6 @@ MARK</span></div>
       </select>
     </div>
     <div id="drop-form-todo" style="display:none">
-      <label class="field-label">사분면</label>
-      <select id="drop-todo-quadrant">
-        <option value="">-- 자동 (마감일 기준) --</option>
-        <option value="1사분면">Today</option>
-        <option value="2사분면">This Week</option>
-        <option value="3사분면">This Month</option>
-        <option value="4사분면">Someday</option>
-      </select>
       <label class="field-label">메모 (선택)</label>
       <textarea id="drop-todo-memo" rows="2" placeholder="추가 메모..."></textarea>
       <label class="field-label">마감일 (선택)</label>
@@ -425,7 +417,7 @@ MARK</span></div>
       <button id="drop-cancel">취소</button>
       <button id="drop-ok">확인</button>
     </div>
-  </div>
+</div>
 
   <script src="../../shared/config-loader.js"></script>
   <script>
@@ -441,7 +433,6 @@ MARK</span></div>
     const drag = { memo: null, active: false, startX: 0, startY: 0 };
     const DRAG_THRESHOLD = 8;
 
-    /* ── 토스트 ── */
     let _toastTimer;
     function showToast(msg, type = 'ok') {
       const el = document.getElementById('toast');
@@ -475,7 +466,6 @@ MARK</span></div>
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
-    /* ── 탭 ── */
     function activateTab(folder) {
       document.querySelectorAll('.tab').forEach(t =>
         t.classList.toggle('active', t.dataset.folder === folder));
@@ -489,7 +479,6 @@ MARK</span></div>
       e.preventDefault(); activateTab(tab.dataset.folder);
     }, { passive: false });
 
-    /* ── 쓰레기통 메뉴 ── */
     const trashMenu = document.getElementById('trash-menu');
 
     addTap(document.getElementById('trash-btn'), () => {
@@ -557,7 +546,6 @@ MARK</span></div>
       document.getElementById('sel-count').textContent = `${selectedIds.size}개 선택됨`;
     }
 
-    /* ── 입력 ── */
     addTap(document.getElementById('send-btn'), sendMemo);
 
     document.getElementById('memo-input').addEventListener('keydown', e => {
@@ -785,7 +773,6 @@ MARK</span></div>
       drag.memo = null; drag.active = false;
     }
 
-    /* ── 폴더 이동 팝업 ── */
     const backdrop = document.getElementById('popup-backdrop');
     const dropPopup = document.getElementById('drop-popup');
 
@@ -816,7 +803,6 @@ MARK</span></div>
     function showDropPopup(initialFolder, memo, x, y) {
       pendingDrop = { memo };
       document.getElementById('drop-folder').value = initialFolder;
-      document.getElementById('drop-todo-quadrant').value = '';
       document.getElementById('drop-todo-memo').value = '';
       document.getElementById('drop-todo-due').value = '';
       document.getElementById('drop-bookmark-title').value = '';
@@ -841,13 +827,12 @@ MARK</span></div>
       const { memo } = pendingDrop;
       const target = document.getElementById('drop-folder').value;
       const opts = {};
-      if (target === 'IDEA')     opts.ideaArea      = document.getElementById('drop-idea-area').value;
+      if (target === 'IDEA')     opts.ideaArea  = document.getElementById('drop-idea-area').value;
       if (target === 'TO-DO') {
-        opts.quadrant = document.getElementById('drop-todo-quadrant').value || null;
         opts.todoMemo = document.getElementById('drop-todo-memo').value.trim() || null;
         opts.dueDate  = document.getElementById('drop-todo-due').value || null;
       }
-      if (target === 'CART')     opts.cartType      = document.getElementById('drop-cart-type').value;
+      if (target === 'CART')     opts.cartType  = document.getElementById('drop-cart-type').value;
       if (target === 'BOOKMARK') {
         const title = document.getElementById('drop-bookmark-title').value.trim();
         if (!title) {
