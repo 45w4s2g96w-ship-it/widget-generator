@@ -76,7 +76,7 @@ async function routeDiary(text) {
   });
 }
 
-async function routeTodo(text, dueDate) {
+async function routeTodo(text, dueDate, todoMemo) {
   const today = todayStr();
   const quadrant = calcQuadrant(dueDate, today);
   const properties = {
@@ -86,6 +86,7 @@ async function routeTodo(text, dueDate) {
     '사분면': { select: { name: quadrant } },
   };
   if (dueDate) properties['마감일'] = { date: { start: dueDate } };
+  if (todoMemo) properties['메모'] = { rich_text: [{ text: { content: todoMemo } }] };
   await notionFetch('https://api.notion.com/v1/pages', 'POST', {
     parent: { database_id: TODO_DB_ID },
     icon: { type: 'emoji', emoji: '▪️' },
@@ -117,13 +118,13 @@ async function routeBookmark(text, title, link) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { memoId, text, target, dueDate, cartType, ideaArea, bookmarkTitle, bookmarkLink } = req.body;
+  const { memoId, text, target, dueDate, todoMemo, cartType, ideaArea, bookmarkTitle, bookmarkLink } = req.body;
   if (!text || !target) return res.status(400).json({ error: 'text, target required' });
 
   try {
     switch (target) {
       case 'DIARY':    await routeDiary(text); break;
-      case 'TO-DO':    await routeTodo(text, dueDate); break;
+      case 'TO-DO':    await routeTodo(text, dueDate, todoMemo); break;
       case 'CART':     await routeCart(text, cartType); break;
       case 'IDEA':     await routeIdea(text, ideaArea); break;
       case 'BOOKMARK': await routeBookmark(text, bookmarkTitle, bookmarkLink); break;

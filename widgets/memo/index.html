@@ -275,12 +275,14 @@
     .drop-popup select,
     .drop-popup input[type=date],
     .drop-popup input[type=text],
-    .drop-popup input[type=url] {
+    .drop-popup input[type=url],
+    .drop-popup textarea {
       width: 100%; border: 1px solid #ddd; font-family: 'ChosunGu', sans-serif;
       font-size: 11px; padding: 4px 6px; margin-bottom: 8px; color: var(--ink);
       background: #fff; box-sizing: border-box; -webkit-appearance: none; border-radius: 0;
     }
-    .drop-popup select:focus, .drop-popup input:focus { outline: none; border-color: var(--accent); }
+    .drop-popup select:focus, .drop-popup input:focus, .drop-popup textarea:focus { outline: none; border-color: var(--accent); }
+    .drop-popup textarea { resize: none; }
     #drop-folder { font-weight: 700; color: var(--accent); border-color: var(--accent); margin-bottom: 10px; }
     .drop-popup label.field-label { font-size: 9.5px; color: #888; display: block; margin-bottom: 2px; }
     .drop-divider { border: none; border-top: 1px solid #eee; margin: 0 0 9px; }
@@ -388,6 +390,8 @@ MARK</span></div>
       </select>
     </div>
     <div id="drop-form-todo" style="display:none">
+      <label class="field-label">메모 (선택)</label>
+      <textarea id="drop-todo-memo" rows="2" placeholder="추가 메모..."></textarea>
       <label class="field-label">마감일 (선택)</label>
       <input type="date" id="drop-todo-due" />
     </div>
@@ -797,6 +801,7 @@ MARK</span></div>
     function showDropPopup(initialFolder, memo, x, y) {
       pendingDrop = { memo };
       document.getElementById('drop-folder').value = initialFolder;
+      document.getElementById('drop-todo-memo').value = '';
       document.getElementById('drop-todo-due').value = '';
       document.getElementById('drop-bookmark-title').value = '';
       document.getElementById('drop-bookmark-link').value = '';
@@ -821,7 +826,10 @@ MARK</span></div>
       const target = document.getElementById('drop-folder').value;
       const opts = {};
       if (target === 'IDEA')     opts.ideaArea      = document.getElementById('drop-idea-area').value;
-      if (target === 'TO-DO')    opts.dueDate       = document.getElementById('drop-todo-due').value || null;
+      if (target === 'TO-DO') {
+        opts.todoMemo = document.getElementById('drop-todo-memo').value.trim() || null;
+        opts.dueDate  = document.getElementById('drop-todo-due').value || null;
+      }
       if (target === 'CART')     opts.cartType      = document.getElementById('drop-cart-type').value;
       if (target === 'BOOKMARK') {
         const title = document.getElementById('drop-bookmark-title').value.trim();
