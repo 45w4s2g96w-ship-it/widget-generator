@@ -37,6 +37,7 @@ export default async function handler(req, res) {
 
     const getText = (prop) => prop?.rich_text?.[0]?.plain_text || '';
 
+    const getUrl = (prop) => prop?.url || '';
     res.status(200).json({
       pageId: page.id,
       title: getText(page.properties.title),
@@ -44,7 +45,8 @@ export default async function handler(req, res) {
       accent: getText(page.properties.accent),
       font: getText(page.properties.font),
       source_db_id: getText(page.properties.source_db_id),
-      source_property: getText(page.properties.source_property)
+      source_property: getText(page.properties.source_property),
+      embed_link: getUrl(page.properties.embed_link),
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

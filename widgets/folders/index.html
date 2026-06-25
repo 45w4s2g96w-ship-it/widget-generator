@@ -11,11 +11,11 @@
       src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
       font-display: swap;
     }
-    body { display:flex; justify-content:center; font-family:'ChosunGu',sans-serif; }
-    .window { max-width:300px; }
+    body { display:flex; justify-content:center; font-family:'ChosunGu',sans-serif; background:transparent; }
+    .window { max-width:300px; background:transparent; border:none; box-shadow:none; }
 
     .content {
-      padding: 14px;
+      padding: 6px;
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
@@ -90,18 +90,11 @@
 </head>
 <body>
   <div class="window">
-    <div class="titlebar">
-      <span data-widget-title>C:// FOLDERS</span>
-      <span style="opacity:0.75;cursor:default">⚙</span>
-    </div>
     <div class="content" id="folder-content"></div>
   </div>
   <div id="toast"></div>
 
-  <script src="../../shared/config-loader.js"></script>
   <script>
-    loadWidgetConfig();
-
     const DEFAULT_FOLDERS = [
       { name:'Diary', colorBody:'#d8ccf0', colorTab:'#b8a8d8', type:'diary-api', url:'' },
       { name:'Book',  colorBody:'#c8c8c8', colorTab:'#a0a0a0', type:'url',
@@ -161,14 +154,14 @@
               const res  = await fetch('/api/diary-today');
               const data = await res.json();
               document.getElementById('toast').classList.remove('show');
-              if (data.url) window.open(data.url, '_blank');
+              if (data.url) window.location.href = data.url;
               else showToast(data.error || '오늘 다이어리 없음', 4000);
             } catch(e) { showToast('연결 실패', 3000); }
             busy = false;
           });
         } else {
           el.addEventListener('click', () => {
-            if (f.url) window.open(f.url, '_blank');
+            if (f.url) window.location.href = f.url;
           });
         }
 

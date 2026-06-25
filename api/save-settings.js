@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { pageId, title, color, accent, font, source_db_id, source_property } = req.body;
+  const { pageId, title, color, accent, font, source_db_id, source_property, embed_link } = req.body;
   if (!pageId) return res.status(400).json({ error: 'pageId required' });
 
   const token = process.env.NOTION_TOKEN;
@@ -25,7 +25,8 @@ export default async function handler(req, res) {
           accent: richText(accent),
           font: richText(font),
           source_db_id: richText(source_db_id),
-          source_property: richText(source_property)
+          source_property: richText(source_property),
+          ...(embed_link !== undefined ? { embed_link: { url: embed_link || null } } : {}),
         }
       })
     });

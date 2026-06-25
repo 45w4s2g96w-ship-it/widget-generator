@@ -91,6 +91,18 @@
     .ask-ta:focus{border-color:#9b8fc7;}
     .info{font-size:10px;color:#aaa;text-align:center;margin-top:8px;line-height:1.6;}
 
+    /* Embed links */
+    .embed-link-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0f0f0;}
+    .embed-link-row:last-child{border-bottom:none;}
+    .embed-label{font-size:11px;color:#555;width:110px;flex-shrink:0;}
+    .embed-url{flex:1;font-size:10px;color:#aaa;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .copy-btn{border:1px solid #ddd;background:#fff;padding:2px 8px;font-size:10px;font-family:'ChosunGu',sans-serif;cursor:pointer;flex-shrink:0;color:#888;}
+    .copy-btn:hover{border-color:#9b8fc7;color:#9b8fc7;}
+    /* DB setup */
+    .db-status{font-size:10.5px;color:#aaa;margin-bottom:8px;line-height:1.6;}
+    .db-status.ok{color:#4caf7d;} .db-status.warn{color:#e08c40;} .db-status.err{color:#e05c5c;}
+    #setup-status{font-size:10.5px;color:#aaa;margin-left:8px;}
+
     #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font-family:'ChosunGu',sans-serif;font-size:11px;padding:8px 18px;border:1px solid #444;opacity:0;transition:opacity .18s;pointer-events:none;white-space:nowrap;z-index:999;}
     #toast.show{opacity:1;}
   </style>
@@ -221,6 +233,18 @@
       <span id="save-status"></span>
     </div>
     <div id="sync-status"></div>
+
+    <!-- ── 임베드 링크 ── -->
+    <div class="sec-head" style="margin-top:28px"><span class="sec-icon">🔗</span> EMBED LINKS</div>
+    <div id="embed-links-list"></div>
+
+    <!-- ── Notion DB 설정 ── -->
+    <div class="sec-head"><span class="sec-icon">🗃</span> NOTION DB 설정</div>
+    <div class="db-status" id="db-status">확인 중...</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
+      <button class="btn" id="setup-db-btn">누락 위젯 추가 + embed_link 속성 생성</button>
+      <span id="setup-status"></span>
+    </div>
 
     <!-- ──────────────────────────────
          Claude Code 요청
@@ -602,6 +626,94 @@ document.getElementById('btn-send').addEventListener('click', async () => {
   showToast('✓ 프롬프트 복사됨! 새 탭에서 Ctrl+V', 5000);
 });
 
+// ── 임베드 링크 ──
+const BASE_URL = 'https://widget-generator-theta.vercel.app';
+const EMBED_WIDGETS = [
+  { id:'clock',        label:'🕐 Clock' },
+  { id:'flipclock',    label:'🕐 FlipClock' },
+  { id:'folders',      label:'📁 Folders' },
+  { id:'habittracker', label:'📋 Habit' },
+  { id:'log',          label:'📝 Log' },
+  { id:'memo',         label:'📝 Memo' },
+  { id:'to-do',        label:'✅ To-Do' },
+  { id:'braindump',    label:'💭 Braindump' },
+  { id:null,           label:'⚙ Settings',  path:'/settings/' },
+];
+
+function renderEmbedLinks() {
+  const container = document.getElementById('embed-links-list');
+  container.innerHTML = '';
+  EMBED_WIDGETS.forEach(w => {
+    const url = BASE_URL + (w.path || `/widgets/${w.id}/`);
+    const row = document.createElement('div');
+    row.className = 'embed-link-row';
+    row.innerHTML = `
+      <span class="embed-label">${w.label}</span>
+      <span class="embed-url" title="${url}">${url}</span>
+      <button class="copy-btn" data-url="${url}">복사</button>
+    `;
+    row.querySelector('.copy-btn').addEventListener('click', async e => {
+      const u = e.target.dataset.url;
+      try { await navigator.clipboard.writeText(u); }
+      catch {
+        const ta = document.createElement('textarea'); ta.value = u;
+        ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      }
+      e.target.textContent = '✓';
+      setTimeout(() => { e.target.textContent = '복사'; }, 1500);
+    });
+    container.appendChild(row);
+  });
+}
+
+// ── Notion DB 설정 ──
+async function checkDbStatus() {
+  const el = document.getElementById('db-status');
+  try {
+    const res = await fetch('/api/setup-settings-db');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const missing = data.missingWidgets || [];
+    if (missing.length || !data.hasEmbedLink) {
+      const parts = [];
+      if (missing.length) parts.push(`누락 위젯: ${missing.join(', ')}`);
+      if (!data.hasEmbedLink) parts.push('embed_link 속성 없음');
+      el.textContent = parts.join(' / ');
+      el.className = 'db-status warn';
+    } else {
+      el.textContent = `모든 위젯 등록됨 · embed_link 속성 있음 ✓`;
+      el.className = 'db-status ok';
+    }
+  } catch {
+    el.textContent = 'DB 상태 확인 실패';
+    el.className = 'db-status err';
+  }
+}
+
+document.getElementById('setup-db-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('setup-db-btn');
+  const statusEl = document.getElementById('setup-status');
+  btn.disabled = true; statusEl.textContent = '설정 중...'; statusEl.style.color = '#aaa';
+  try {
+    const res = await fetch('/api/setup-settings-db', { method: 'POST' });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const parts = [];
+    if (data.addedProperty) parts.push('embed_link 추가됨');
+    if (data.created.length) parts.push(`생성: ${data.created.join(', ')}`);
+    if (data.skipped.length) parts.push(`기존: ${data.skipped.join(', ')}`);
+    if (data.errors.length) parts.push(`오류: ${data.errors.join(', ')}`);
+    statusEl.textContent = parts.join(' / ') || '완료';
+    statusEl.style.color = data.errors.length ? '#e05c5c' : '#4caf7d';
+    checkDbStatus();
+  } catch (e) {
+    statusEl.textContent = e.message; statusEl.style.color = '#e05c5c';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
 function showToast(msg, ms) {
   const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), ms || 3500);
@@ -610,6 +722,8 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+renderEmbedLinks();
+checkDbStatus();
 loadSettings();
 </script>
 </body>
