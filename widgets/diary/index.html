@@ -112,13 +112,8 @@
       t._timer = setTimeout(() => t.classList.remove('show'), ms || 3200);
     }
 
-    function navigateTop(url) {
-      const a = document.createElement('a');
-      a.href = url;
-      a.target = '_top';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+    function openNotion(url) {
+      window.location.href = url.replace('https://', 'notion://');
     }
 
     let busy = false;
@@ -130,7 +125,7 @@
         const res  = await fetch('/api/diary-today');
         const data = await res.json();
         document.getElementById('toast').classList.remove('show');
-        if (data.url) navigateTop(data.url);
+        if (data.url) openNotion(data.url);
         else showToast(data.error || '오늘 다이어리 없음', 4000);
       } catch(e) { showToast('연결 실패', 3000); }
       busy = false;

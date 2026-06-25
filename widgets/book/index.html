@@ -93,17 +93,12 @@
       } catch { return 'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7'; }
     }
 
-    function navigateTop(url) {
-      const a = document.createElement('a');
-      a.href = url;
-      a.target = '_top';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+    function openNotion(url) {
+      window.location.href = url.replace('https://', 'notion://');
     }
 
     document.getElementById('book-folder').addEventListener('click', () => {
-      navigateTop(getBookUrl());
+      openNotion(getBookUrl());
     });
   </script>
 </body>
