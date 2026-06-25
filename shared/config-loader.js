@@ -1,15 +1,14 @@
 /* ===== config-loader.js =====
-   생성기의 핵심: config.json 값을 읽어서
-   1) CSS 변수(색/폰트)에 주입
-   2) 타이틀바 텍스트 세팅
-   3) config 객체를 위젯 스크립트에 반환 (notionDbId 등 위젯 로직에서 사용)
+   1) config.json 로드
+   2) Notion Settings DB에서 live override (mode:live인 경우)
+   3) localStorage (settings 페이지 저장값) 최종 override
+   4) CSS 변수 주입 + 타이틀바 텍스트 세팅
 */
 
 async function loadWidgetConfig() {
   const res = await fetch('./config.json');
   const config = await res.json();
 
-  // Notion Settings DB에 저장된 최신 값이 있으면 덮어쓴다 (없으면 config.json 기본값 사용)
   try {
     const liveRes = await fetch(`/api/get-settings?widgetId=${config.id}`);
     if (liveRes.ok) {
@@ -22,8 +21,25 @@ async function loadWidgetConfig() {
 
   const root = document.documentElement.style;
   if (config.color)  root.setProperty('--win-color', config.color);
-  if (config.accent) root.setProperty('--accent', config.accent);
-  if (config.font)   root.setProperty('--font', config.font);
+  if (config.accent) root.setProperty('--accent',    config.accent);
+  if (config.font)   root.setProperty('--font',      config.font);
+
+  /* localStorage 글로벌 설정 override */
+  try {
+    const stored = JSON.parse(localStorage.getItem('wg_settings') || 'null');
+    if (stored?.theme) {
+      const t = stored.theme;
+      if (t.winColor)  root.setProperty('--win-color',   t.winColor);
+      if (t.accent)    root.setProperty('--accent',      t.accent);
+      if (t.windowBg)  root.setProperty('--window-bg',   t.windowBg);
+      if (t.ink)       root.setProperty('--ink',         t.ink);
+    }
+    if (stored?.titlebar) {
+      const tb = stored.titlebar;
+      if (tb.fontSize) root.setProperty('--tb-fontsize',   tb.fontSize + 'px');
+      if (tb.height)   root.setProperty('--tb-min-height', tb.height   + 'px');
+    }
+  } catch(e) {}
 
   if (config.title) {
     document.title = config.title;

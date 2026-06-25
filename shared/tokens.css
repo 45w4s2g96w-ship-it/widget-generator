@@ -1,6 +1,7 @@
 /* ===== tokens.css =====
    모든 위젯이 공유하는 디자인 시스템.
    위젯별 색/폰트는 config.json → config-loader.js가 여기 변수를 덮어씀.
+   settings 페이지 저장값은 localStorage → config-loader가 추가 override.
 */
 
 :root {
@@ -9,11 +10,15 @@
   --ink: #111111;
   --border: #111111;
 
-  /* 위젯별로 override 되는 기본값 (블랙 + 연보라) */
+  /* 위젯별로 override 되는 기본값 */
   --win-color: #1a1a1a;
   --accent: #9b8fc7;
   --win-text: #ffffff;
   --font: 'Helvetica Neue', Arial, sans-serif;
+
+  /* 타이틀바 커스텀 (settings에서 조절) */
+  --tb-fontsize: 11px;
+  --tb-min-height: 0px;
 }
 
 * { box-sizing: border-box; }
@@ -35,9 +40,10 @@ body {
 .titlebar {
   background: var(--win-color);
   color: var(--win-text);
-  font-size: 11px;
+  font-size: var(--tb-fontsize);
   font-weight: 700;
   padding: 4px 6px;
+  min-height: var(--tb-min-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
