@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// FOLDERS</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'ChosunGu';
+      src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+      font-display: swap;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      font-family: 'ChosunGu', sans-serif;
+    }
+
+    .window { max-width: 280px; }
+
+    .content {
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+    }
+
+    /* ── 폴더 카드 ── */
+    .folder {
+      flex: 1;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+
+    .folder-tab {
+      width: 44px;
+      height: 12px;
+      border-radius: 4px 4px 0 0;
+      /* color set per folder */
+    }
+
+    .folder-body {
+      border: 1.5px solid #111;
+      border-radius: 0 4px 4px 4px;
+      padding: 12px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      transition: filter 0.1s;
+      position: relative;
+    }
+    .folder-body::after {
+      content: '';
+      position: absolute;
+      inset: 3px 3px -3px -3px;
+      border-right: 1.5px solid #111;
+      border-bottom: 1.5px solid #111;
+      border-radius: 0 4px 4px 4px;
+      z-index: -1;
+    }
+
+    .folder:hover .folder-body  { filter: brightness(0.93); }
+    .folder:active .folder-body { filter: brightness(0.80); }
+
+    .folder-lines {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 2px;
+    }
+    .folder-line {
+      height: 2px;
+      border-radius: 1px;
+      background: rgba(0,0,0,0.22);
+      width: 100%;
+    }
+    .folder-line:nth-child(2) { width: 70%; }
+    .folder-line:nth-child(3) { width: 85%; }
+
+    .folder-label {
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+    }
+
+    .folder-sub {
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 9.5px;
+      color: #555;
+      letter-spacing: 0.3px;
+    }
+
+    /* diary: 연보라 */
+    .folder-diary .folder-tab  { background: #b8a8d8; }
+    .folder-diary .folder-body { background: #d8ccf0; }
+
+    /* book: 회색 */
+    .folder-book .folder-tab  { background: #a0a0a0; }
+    .folder-book .folder-body { background: #c8c8c8; }
+
+    /* toast */
+    #toast {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: #fff;
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 10.5px;
+      padding: 6px 13px;
+      border: 1px solid #444;
+      opacity: 0;
+      transition: opacity 0.18s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// FOLDERS</span>
+      <span style="opacity:0.75;cursor:default">⚙</span>
+    </div>
+    <div class="content">
+
+      <!-- Diary -->
+      <div class="folder folder-diary" id="btn-diary">
+        <div class="folder-tab"></div>
+        <div class="folder-body">
+          <div class="folder-lines">
+            <div class="folder-line"></div>
+            <div class="folder-line"></div>
+            <div class="folder-line"></div>
+          </div>
+          <div class="folder-label">Diary</div>
+          <div class="folder-sub" id="diary-date">----.--.--</div>
+        </div>
+      </div>
+
+      <!-- Book -->
+      <div class="folder folder-book" id="btn-book">
+        <div class="folder-tab"></div>
+        <div class="folder-body">
+          <div class="folder-lines">
+            <div class="folder-line"></div>
+            <div class="folder-line"></div>
+            <div class="folder-line"></div>
+          </div>
+          <div class="folder-label">Book</div>
+          <div class="folder-sub">DB ↗</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    loadWidgetConfig();
+
+    // 오늘 날짜 (서울, 5시 컷오프)
+    const _now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+    if (_now.getHours() < 5) _now.setDate(_now.getDate() - 1);
+    const _y = _now.getFullYear();
+    const _m = String(_now.getMonth() + 1).padStart(2, '0');
+    const _d = String(_now.getDate()).padStart(2, '0');
+    document.getElementById('diary-date').textContent = `${_y}.${_m}.${_d}`;
+
+    function showToast(msg, ms) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), ms || 3000);
+    }
+
+    // Diary: API로 오늘 페이지 URL 조회 후 열기
+    let diaryBusy = false;
+    document.getElementById('btn-diary').addEventListener('click', async () => {
+      if (diaryBusy) return;
+      diaryBusy = true;
+      showToast('페이지 찾는 중...', 60000);
+      try {
+        const res = await fetch('/api/diary-today');
+        const data = await res.json();
+        document.getElementById('toast').classList.remove('show');
+        if (data.url) {
+          window.open(data.url, '_blank');
+        } else {
+          showToast(data.error || '오늘 다이어리 없음', 4000);
+        }
+      } catch (e) {
+        showToast('연결 실패', 3500);
+      }
+      diaryBusy = false;
+    });
+
+    // Book: Notion DB 바로 열기
+    document.getElementById('btn-book').addEventListener('click', () => {
+      window.open('https://www.notion.so/37851f4140c580c995d6f55451f2c1f7', '_blank');
+    });
+  </script>
+</body>
+</html>
