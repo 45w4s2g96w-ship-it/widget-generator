@@ -132,11 +132,9 @@
     <div class="cards-row">
       <div class="flip-card">
         <div class="card-num" id="hours">00</div>
-        <div class="card-label" id="ampm">AM</div>
       </div>
       <div class="flip-card">
         <div class="card-num" id="minutes">00</div>
-        <div class="card-label" id="dayofweek">MON</div>
       </div>
     </div>
   </div>
@@ -145,21 +143,12 @@
   <script>
     loadWidgetConfig();
 
-    const DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-
     function pad(n) { return String(n).padStart(2, '0'); }
 
     function tick() {
       const now = new Date();
-      const h = now.getHours();
-      const m = now.getMinutes();
-      const ampm = h < 12 ? 'AM' : 'PM';
-      const h12 = h % 12 || 12;
-
-      document.getElementById('hours').textContent = pad(h12);
-      document.getElementById('minutes').textContent = pad(m);
-      document.getElementById('ampm').textContent = ampm;
-      document.getElementById('dayofweek').textContent = DAYS[now.getDay()];
+      document.getElementById('hours').textContent = pad(now.getHours());
+      document.getElementById('minutes').textContent = pad(now.getMinutes());
 
       const y = now.getFullYear();
       const mo = pad(now.getMonth() + 1);

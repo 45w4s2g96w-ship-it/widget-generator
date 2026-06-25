@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOOK</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'ChosunGu';
+      src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+      font-display: swap;
+    }
+    body { display:flex; justify-content:center; font-family:'ChosunGu',sans-serif; background:transparent; margin:0; padding:6px; }
+
+    .folder {
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      width: 130px;
+    }
+
+    .folder-tab {
+      width: 44px;
+      height: 12px;
+      border-radius: 4px 4px 0 0;
+      background: #a0a0a0;
+    }
+
+    .folder-body {
+      border: 1.5px solid #111;
+      border-radius: 0 4px 4px 4px;
+      padding: 10px 10px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #c8c8c8;
+      transition: filter 0.1s;
+      position: relative;
+    }
+    .folder-body::after {
+      content:'';
+      position:absolute;
+      inset: 3px 3px -4px -4px;
+      border-right: 1.5px solid #111;
+      border-bottom: 1.5px solid #111;
+      border-radius: 0 4px 4px 4px;
+      z-index: -1;
+    }
+    .folder:hover  .folder-body { filter: brightness(0.94); }
+    .folder:active .folder-body { filter: brightness(0.82); }
+
+    .folder-lines { width:100%; display:flex; flex-direction:column; gap:4px; margin-bottom:1px; }
+    .folder-line  { height:2px; border-radius:1px; background:rgba(0,0,0,0.18); }
+    .folder-line:nth-child(2) { width:68%; }
+    .folder-line:nth-child(3) { width:84%; }
+
+    .folder-label {
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.2;
+    }
+    .folder-sub {
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 9.5px;
+      color: #666;
+      letter-spacing: 0.2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="folder" id="book-folder">
+    <div class="folder-tab"></div>
+    <div class="folder-body">
+      <div class="folder-lines">
+        <div class="folder-line"></div>
+        <div class="folder-line"></div>
+        <div class="folder-line"></div>
+      </div>
+      <div class="folder-label">Book</div>
+      <div class="folder-sub">↗</div>
+    </div>
+  </div>
+
+  <script>
+    function getBookUrl() {
+      try {
+        const s = JSON.parse(localStorage.getItem('wg_settings') || 'null');
+        const bookFolder = s?.folders?.find(f => f.type === 'url');
+        return bookFolder?.url || 'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7';
+      } catch { return 'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7'; }
+    }
+
+    function navigateTop(url) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_top';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    document.getElementById('book-folder').addEventListener('click', () => {
+      navigateTop(getBookUrl());
+    });
+  </script>
+</body>
+</html>

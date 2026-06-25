@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DIARY</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'ChosunGu';
+      src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+      font-display: swap;
+    }
+    body { display:flex; justify-content:center; font-family:'ChosunGu',sans-serif; background:transparent; margin:0; padding:6px; }
+
+    .folder {
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      width: 130px;
+    }
+
+    .folder-tab {
+      width: 44px;
+      height: 12px;
+      border-radius: 4px 4px 0 0;
+      background: #b8a8d8;
+    }
+
+    .folder-body {
+      border: 1.5px solid #111;
+      border-radius: 0 4px 4px 4px;
+      padding: 10px 10px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #d8ccf0;
+      transition: filter 0.1s;
+      position: relative;
+    }
+    .folder-body::after {
+      content:'';
+      position:absolute;
+      inset: 3px 3px -4px -4px;
+      border-right: 1.5px solid #111;
+      border-bottom: 1.5px solid #111;
+      border-radius: 0 4px 4px 4px;
+      z-index: -1;
+    }
+    .folder:hover  .folder-body { filter: brightness(0.94); }
+    .folder:active .folder-body { filter: brightness(0.82); }
+
+    .folder-lines { width:100%; display:flex; flex-direction:column; gap:4px; margin-bottom:1px; }
+    .folder-line  { height:2px; border-radius:1px; background:rgba(0,0,0,0.18); }
+    .folder-line:nth-child(2) { width:68%; }
+    .folder-line:nth-child(3) { width:84%; }
+
+    .folder-label {
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.2;
+    }
+    .folder-sub {
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 9.5px;
+      color: #666;
+      letter-spacing: 0.2px;
+    }
+
+    #toast {
+      position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+      background:#1a1a1a; color:#fff;
+      font-family:'ChosunGu',sans-serif; font-size:10.5px;
+      padding:6px 14px; border:1px solid #444;
+      opacity:0; transition:opacity 0.18s;
+      pointer-events:none; white-space:nowrap; z-index:99;
+    }
+    #toast.show { opacity:1; }
+  </style>
+</head>
+<body>
+  <div class="folder" id="diary-folder">
+    <div class="folder-tab"></div>
+    <div class="folder-body">
+      <div class="folder-lines">
+        <div class="folder-line"></div>
+        <div class="folder-line"></div>
+        <div class="folder-line"></div>
+      </div>
+      <div class="folder-label">Diary</div>
+      <div class="folder-sub" id="date-label">----.--.--</div>
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <script>
+    function todayLabel() {
+      const now = new Date(new Date().toLocaleString('en-US', { timeZone:'Asia/Seoul' }));
+      if (now.getHours() < 5) now.setDate(now.getDate() - 1);
+      return `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+    }
+
+    document.getElementById('date-label').textContent = todayLabel();
+
+    function showToast(msg, ms) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), ms || 3200);
+    }
+
+    function navigateTop(url) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_top';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    let busy = false;
+    document.getElementById('diary-folder').addEventListener('click', async () => {
+      if (busy) return;
+      busy = true;
+      showToast('페이지 찾는 중...', 60000);
+      try {
+        const res  = await fetch('/api/diary-today');
+        const data = await res.json();
+        document.getElementById('toast').classList.remove('show');
+        if (data.url) navigateTop(data.url);
+        else showToast(data.error || '오늘 다이어리 없음', 4000);
+      } catch(e) { showToast('연결 실패', 3000); }
+      busy = false;
+    });
+  </script>
+</body>
+</html>
