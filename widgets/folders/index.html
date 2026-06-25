@@ -154,14 +154,14 @@
               const res  = await fetch('/api/diary-today');
               const data = await res.json();
               document.getElementById('toast').classList.remove('show');
-              if (data.url) window.location.href = data.url;
+              if (data.url) window.open(data.url, '_blank');
               else showToast(data.error || '오늘 다이어리 없음', 4000);
             } catch(e) { showToast('연결 실패', 3000); }
             busy = false;
           });
         } else {
           el.addEventListener('click', () => {
-            if (f.url) window.location.href = f.url;
+            if (f.url) window.open(f.url, '_blank');
           });
         }
 
