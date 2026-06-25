@@ -11,8 +11,6 @@
     .window{width:100%;max-width:520px;background:#fff;border:1.5px solid #111;box-shadow:4px 4px 0 #111;}
     .titlebar{background:#1a1a1a;color:#fff;font-size:12px;font-weight:700;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;letter-spacing:.3px;user-select:none;}
     .body{padding:20px 16px 28px;}
-
-    /* Step indicator */
     .step-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
     .step-dots{display:flex;align-items:center;}
     .sdot{width:24px;height:24px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#bbb;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
@@ -20,18 +18,13 @@
     .sdot.done{border-color:#4caf7d;background:#4caf7d;color:#fff;}
     .sdot-line{width:16px;height:1.5px;background:#eee;}
     .step-label{font-size:10px;color:#aaa;letter-spacing:.5px;flex:1;}
-
     h3{font-size:10.5px;color:#999;letter-spacing:.8px;text-transform:uppercase;margin:0 0 12px;padding-bottom:5px;border-bottom:1px solid #eee;}
-
-    /* Card grid */
     .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:8px;}
     .wcard{border:1.5px solid #ddd;padding:10px 6px 8px;text-align:center;cursor:pointer;font-size:11px;color:#555;transition:all .12s;line-height:1.5;user-select:none;}
     .wcard .wc-icon{font-size:20px;display:block;margin-bottom:4px;}
     .wcard.sel{border-color:#9b8fc7;background:#f5f0ff;color:#7b6fb7;font-weight:700;}
     .wcard.cat{border-style:dashed;}
     .wcard.cat.sel{border-style:solid;}
-
-    /* Mode picker */
     .mode-cards{display:flex;gap:10px;margin-bottom:16px;}
     .mcard{flex:1;border:1.5px solid #ddd;padding:12px 10px;cursor:pointer;text-align:center;transition:all .12s;}
     .mcard:hover{border-color:#9b8fc7;}
@@ -39,35 +32,24 @@
     .mcard .mc-icon{font-size:18px;display:block;margin-bottom:4px;}
     .mcard .mc-title{font-size:11.5px;font-weight:700;color:#333;margin-bottom:2px;}
     .mcard .mc-desc{font-size:10px;color:#aaa;line-height:1.4;}
-
-    /* Part list */
     .part-list{margin-bottom:14px;}
     .part-item{margin-bottom:8px;}
     .part-item label{font-size:12px;color:#333;display:flex;align-items:flex-start;gap:8px;cursor:pointer;line-height:1.6;}
     input[type=checkbox],input[type=radio]{accent-color:#9b8fc7;cursor:pointer;}
-
-    /* Per-widget section */
     .wsec{border:1px solid #ddd;margin-bottom:10px;}
     .wsec-head{background:#f4f4f2;padding:7px 12px;font-size:11px;font-weight:700;color:#555;display:flex;align-items:center;gap:6px;}
     .wsec-body{padding:10px 12px 12px;}
-
-    /* Summary */
     .summary{background:#f4f4f2;border:1px solid #ddd;padding:8px 12px;margin-bottom:12px;font-size:10.5px;color:#555;line-height:1.9;}
     .summary strong{color:#9b8fc7;}
-
-    /* Textarea */
     .ask-ta{font-family:'ChosunGu',sans-serif;font-size:12px;line-height:1.7;border:1.5px solid #ddd;padding:10px 12px;width:100%;min-height:100px;resize:vertical;outline:none;color:#111;}
     .ask-ta:focus{border-color:#9b8fc7;}
     .ask-ta.sm{min-height:70px;}
-
-    /* Buttons */
     .btn-row{display:flex;gap:8px;margin-top:14px;}
     .btn{font-family:'ChosunGu',sans-serif;font-size:11.5px;border:1.5px solid #9b8fc7;background:#9b8fc7;color:#fff;padding:7px 16px;cursor:pointer;letter-spacing:.2px;}
     .btn:hover{filter:brightness(1.1);} .btn:active{filter:brightness(.9);} .btn:disabled{opacity:.45;cursor:default;filter:none;}
     .btn.ghost{background:#fff;color:#9b8fc7;}
     .btn.dark{background:#1a1a1a;border-color:#1a1a1a;}
     .btn.full{width:100%;text-align:center;padding:9px 16px;font-size:12px;}
-
     .info{font-size:10.5px;color:#aaa;margin-top:8px;line-height:1.6;text-align:center;}
     #sync-status{font-size:10px;color:#aaa;margin-top:4px;text-align:center;}
     #sync-status.ok{color:#4caf7d;} #sync-status.err{color:#e05c5c;}
@@ -82,8 +64,6 @@
     <span style="opacity:.75;cursor:default">&#9881;</span>
   </div>
   <div class="body">
-
-    <!-- Step indicator -->
     <div class="step-header">
       <div class="step-dots">
         <div class="sdot active" id="dot1">1</div>
@@ -95,11 +75,10 @@
       <div class="step-label" id="step-label">무엇을 바꾸고 싶으세요?</div>
     </div>
 
-    <!-- Step 1: 내용 선택 -->
+    <!-- Step 1 -->
     <div id="s1">
       <h3>커테고리</h3>
       <div class="card-grid" id="cat-grid">
-        <!-- 시스템 커테고리 -->
         <div class="wcard cat" data-id="theme"><span class="wc-icon">🎨</span>테마</div>
         <div class="wcard cat" data-id="titlebar"><span class="wc-icon">🛠</span>타이틀바</div>
         <div class="wcard cat" data-id="new"><span class="wc-icon">✦</span>새 위젯</div>
@@ -112,21 +91,13 @@
       </div>
     </div>
 
-    <!-- Step 2: 방식 + 부분 선택 -->
+    <!-- Step 2 -->
     <div id="s2" style="display:none">
       <div id="s2-mode" style="display:none;margin-bottom:16px">
         <h3>적용 방식</h3>
         <div class="mode-cards">
-          <div class="mcard sel" id="mc-bulk">
-            <span class="mc-icon">⚡</span>
-            <div class="mc-title">일괄 적용</div>
-            <div class="mc-desc">선택한 모든 항목에<br>같은 변경</div>
-          </div>
-          <div class="mcard" id="mc-each">
-            <span class="mc-icon">🎯</span>
-            <div class="mc-title">각각 커스텀</div>
-            <div class="mc-desc">항목마다 다른<br>변경 내용 입력</div>
-          </div>
+          <div class="mcard sel" id="mc-bulk"><span class="mc-icon">⚡</span><div class="mc-title">일괄 적용</div><div class="mc-desc">선택한 모든 항목에<br>같은 변경</div></div>
+          <div class="mcard" id="mc-each"><span class="mc-icon">🎯</span><div class="mc-title">각각 커스텀</div><div class="mc-desc">항목마다 다른<br>변경 내용</div></div>
         </div>
       </div>
       <h3>어떤 부분을 바꾸고 싶나요?</h3>
@@ -137,22 +108,17 @@
       </div>
     </div>
 
-    <!-- Step 3: 내용 입력 + 전송 -->
+    <!-- Step 3 -->
     <div id="s3" style="display:none">
       <div class="summary" id="summary"></div>
-      <div id="s3-bulk">
-        <textarea class="ask-ta" id="ta-bulk" placeholder="구체적으로 설명해주세요..."></textarea>
-      </div>
-      <div id="s3-each" style="display:none">
-        <div id="each-secs"></div>
-      </div>
+      <div id="s3-bulk"><textarea class="ask-ta" id="ta-bulk" placeholder="구체적으로 설명해주세요..."></textarea></div>
+      <div id="s3-each" style="display:none"><div id="each-secs"></div></div>
       <div class="btn-row" style="margin-top:14px">
         <button class="btn ghost" id="back3">← 이전</button>
         <button class="btn dark full" id="btn-send">✦ Claude Code에 보내기</button>
       </div>
-      <p class="info">프롬프트 복사 + claude.ai/code 오픈 &rarr; 붙여넣기(Ctrl+V)</p>
+      <p class="info">프롬프트 복사 + claude.ai/code 오픈 &rarr; Ctrl+V</p>
     </div>
-
   </div>
 </div>
 <div id="sync-status"></div>
@@ -173,68 +139,62 @@ const DEFAULTS={
 function deep(o){return JSON.parse(JSON.stringify(o));}
 let S=deep(DEFAULTS);
 
-/* Notion 로드 */
-async function loadFromNotion(){
-  try{
-    const res=await fetch('/api/settings');
-    if(!res.ok) throw new Error();
-    const remote=await res.json();
-    S=Object.assign(deep(DEFAULTS),remote);
-    document.getElementById('sync-status').textContent='✓ Notion 연동';
-    document.getElementById('sync-status').className='ok';
-  }catch{
-    try{const l=JSON.parse(localStorage.getItem('wg_settings')||'null');if(l)S=Object.assign(deep(DEFAULTS),l);}catch{}
-    document.getElementById('sync-status').textContent='⚠️ 로컬 설정 사용중';
-    document.getElementById('sync-status').className='err';
-  }
-  buildWidgetCards();
-}
-
-/* 위젯 카탈로그 */
 const SYSTEM_CATS=[
-  {id:'theme',   icon:'🎨',label:'테마',     cat:true, parts:['위도우 색상','강조색','배경색','텍스트 색상','전체 팔레트 변경']},
-  {id:'titlebar',icon:'🛠',label:'타이틀바',  cat:true, file:'shared/tokens.css', parts:['높이/폰트 크기','우측 표시 요소','시각/날짜 표시','커스텀 텍스트','진체조 효과 추가']},
-  {id:'new',     icon:'✦', label:'새 위젯', cat:true, file:'',parts:['어떤 위젯인지 설명해주세요']},
+  {id:'theme',   icon:'🎨',label:'테마',    cat:true, parts:['위도우 색상','강조색','배경색','텍스트 색상','전체 팔레트']},
+  {id:'titlebar',icon:'🛠',label:'타이틀바', cat:true, file:'shared/tokens.css', parts:['높이/폰트 크기','우측 요소','시각/날짜','커스텀 텍스트']},
+  {id:'new',     icon:'✦', label:'새 위젯',cat:true, parts:['어떤 위젯인지 설명해주세요']},
 ];
 const FIXED_WIDGETS=[
-  {id:'clock',   icon:'🕐',label:'Clock',   file:'widgets/clock/index.html',        parts:['디자인 전체 변경','숫자/폰트 스타일','12h/24h 형식','날짜·요일 표시','애니메이션 변경','기타']},
-  {id:'memo',    icon:'📝',label:'Memo',    file:'widgets/log/index.html',           parts:['라우팅 로직 변경','DB 구성','UI/디자인','새 기능 추가','기타']},
-  {id:'todo',    icon:'✅',label:'Todo',    file:'widgets/todo/index.html',          parts:['항목 표시 방식','체크/완료 로직','DB 구성','디자인 변경','필터/정렬','기타'], dbId:'37651f4140c5805e875cdc92a5715d21'},
-  {id:'folders', icon:'📁',label:'Folders', file:'widgets/folders/index.html',      parts:['폴더 디자인','연결 대상 변경','폴더 추가/삭제','애니메이션','기타']},
-  {id:'habit',   icon:'📋',label:'Habit',   file:'widgets/habittracker/index.html', parts:['트래커 항목','디자인 변경','DB 연동','기타']},
-  {id:'settings',icon:'⚙', label:'Settings',file:'settings/index.html',             parts:['UI 개선','새 설정 항목 추가','Claude 탭 개선','기타']},
+  {id:'clock',   icon:'🕐',label:'Clock',   file:'widgets/clock/index.html',        parts:['디자인 전체','숫자/폰트','12h/24h 형식','날짜·요일','애니메이션','기타']},
+  {id:'memo',    icon:'📝',label:'Memo',    file:'widgets/log/index.html',           parts:['라우팅 로직','DB 구성','UI/디자인','새 기능','기타']},
+  {id:'todo',    icon:'✅',label:'Todo',    file:'widgets/todo/index.html',          parts:['항목 표시','체크/완료 로직','DB 구성','디자인','필터/정렬','기타'], dbId:'37651f4140c5805e875cdc92a5715d21'},
+  {id:'folders', icon:'📁',label:'Folders', file:'widgets/folders/index.html',      parts:['폴더 디자인','연결 대상','폴더 추가/삭제','애니메이션','기타']},
+  {id:'habit',   icon:'📋',label:'Habit',   file:'widgets/habittracker/index.html', parts:['항목 목록','디자인','DB 연동','기타']},
+  {id:'settings',icon:'⚙', label:'Settings',file:'settings/index.html',             parts:['UI 개선','새 항목 추가','Claude 탭 개선','기타']},
 ];
 
 function getAllItems(){
-  const folderItems=(S.folders||[]).map(f=>({
-    id:'folder-'+f.name,icon:'📂',label:f.name+' 폴더',file:'widgets/folders/index.html',
-    parts:['연결 대상 변경','색상 변경','아이콘 변경','애니메이션','기타'],
+  const fi=(S.folders||[]).map(f=>({
+    id:'f-'+f.name,icon:'📂',label:f.name+' 폴더',file:'widgets/folders/index.html',
+    parts:['연결 대상','색상','아이콘','애니메이션','기타'],
   }));
-  return [...SYSTEM_CATS,...FIXED_WIDGETS,...folderItems];
+  return [...SYSTEM_CATS,...FIXED_WIDGETS,...fi];
 }
 
+/* 위젯 카드만 동적 생성 (카테고리는 HTML 고정) */
 function buildWidgetCards(){
-  /* 카탈로그 세 카드는 HTML에 고정, 위젯만 동적 */
   const grid=document.getElementById('widget-grid');
   grid.innerHTML='';
-  const items=getAllItems().filter(i=>!i.cat);
-  items.forEach(w=>{
+  getAllItems().filter(i=>!i.cat).forEach(w=>{
     const el=document.createElement('div');
     el.className='wcard';el.dataset.id=w.id;
     el.innerHTML=`<span class="wc-icon">${w.icon}</span>${w.label}`;
     el.addEventListener('click',()=>el.classList.toggle('sel'));
     grid.appendChild(el);
   });
-  /* 카탈로그 카드에도 클릭 이벤트 */
-  document.querySelectorAll('#cat-grid .wcard').forEach(el=>{
-    el.addEventListener('click',()=>el.classList.toggle('sel'));
-  });
 }
 
-/* Step 상태 */
-let selItems=[];
-let mode='bulk';
-let selParts=[];
+/* 카테고리 카드: 리스너 한 번만 등록 (HTML 고정 요소) */
+document.querySelectorAll('#cat-grid .wcard').forEach(el=>{
+  el.addEventListener('click',()=>el.classList.toggle('sel'));
+});
+
+async function loadFromNotion(){
+  try{
+    const res=await fetch('/api/settings');
+    if(!res.ok) throw new Error();
+    S=Object.assign(deep(DEFAULTS),await res.json());
+    document.getElementById('sync-status').textContent='✓ Notion 연동';
+    document.getElementById('sync-status').className='ok';
+  }catch{
+    try{const l=JSON.parse(localStorage.getItem('wg_settings')||'null');if(l)S=Object.assign(deep(DEFAULTS),l);}catch{}
+    document.getElementById('sync-status').textContent='⚠️ 로컈 설정 사용중';
+    document.getElementById('sync-status').className='err';
+  }
+  buildWidgetCards();
+}
+
+let selItems=[],mode='bulk',selParts=[];
 
 function setStep(n){
   ['s1','s2','s3'].forEach((id,i)=>document.getElementById(id).style.display=(i+1===n)?'':'none');
@@ -246,17 +206,13 @@ function setStep(n){
   });
 }
 
-/* Step 1 → 2 */
 document.getElementById('next1').addEventListener('click',()=>{
-  const allItems=getAllItems();
-  selItems=Array.from(document.querySelectorAll('.wcard.sel')).map(el=>allItems.find(w=>w.id===el.dataset.id)).filter(Boolean);
+  const all=getAllItems();
+  selItems=Array.from(document.querySelectorAll('.wcard.sel')).map(el=>all.find(w=>w.id===el.dataset.id)).filter(Boolean);
   if(!selItems.length){showToast('항목을 하나 이상 선택해주세요',2500);return;}
-
   const multi=selItems.length>1;
   document.getElementById('s2-mode').style.display=multi?'':'none';
   if(!multi)mode='bulk';
-
-  /* 파트 목록 (union) */
   const allParts=[...new Set(selItems.flatMap(w=>w.parts))];
   const list=document.getElementById('parts-bulk');list.innerHTML='';
   allParts.forEach((p,i)=>{
@@ -267,7 +223,6 @@ document.getElementById('next1').addEventListener('click',()=>{
   setStep(2);
 });
 
-/* Mode 토글 */
 ['mc-bulk','mc-each'].forEach(id=>{
   document.getElementById(id).addEventListener('click',()=>{
     mode=id==='mc-bulk'?'bulk':'each';
@@ -278,13 +233,11 @@ document.getElementById('next1').addEventListener('click',()=>{
 
 document.getElementById('back2').addEventListener('click',()=>setStep(1));
 
-/* Step 2 → 3 */
 document.getElementById('next2').addEventListener('click',()=>{
   selParts=Array.from(document.querySelectorAll('#parts-bulk input:checked')).map(cb=>cb.value);
   const names=selItems.map(w=>w.label).join(', ');
   const parts=selParts.length?selParts.join(', '):'(미선택)';
   document.getElementById('summary').innerHTML=`<strong>대상:</strong> ${names}<br><strong>부분:</strong> ${parts}`;
-
   if(mode==='each'){
     document.getElementById('s3-bulk').style.display='none';
     document.getElementById('s3-each').style.display='';
@@ -312,7 +265,6 @@ document.getElementById('next2').addEventListener('click',()=>{
 
 document.getElementById('back3').addEventListener('click',()=>setStep(2));
 
-/* 전송 */
 document.getElementById('btn-send').addEventListener('click',async()=>{
   let sections=[];
   if(mode==='each'){
@@ -329,27 +281,15 @@ document.getElementById('btn-send').addEventListener('click',async()=>{
     if(!text){showToast('변경 내용을 입력해주세요',2500);return;}
     sections=selItems.map(w=>({w,parts:selParts,text}));
   }
-
   const body=sections.map(({w,parts,text})=>{
     const lines=[`[${w.label}]`];
     if(w.file) lines.push(`  파일: ${w.file}`);
     if(w.dbId) lines.push(`  DB ID: ${w.dbId}`);
-    lines.push(`  변경 부분: ${parts.length?parts.join(', '):'자유 변경'}`);
+    lines.push(`  변경 부분: ${parts.length?parts.join(', '):'자유'}`);
     lines.push(`  요청: ${text}`);
     return lines.join('\n');
   }).join('\n\n');
-
-  const prompt=`[프로젝트]
-GitHub: 45w4s2g96w-ship-it/widget-generator
-Vercel: https://widget-generator-theta.vercel.app
-브랜치: main (push → Vercel 자동 배포)
-
-${body}
-
-[지시]
-레포를 직접 읽고 관련 파일을 파악한 뒤 변경을 구현해주세요.
-완료 후 main 브랜치에 push해주세요.`;
-
+  const prompt=`[프로젝트]\nGitHub: 45w4s2g96w-ship-it/widget-generator\nVercel: https://widget-generator-theta.vercel.app\n브랜치: main (push → Vercel 자동 배포)\n\n${body}\n\n[지시]\n레포를 직접 읽고 관련 파일을 파악한 뒤 변경을 구현해주세요.\n완료 후 main 브랜치에 push해주세요.`;
   try{await navigator.clipboard.writeText(prompt);}
   catch{
     const ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';
@@ -364,6 +304,7 @@ function showToast(msg,ms){
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms||3500);
 }
 
+/* 카테고리 리스너는 위에서 한 번만 등록됨 */
 buildWidgetCards();
 loadFromNotion();
 </script>
