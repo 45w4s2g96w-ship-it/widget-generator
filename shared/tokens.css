@@ -42,7 +42,8 @@ body {
   color: var(--win-text);
   font-size: var(--tb-fontsize);
   font-weight: 700;
-  padding: 4px 6px;
+  padding: 0 6px;
+  height: 25px;
   min-height: var(--tb-min-height);
   display: flex;
   justify-content: space-between;
