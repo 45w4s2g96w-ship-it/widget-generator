@@ -16,275 +16,146 @@
       font-family: 'ChosunGu', sans-serif;
       display: flex;
       justify-content: center;
-      padding: 24px 16px 48px;
+      padding: 24px 16px 56px;
       min-height: 100vh;
     }
     .window {
-      width: 100%;
-      max-width: 500px;
+      width: 100%; max-width: 520px;
       background: #fff;
       border: 1.5px solid #111;
       box-shadow: 4px 4px 0 #111;
     }
     .titlebar {
-      background: #1a1a1a;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
+      background: #1a1a1a; color: #fff;
+      font-size: 12px; font-weight: 700;
       padding: 6px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      letter-spacing: 0.3px;
-      user-select: none;
+      display: flex; justify-content: space-between; align-items: center;
+      letter-spacing: 0.3px; user-select: none;
     }
     /* tabs */
-    .tabs {
-      display: flex;
-      border-bottom: 1.5px solid #111;
-      background: #ebebea;
-    }
+    .tabs { display: flex; border-bottom: 1.5px solid #111; background: #ebebea; overflow-x: auto; }
     .tab-btn {
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 11.5px;
-      padding: 7px 18px;
-      border: none;
-      border-right: 1px solid #ccc;
-      background: transparent;
-      cursor: pointer;
-      color: #555;
+      font-family: 'ChosunGu', sans-serif; font-size: 11.5px;
+      padding: 7px 16px; border: none; border-right: 1px solid #ccc;
+      background: transparent; cursor: pointer; color: #666; white-space: nowrap; flex-shrink: 0;
     }
-    .tab-btn.active {
-      background: #fff;
-      color: #111;
-      font-weight: 700;
-      border-bottom: 2px solid #fff;
-      margin-bottom: -1.5px;
-    }
-    .tab-pane { display: none; padding: 18px 16px 20px; }
+    .tab-btn.active { background: #fff; color: #111; font-weight: 700; border-bottom: 2px solid #fff; margin-bottom: -1.5px; }
+    .tab-pane { display: none; padding: 18px 16px 22px; }
     .tab-pane.active { display: block; }
 
-    h3 {
-      font-size: 11px;
-      color: #888;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      margin: 0 0 12px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #e8e8e8;
-    }
+    h3 { font-size: 10.5px; color: #999; letter-spacing: 0.8px; text-transform: uppercase; margin: 0 0 11px; padding-bottom: 5px; border-bottom: 1px solid #eee; }
     .section { margin-bottom: 22px; }
 
     /* color rows */
-    .color-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 9px;
-    }
-    .color-row .c-label {
-      font-size: 11.5px;
-      width: 72px;
-      flex-shrink: 0;
-      color: #333;
-    }
-    .color-row input[type=color] {
-      width: 30px; height: 30px;
-      border: 1.5px solid #111;
-      padding: 1px;
-      cursor: pointer;
-      background: none;
-      flex-shrink: 0;
-    }
-    .hex-input {
-      font-family: 'ChosunGu', monospace;
-      font-size: 11px;
-      border: 1px solid #ccc;
-      padding: 4px 7px;
-      width: 86px;
-      color: #111;
-      outline: none;
-    }
+    .color-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .c-label { font-size: 11.5px; width: 76px; flex-shrink: 0; color: #333; }
+    .color-row input[type=color] { width: 30px; height: 30px; border: 1.5px solid #111; padding: 1px; cursor: pointer; background: none; flex-shrink: 0; }
+    .hex-input { font-family: 'ChosunGu', monospace; font-size: 11px; border: 1px solid #ccc; padding: 4px 7px; width: 86px; color: #111; outline: none; }
     .hex-input:focus { border-color: #9b8fc7; }
 
     /* preview */
-    .preview-wrap {
-      margin-top: 14px;
-      padding: 12px;
-      background: #f4f4f2;
-      border: 1px solid #ddd;
-    }
+    .preview-wrap { margin-top: 14px; padding: 12px; background: #f4f4f2; border: 1px solid #ddd; }
     .preview-label { font-size: 10px; color: #999; margin-bottom: 8px; }
-    .preview-win {
-      max-width: 190px;
-      border: 1.5px solid var(--p-ink, #111);
-      box-shadow: 3px 3px 0 var(--p-ink, #111);
-    }
-    .preview-tb {
-      background: var(--p-win, #1a1a1a);
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 5px 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .preview-body {
-      background: var(--p-bg, #fff);
-      color: var(--p-ink, #111);
-      padding: 10px 10px 8px;
-      font-size: 10.5px;
-      line-height: 1.6;
-    }
-    .preview-btn {
-      display: inline-block;
-      background: var(--p-accent, #9b8fc7);
-      color: #fff;
-      font-size: 9.5px;
-      padding: 3px 10px;
-      margin-top: 5px;
-      border: none;
-    }
+    .preview-win { max-width: 180px; border: 1.5px solid var(--p-ink,#111); box-shadow: 3px 3px 0 var(--p-ink,#111); }
+    .preview-tb { background: var(--p-win,#1a1a1a); color: #fff; font-size: 10px; font-weight: 700; padding: 5px 8px; display: flex; justify-content: space-between; }
+    .preview-body { background: var(--p-bg,#fff); color: var(--p-ink,#111); padding: 10px 10px 8px; font-size: 10.5px; line-height: 1.6; }
+    .preview-btn { display: inline-block; background: var(--p-accent,#9b8fc7); color: #fff; font-size: 9.5px; padding: 3px 10px; margin-top: 5px; }
 
     /* suggest */
-    .suggest-grid {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    .suggest-card {
-      flex: 1;
-      min-width: 130px;
-      border: 1.5px solid #ddd;
-      padding: 10px;
-      cursor: pointer;
-      background: #fafafa;
-      transition: border-color 0.1s;
-    }
+    .suggest-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .suggest-card { flex: 1; min-width: 130px; border: 1.5px solid #ddd; padding: 10px; cursor: pointer; background: #fafafa; transition: border-color 0.1s; }
     .suggest-card:hover { border-color: #9b8fc7; }
     .suggest-card.selected { border-color: #9b8fc7; background: #f5f0ff; }
     .swatch-row { display: flex; gap: 4px; margin-bottom: 6px; }
-    .swatch {
-      width: 20px; height: 20px;
-      border: 1px solid rgba(0,0,0,0.12);
-    }
+    .swatch { width: 20px; height: 20px; border: 1px solid rgba(0,0,0,0.12); }
     .suggest-name { font-size: 10.5px; color: #444; }
 
     /* sliders */
     .slider-row { margin-bottom: 14px; }
-    .slider-row .s-label {
-      font-size: 11.5px;
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      color: #333;
-    }
-    .slider-row .s-label span { color: #9b8fc7; font-weight: 700; }
+    .s-label { font-size: 11.5px; display: flex; justify-content: space-between; margin-bottom: 5px; color: #333; }
+    .s-label span { color: #9b8fc7; font-weight: 700; }
     input[type=range] { width: 100%; accent-color: #9b8fc7; }
+
+    /* radio / checkbox rows */
+    .option-row { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; }
+    .option-row label { font-size: 11.5px; color: #333; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    .cb-row { margin-bottom: 8px; }
+    .cb-row label { font-size: 11.5px; color: #333; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    input[type=checkbox], input[type=radio] { accent-color: #9b8fc7; cursor: pointer; }
+
+    /* text inputs */
+    .text-input {
+      font-family: 'ChosunGu', monospace; font-size: 11px;
+      border: 1px solid #ccc; padding: 6px 8px; width: 100%; outline: none; color: #111;
+    }
+    .text-input:focus { border-color: #9b8fc7; }
+    .field-label { font-size: 10.5px; color: #888; display: block; margin-bottom: 4px; margin-top: 10px; }
 
     /* folder editor */
     .folder-item-wrap { margin-bottom: 6px; }
-    .folder-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 8px;
-      border: 1px solid #ddd;
-      background: #fafafa;
-    }
-    .folder-item input[type=color] {
-      width: 26px; height: 26px;
-      border: 1px solid #111;
-      padding: 1px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .fi-name {
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 11.5px;
-      border: 1px solid #ccc;
-      padding: 4px 6px;
-      flex: 1;
-      min-width: 0;
-      outline: none;
-    }
+    .folder-item { display: flex; align-items: center; gap: 6px; padding: 7px 8px; border: 1px solid #ddd; background: #fafafa; }
+    .folder-item input[type=color] { width: 26px; height: 26px; border: 1px solid #111; padding: 1px; cursor: pointer; flex-shrink: 0; }
+    .fi-name { font-family: 'ChosunGu', sans-serif; font-size: 11.5px; border: 1px solid #ccc; padding: 4px 6px; flex: 1; min-width: 0; outline: none; }
     .fi-name:focus { border-color: #9b8fc7; }
-    .fi-type {
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 11px;
-      border: 1px solid #ccc;
-      padding: 4px 5px;
-      background: #fff;
-      cursor: pointer;
-    }
-    .icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 13px;
-      color: #999;
-      padding: 2px 3px;
-      flex-shrink: 0;
-      line-height: 1;
-    }
+    .fi-type { font-family: 'ChosunGu', sans-serif; font-size: 11px; border: 1px solid #ccc; padding: 4px 5px; background: #fff; cursor: pointer; }
+    .icon-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: #aaa; padding: 2px 3px; flex-shrink: 0; line-height: 1; }
     .icon-btn:hover { color: #333; }
-    .folder-extra {
-      padding: 6px 8px;
-      border: 1px solid #ddd;
-      border-top: none;
-      background: #f4f4f4;
-    }
+    .folder-extra { padding: 6px 8px; border: 1px solid #ddd; border-top: none; background: #f4f4f4; }
     .folder-extra label { font-size: 10px; color: #888; display: block; margin-bottom: 3px; }
-    .fi-url {
-      font-family: 'ChosunGu', monospace;
-      font-size: 10.5px;
-      border: 1px solid #ccc;
-      padding: 4px 7px;
-      width: 100%;
-      outline: none;
-    }
+    .fi-url { font-family: 'ChosunGu', monospace; font-size: 10.5px; border: 1px solid #ccc; padding: 4px 7px; width: 100%; outline: none; }
     .fi-url:focus { border-color: #9b8fc7; }
+
+    /* ask claude */
+    .ask-textarea {
+      font-family: 'ChosunGu', sans-serif; font-size: 12px; line-height: 1.7;
+      border: 1.5px solid #ddd; padding: 10px 12px; width: 100%; min-height: 130px;
+      resize: vertical; outline: none; color: #111;
+    }
+    .ask-textarea:focus { border-color: #9b8fc7; }
+    .context-box {
+      background: #f4f4f2; border: 1px solid #ddd;
+      padding: 10px 12px; font-size: 10px; color: #666; line-height: 1.6;
+      max-height: 0; overflow: hidden; transition: max-height 0.3s;
+      font-family: monospace; white-space: pre-wrap;
+    }
+    .context-box.open { max-height: 320px; overflow-y: auto; }
+    .toggle-ctx { font-size: 10.5px; color: #9b8fc7; background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 6px; }
+
+    /* widget checkboxes for ask */
+    .widget-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 16px; }
+    .widget-chip input { display: none; }
+    .widget-chip label {
+      font-size: 11px; padding: 4px 12px;
+      border: 1.5px solid #ddd; cursor: pointer; color: #555;
+      display: block; transition: all 0.1s;
+    }
+    .widget-chip input:checked + label { border-color: #9b8fc7; background: #f5f0ff; color: #9b8fc7; font-weight: 700; }
 
     /* buttons */
     .btn-row { display: flex; gap: 8px; margin-top: 14px; }
     .btn {
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 11.5px;
-      border: 1.5px solid #9b8fc7;
-      background: #9b8fc7;
-      color: #fff;
-      padding: 7px 16px;
-      cursor: pointer;
-      letter-spacing: 0.2px;
+      font-family: 'ChosunGu', sans-serif; font-size: 11.5px;
+      border: 1.5px solid #9b8fc7; background: #9b8fc7; color: #fff;
+      padding: 7px 16px; cursor: pointer; letter-spacing: 0.2px;
     }
     .btn:hover { filter: brightness(1.1); }
     .btn:active { filter: brightness(0.9); }
     .btn:disabled { opacity: 0.45; cursor: default; filter: none; }
-    .btn.ghost {
-      background: #fff;
-      color: #9b8fc7;
-    }
+    .btn.ghost { background: #fff; color: #9b8fc7; }
+    .btn.full { width: 100%; text-align: center; }
+    .btn.dark { background: #1a1a1a; border-color: #1a1a1a; }
 
     /* toast */
     #toast {
-      position: fixed;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a1a1a;
-      color: #fff;
-      font-family: 'ChosunGu', sans-serif;
-      font-size: 11px;
-      padding: 8px 18px;
-      border: 1px solid #444;
-      opacity: 0;
-      transition: opacity 0.18s;
-      pointer-events: none;
-      white-space: nowrap;
-      z-index: 999;
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      background: #1a1a1a; color: #fff;
+      font-family: 'ChosunGu', sans-serif; font-size: 11px;
+      padding: 8px 18px; border: 1px solid #444;
+      opacity: 0; transition: opacity 0.18s;
+      pointer-events: none; white-space: nowrap; z-index: 999;
     }
     #toast.show { opacity: 1; }
+    .info { font-size: 10.5px; color: #999; margin-top: 8px; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -298,52 +169,31 @@
       <button class="tab-btn active" data-tab="theme">테마</button>
       <button class="tab-btn" data-tab="titlebar">타이틀바</button>
       <button class="tab-btn" data-tab="widgets">위젯</button>
+      <button class="tab-btn" data-tab="ask">✦ Claude</button>
     </div>
 
     <!-- 테마 탭 -->
     <div class="tab-pane active" id="tab-theme">
       <div class="section">
         <h3>색상 팔레트 (4색)</h3>
-        <div class="color-row">
-          <span class="c-label">타이틀바</span>
-          <input type="color" id="c-win" />
-          <input type="text" class="hex-input" id="c-win-hex" maxlength="7" />
-        </div>
-        <div class="color-row">
-          <span class="c-label">강조색</span>
-          <input type="color" id="c-accent" />
-          <input type="text" class="hex-input" id="c-accent-hex" maxlength="7" />
-        </div>
-        <div class="color-row">
-          <span class="c-label">배경</span>
-          <input type="color" id="c-bg" />
-          <input type="text" class="hex-input" id="c-bg-hex" maxlength="7" />
-        </div>
-        <div class="color-row">
-          <span class="c-label">텍스트</span>
-          <input type="color" id="c-ink" />
-          <input type="text" class="hex-input" id="c-ink-hex" maxlength="7" />
-        </div>
+        <div class="color-row"><span class="c-label">타이틀바</span><input type="color" id="c-win" /><input type="text" class="hex-input" id="c-win-hex" maxlength="7" /></div>
+        <div class="color-row"><span class="c-label">강조색</span><input type="color" id="c-accent" /><input type="text" class="hex-input" id="c-accent-hex" maxlength="7" /></div>
+        <div class="color-row"><span class="c-label">배경</span><input type="color" id="c-bg" /><input type="text" class="hex-input" id="c-bg-hex" maxlength="7" /></div>
+        <div class="color-row"><span class="c-label">텍스트</span><input type="color" id="c-ink" /><input type="text" class="hex-input" id="c-ink-hex" maxlength="7" /></div>
       </div>
-
       <div class="btn-row">
         <button class="btn ghost" id="btn-suggest">✨ Claude 팔레트 추천</button>
         <button class="btn" id="btn-apply-theme">저장</button>
       </div>
-
       <div id="suggest-area" style="display:none; margin-top:14px;">
         <h3>추천 팔레트 <span style="font-size:10px;text-transform:none;letter-spacing:0;color:#bbb">클릭해서 적용</span></h3>
         <div class="suggest-grid" id="suggest-grid"></div>
       </div>
-
       <div class="preview-wrap">
         <div class="preview-label">미리보기</div>
         <div class="preview-win">
           <div class="preview-tb"><span>C:// WIDGET</span><span>⚙</span></div>
-          <div class="preview-body">
-            위젯 내용 샘플<br />
-            <div class="preview-btn">버튼</div>
-          </div>
+          <div class="preview-body">위젯 내용 샘플<br /><div class="preview-btn">버튼</div></div>
         </div>
       </div>
     </div>
@@ -351,59 +201,122 @@
     <!-- 타이틀바 탭 -->
     <div class="tab-pane" id="tab-titlebar">
       <div class="section">
-        <h3>타이틀바</h3>
+        <h3>크기</h3>
         <div class="slider-row">
-          <div class="s-label">높이 <span id="tb-h-val">24px</span></div>
-          <input type="range" id="tb-height" min="18" max="44" value="24" />
+          <div class="s-label">최소 높이 <span id="tb-h-val">24px</span></div>
+          <input type="range" id="tb-height" min="18" max="48" value="24" />
         </div>
         <div class="slider-row">
           <div class="s-label">폰트 크기 <span id="tb-fs-val">11px</span></div>
           <input type="range" id="tb-fontsize" min="9" max="16" value="11" />
         </div>
-        <label style="font-size:11.5px;display:flex;align-items:center;gap:8px;cursor:pointer;color:#333">
-          <input type="checkbox" id="tb-gear" checked />
-          ⚙ 설정 아이콘 표시
-        </label>
+      </div>
+      <div class="section">
+        <h3>구성 요소</h3>
+        <div class="cb-row"><label><input type="checkbox" id="tb-gear" checked /> ⚙ 설정 아이콘</label></div>
+        <div class="cb-row"><label><input type="checkbox" id="tb-time" /> 🕐 현재 시각 (소형)</label></div>
+        <div class="cb-row"><label><input type="checkbox" id="tb-date" /> 📅 오늘 날짜</label></div>
+        <label class="field-label">우측 커스텀 텍스트</label>
+        <input type="text" class="text-input" id="tb-custom" placeholder="비워두면 표시 안 함" />
       </div>
       <div class="btn-row">
         <button class="btn" id="btn-apply-titlebar">저장</button>
       </div>
+      <p class="info">* 타이틀바 변경은 위젯 새로고침 후 반영됩니다. 타이틀바에 시각/날짜를 추가하려면 각 위젯 HTML도 업데이트가 필요해요 — 아래 ✦ Claude 탭에서 요청하세요.</p>
     </div>
 
     <!-- 위젯 탭 -->
     <div class="tab-pane" id="tab-widgets">
+
+      <!-- Folders -->
       <div class="section">
         <h3>📁 Folders 위젯</h3>
         <div id="folder-list"></div>
         <button class="btn ghost" id="btn-add-folder" style="margin-top:6px;padding:5px 12px;font-size:11px">+ 폴더 추가</button>
+        <div class="btn-row"><button class="btn" id="btn-apply-folders">저장</button></div>
       </div>
-      <div class="btn-row">
-        <button class="btn" id="btn-apply-folders">저장</button>
+
+      <!-- Clock -->
+      <div class="section">
+        <h3>🕐 Clock 위젯</h3>
+        <label class="field-label">시간 형식</label>
+        <div class="option-row">
+          <label><input type="radio" name="clock-fmt" value="12h" id="fmt-12" checked /> 12시간 (AM/PM)</label>
+          <label><input type="radio" name="clock-fmt" value="24h" id="fmt-24" /> 24시간</label>
+        </div>
+        <div class="cb-row"><label><input type="checkbox" id="clock-date" checked /> 날짜 표시</label></div>
+        <div class="cb-row"><label><input type="checkbox" id="clock-day"  checked /> 요일 표시</label></div>
+        <div class="btn-row"><button class="btn" id="btn-apply-clock">저장</button></div>
+      </div>
+
+      <!-- Memo -->
+      <div class="section">
+        <h3>📝 Memo 위젯</h3>
+        <p class="info" style="margin-bottom:10px">Notion DB ID 변경은 서버 코드(api/memo-route.js) 수정이 필요합니다. 아래 ✦ Claude 탭에서 요청하면 코드를 생성해드려요.</p>
+        <label class="field-label">소스 DB ID (현재)</label>
+        <input type="text" class="text-input" id="memo-src-db" value="37751f4140c580e4b680c979ee1d0f2a" />
+        <label class="field-label">최대 표시 메모 수</label>
+        <input type="number" class="text-input" id="memo-max" value="60" min="10" max="200" style="width:80px" />
+        <div class="section" style="margin-top:14px;margin-bottom:0">
+          <h3>라우팅 대상</h3>
+          <div class="cb-row"><label><input type="checkbox" class="memo-route" value="diary" checked /> 📔 다이어리</label></div>
+          <div class="cb-row"><label><input type="checkbox" class="memo-route" value="todo"  checked /> ✅ TO-DO</label></div>
+          <div class="cb-row"><label><input type="checkbox" class="memo-route" value="cart"  checked /> 🛒 장바구니</label></div>
+          <div class="cb-row"><label><input type="checkbox" class="memo-route" value="idea"  checked /> 💡 아이디어</label></div>
+          <div class="cb-row"><label><input type="checkbox" class="memo-route" value="bookmark" checked /> 🔖 북마크</label></div>
+        </div>
+        <div class="btn-row"><button class="btn" id="btn-apply-memo">저장 (참고용)</button></div>
+        <p class="info">* 라우팅 대상 변경은 저장 후 ✦ Claude 탭에서 "memo-route.js에서 체크 해제한 항목 제거해줘"라고 요청하세요.</p>
       </div>
     </div>
-  </div>
 
+    <!-- Ask Claude 탭 -->
+    <div class="tab-pane" id="tab-ask">
+      <div class="section">
+        <h3>어떤 변경을 원하시나요?</h3>
+        <p class="info" style="margin-bottom:10px">구체적으로 써주세요. 이 프로젝트의 전체 컨텍스트가 자동으로 프롬프트에 포함됩니다.</p>
+        <textarea class="ask-textarea" id="ask-text" placeholder="예시:\n- 시계 위젯을 디지털 세그먼트 스타일로 바꿔줘\n- 메모 위젯에 태그 기능 추가해줘\n- 폴더 위젯에 호버 시 툴팁 보여줘\n- 타이틀바에 현재 시각 추가해줘"></textarea>
+
+        <label class="field-label">관련 위젯 선택</label>
+        <div class="widget-chips">
+          <div class="widget-chip"><input type="checkbox" id="wc-clock" value="clock" /><label for="wc-clock">🕐 Clock</label></div>
+          <div class="widget-chip"><input type="checkbox" id="wc-memo"  value="memo"  /><label for="wc-memo">📝 Memo</label></div>
+          <div class="widget-chip"><input type="checkbox" id="wc-folder" value="folder" /><label for="wc-folder">📁 Folders</label></div>
+          <div class="widget-chip"><input type="checkbox" id="wc-habit" value="habit" /><label for="wc-habit">📋 Habit</label></div>
+          <div class="widget-chip"><input type="checkbox" id="wc-new" value="new" /><label for="wc-new">✦ 새 위젯</label></div>
+          <div class="widget-chip"><input type="checkbox" id="wc-settings" value="settings" /><label for="wc-settings">⚙ Settings</label></div>
+        </div>
+
+        <button class="toggle-ctx" id="btn-ctx-toggle">▶ 자동 첨부되는 컨텍스트 미리보기</button>
+        <div class="context-box" id="ctx-preview"></div>
+      </div>
+
+      <button class="btn dark full" id="btn-send-claude">✦ Claude에게 전달하기</button>
+      <p class="info" style="margin-top:10px">버튼을 누르면 프롬프트가 클립보드에 복사되고 Claude.ai가 새 탭으로 열립니다. 새 탭에서 붙여넣기(Ctrl+V)하세요.</p>
+    </div>
+
+  </div>
   <div id="toast"></div>
 
   <script>
     /* ===== 기본값 ===== */
     const DEFAULTS = {
       theme:    { winColor:'#1a1a1a', accent:'#9b8fc7', windowBg:'#ffffff', ink:'#111111' },
-      titlebar: { height:24, fontSize:11, showGear:true },
+      titlebar: { height:24, fontSize:11, showGear:true, showTime:false, showDate:false, customText:'' },
       folders: [
         { name:'Diary', colorBody:'#d8ccf0', colorTab:'#b8a8d8', type:'diary-api', url:'' },
-        { name:'Book',  colorBody:'#c8c8c8', colorTab:'#a0a0a0', type:'url',
-          url:'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7' },
-      ]
+        { name:'Book',  colorBody:'#c8c8c8', colorTab:'#a0a0a0', type:'url', url:'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7' },
+      ],
+      clock: { format:'12h', showDate:true, showDay:true },
+      memo:  { srcDbId:'37751f4140c580e4b680c979ee1d0f2a', maxItems:60, routes:['diary','todo','cart','idea','bookmark'] },
     };
 
     function loadS() {
-      try { return JSON.parse(localStorage.getItem('wg_settings') || 'null') || deep(DEFAULTS); }
+      try { return Object.assign(deep(DEFAULTS), JSON.parse(localStorage.getItem('wg_settings') || '{}')); }
       catch(e) { return deep(DEFAULTS); }
     }
     function saveS() { localStorage.setItem('wg_settings', JSON.stringify(S)); }
     function deep(o) { return JSON.parse(JSON.stringify(o)); }
-
     let S = loadS();
 
     /* ===== 탭 ===== */
@@ -416,193 +329,228 @@
       });
     });
 
-    /* ===== 색상 동기화 ===== */
-    function bindColor(pickerId, hexId, cssVar) {
-      const picker = document.getElementById(pickerId);
-      const hex    = document.getElementById(hexId);
-      picker.addEventListener('input', () => {
-        hex.value = picker.value;
-        document.documentElement.style.setProperty(cssVar, picker.value);
-      });
-      hex.addEventListener('input', () => {
-        if (/^#[0-9a-fA-F]{6}$/.test(hex.value)) {
-          picker.value = hex.value;
-          document.documentElement.style.setProperty(cssVar, hex.value);
-        }
-      });
+    /* ===== 색상 ===== */
+    function bindColor(pid, hid, cssVar) {
+      const p = document.getElementById(pid), h = document.getElementById(hid);
+      p.addEventListener('input', () => { h.value = p.value; document.documentElement.style.setProperty(cssVar, p.value); });
+      h.addEventListener('input', () => { if (/^#[0-9a-fA-F]{6}$/.test(h.value)) { p.value = h.value; document.documentElement.style.setProperty(cssVar, h.value); } });
     }
-    bindColor('c-win',    'c-win-hex',    '--p-win');
-    bindColor('c-accent', 'c-accent-hex', '--p-accent');
-    bindColor('c-bg',     'c-bg-hex',     '--p-bg');
-    bindColor('c-ink',    'c-ink-hex',    '--p-ink');
+    bindColor('c-win','c-win-hex','--p-win');
+    bindColor('c-accent','c-accent-hex','--p-accent');
+    bindColor('c-bg','c-bg-hex','--p-bg');
+    bindColor('c-ink','c-ink-hex','--p-ink');
 
     function applyThemeInputs(t) {
-      [['c-win', t.winColor], ['c-accent', t.accent], ['c-bg', t.windowBg], ['c-ink', t.ink]]
-        .forEach(([id, val]) => {
-          document.getElementById(id).value = val;
-          document.getElementById(id + '-hex').value = val;
-        });
-      document.documentElement.style.setProperty('--p-win',    t.winColor);
+      [['c-win',t.winColor],['c-accent',t.accent],['c-bg',t.windowBg],['c-ink',t.ink]].forEach(([id,val]) => {
+        document.getElementById(id).value = val;
+        document.getElementById(id+'-hex').value = val;
+      });
+      document.documentElement.style.setProperty('--p-win', t.winColor);
       document.documentElement.style.setProperty('--p-accent', t.accent);
-      document.documentElement.style.setProperty('--p-bg',     t.windowBg);
-      document.documentElement.style.setProperty('--p-ink',    t.ink);
+      document.documentElement.style.setProperty('--p-bg', t.windowBg);
+      document.documentElement.style.setProperty('--p-ink', t.ink);
     }
     applyThemeInputs(S.theme);
 
     document.getElementById('btn-apply-theme').addEventListener('click', () => {
-      S.theme = {
-        winColor: document.getElementById('c-win').value,
-        accent:   document.getElementById('c-accent').value,
-        windowBg: document.getElementById('c-bg').value,
-        ink:      document.getElementById('c-ink').value,
-      };
-      saveS();
-      showToast('테마 저장 완료! 위젯 새로고침 시 반영됩니다.');
+      S.theme = { winColor:document.getElementById('c-win').value, accent:document.getElementById('c-accent').value, windowBg:document.getElementById('c-bg').value, ink:document.getElementById('c-ink').value };
+      saveS(); showToast('테마 저장 완료! 위젯 새로고침 시 반영됩니다.');
     });
 
     /* ===== Claude 팔레트 추천 ===== */
     document.getElementById('btn-suggest').addEventListener('click', async () => {
-      const btn  = document.getElementById('btn-suggest');
-      const area = document.getElementById('suggest-area');
+      const btn = document.getElementById('btn-suggest');
       const grid = document.getElementById('suggest-grid');
-      const mainColor = document.getElementById('c-win').value;
-
-      btn.disabled = true;
-      btn.textContent = '분석 중...';
-      area.style.display = 'none';
-
+      btn.disabled = true; btn.textContent = '분석 중...';
+      document.getElementById('suggest-area').style.display = 'none';
       try {
-        const res  = await fetch('/api/suggest-colors?color=' + encodeURIComponent(mainColor));
+        const res  = await fetch('/api/suggest-colors?color=' + encodeURIComponent(document.getElementById('c-win').value));
         const data = await res.json();
         if (!data.palettes) throw new Error(data.error || '응답 오류');
-
         grid.innerHTML = '';
         data.palettes.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'suggest-card';
-          card.innerHTML = `
-            <div class="swatch-row">
-              <div class="swatch" style="background:${p.winColor}"></div>
-              <div class="swatch" style="background:${p.accent}"></div>
-              <div class="swatch" style="background:${p.windowBg}"></div>
-              <div class="swatch" style="background:${p.ink}"></div>
-            </div>
-            <div class="suggest-name">${p.description}</div>`;
-          card.addEventListener('click', () => {
-            document.querySelectorAll('.suggest-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            applyThemeInputs(p);
-          });
+          const card = document.createElement('div'); card.className = 'suggest-card';
+          card.innerHTML = `<div class="swatch-row"><div class="swatch" style="background:${p.winColor}"></div><div class="swatch" style="background:${p.accent}"></div><div class="swatch" style="background:${p.windowBg}"></div><div class="swatch" style="background:${p.ink}"></div></div><div class="suggest-name">${p.description}</div>`;
+          card.addEventListener('click', () => { document.querySelectorAll('.suggest-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); applyThemeInputs(p); });
           grid.appendChild(card);
         });
-        area.style.display = 'block';
-      } catch(e) {
-        showToast('추천 실패: ' + e.message, 4000);
-      }
-
-      btn.disabled = false;
-      btn.textContent = '✨ Claude 팔레트 추천';
+        document.getElementById('suggest-area').style.display = 'block';
+      } catch(e) { showToast('추천 실패: '+e.message, 4000); }
+      btn.disabled = false; btn.textContent = '✨ Claude 팔레트 추천';
     });
 
-    /* ===== 타이틀바 슬라이더 ===== */
-    const slH  = document.getElementById('tb-height');
-    const slFs = document.getElementById('tb-fontsize');
-    const cbGear = document.getElementById('tb-gear');
-    slH.value  = S.titlebar.height;
-    slFs.value = S.titlebar.fontSize;
-    cbGear.checked = S.titlebar.showGear !== false;
-    document.getElementById('tb-h-val').textContent  = S.titlebar.height  + 'px';
+    /* ===== 타이틀바 ===== */
+    const slH = document.getElementById('tb-height'), slFs = document.getElementById('tb-fontsize');
+    slH.value = S.titlebar.height; slFs.value = S.titlebar.fontSize;
+    document.getElementById('tb-h-val').textContent  = S.titlebar.height + 'px';
     document.getElementById('tb-fs-val').textContent = S.titlebar.fontSize + 'px';
-    slH.addEventListener('input',  () => document.getElementById('tb-h-val').textContent  = slH.value  + 'px');
+    document.getElementById('tb-gear').checked  = S.titlebar.showGear !== false;
+    document.getElementById('tb-time').checked  = !!S.titlebar.showTime;
+    document.getElementById('tb-date').checked  = !!S.titlebar.showDate;
+    document.getElementById('tb-custom').value  = S.titlebar.customText || '';
+    slH.addEventListener('input',  () => document.getElementById('tb-h-val').textContent  = slH.value + 'px');
     slFs.addEventListener('input', () => document.getElementById('tb-fs-val').textContent = slFs.value + 'px');
-
     document.getElementById('btn-apply-titlebar').addEventListener('click', () => {
-      S.titlebar = { height:+slH.value, fontSize:+slFs.value, showGear:cbGear.checked };
-      saveS();
-      showToast('타이틀바 설정 저장 완료!');
+      S.titlebar = { height:+slH.value, fontSize:+slFs.value, showGear:document.getElementById('tb-gear').checked, showTime:document.getElementById('tb-time').checked, showDate:document.getElementById('tb-date').checked, customText:document.getElementById('tb-custom').value.trim() };
+      saveS(); showToast('타이틀바 설정 저장 완료!');
     });
 
-    /* ===== 폴더 에디터 ===== */
+    /* ===== 폴더 ===== */
     function renderFolders() {
-      const list = document.getElementById('folder-list');
-      list.innerHTML = '';
+      const list = document.getElementById('folder-list'); list.innerHTML = '';
       S.folders.forEach((f, i) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'folder-item-wrap';
-
-        const row = document.createElement('div');
-        row.className = 'folder-item';
-        row.innerHTML = `
-          <input type="color" value="${f.colorTab}"  title="탭 색" />
-          <input type="color" value="${f.colorBody}" title="본문 색" />
-          <input type="text"  class="fi-name" value="${f.name}" placeholder="이름" />
-          <select class="fi-type">
-            <option value="diary-api" ${f.type==='diary-api'?'selected':''}>다이어리 API</option>
-            <option value="url"       ${f.type==='url'?'selected':''}>직접 URL</option>
-          </select>
-          <button class="icon-btn" data-a="up">↑</button>
-          <button class="icon-btn" data-a="dn">↓</button>
-          <button class="icon-btn" data-a="del">✕</button>`;
-
-        const extra = document.createElement('div');
-        extra.className = 'folder-extra';
-        extra.style.display = f.type === 'url' ? 'block' : 'none';
-        extra.innerHTML = `<label>Notion URL</label>
-          <input class="fi-url" type="text" value="${f.url || ''}" placeholder="https://www.notion.so/..." />`;
-
-        row.querySelector('.fi-type').addEventListener('change', e => {
-          extra.style.display = e.target.value === 'url' ? 'block' : 'none';
-        });
-        row.querySelector('[data-a=del]').addEventListener('click', () => {
-          S.folders.splice(i, 1); renderFolders();
-        });
-        row.querySelector('[data-a=up]').addEventListener('click', () => {
-          if (i === 0) return;
-          [S.folders[i-1], S.folders[i]] = [S.folders[i], S.folders[i-1]]; renderFolders();
-        });
-        row.querySelector('[data-a=dn]').addEventListener('click', () => {
-          if (i === S.folders.length-1) return;
-          [S.folders[i], S.folders[i+1]] = [S.folders[i+1], S.folders[i]]; renderFolders();
-        });
-
-        wrap.appendChild(row);
-        wrap.appendChild(extra);
-        list.appendChild(wrap);
+        const wrap = document.createElement('div'); wrap.className = 'folder-item-wrap';
+        const row = document.createElement('div'); row.className = 'folder-item';
+        row.innerHTML = `<input type="color" value="${f.colorTab}" title="탭 색" /><input type="color" value="${f.colorBody}" title="본문 색" /><input type="text" class="fi-name" value="${f.name}" placeholder="이름" /><select class="fi-type"><option value="diary-api" ${f.type==='diary-api'?'selected':''}>다이어리 API</option><option value="url" ${f.type==='url'?'selected':''}>직접 URL</option></select><button class="icon-btn" data-a="up">↑</button><button class="icon-btn" data-a="dn">↓</button><button class="icon-btn" data-a="del">✕</button>`;
+        const extra = document.createElement('div'); extra.className = 'folder-extra';
+        extra.style.display = f.type==='url'?'block':'none';
+        extra.innerHTML = `<label>Notion URL</label><input class="fi-url" type="text" value="${f.url||''}" placeholder="https://www.notion.so/..." />`;
+        row.querySelector('.fi-type').addEventListener('change', e => extra.style.display = e.target.value==='url'?'block':'none');
+        row.querySelector('[data-a=del]').addEventListener('click', () => { S.folders.splice(i,1); renderFolders(); });
+        row.querySelector('[data-a=up]').addEventListener('click',  () => { if(i>0){[S.folders[i-1],S.folders[i]]=[S.folders[i],S.folders[i-1]]; renderFolders();} });
+        row.querySelector('[data-a=dn]').addEventListener('click',  () => { if(i<S.folders.length-1){[S.folders[i],S.folders[i+1]]=[S.folders[i+1],S.folders[i]]; renderFolders();} });
+        wrap.appendChild(row); wrap.appendChild(extra); list.appendChild(wrap);
       });
     }
     renderFolders();
-
     document.getElementById('btn-add-folder').addEventListener('click', () => {
-      S.folders.push({ name:'새 폴더', colorBody:'#e0e0e0', colorTab:'#c8c8c8', type:'url', url:'' });
+      S.folders.push({name:'새 폴더',colorBody:'#e0e0e0',colorTab:'#c8c8c8',type:'url',url:''});
       renderFolders();
-      document.getElementById('folder-list').lastElementChild
-        .querySelector('.fi-name').focus();
+      document.getElementById('folder-list').lastElementChild.querySelector('.fi-name').focus();
+    });
+    document.getElementById('btn-apply-folders').addEventListener('click', () => {
+      S.folders = Array.from(document.getElementById('folder-list').children).map(wrap => {
+        const row = wrap.querySelector('.folder-item'), extra = wrap.querySelector('.folder-extra');
+        const colors = row.querySelectorAll('input[type=color]');
+        return { name:row.querySelector('.fi-name').value.trim()||'폴더', colorTab:colors[0].value, colorBody:colors[1].value, type:row.querySelector('.fi-type').value, url:extra?extra.querySelector('.fi-url').value.trim():'' };
+      });
+      saveS(); showToast('폴더 설정 저장 완료!');
     });
 
-    document.getElementById('btn-apply-folders').addEventListener('click', () => {
-      const wraps = document.getElementById('folder-list').children;
-      S.folders = Array.from(wraps).map(wrap => {
-        const row   = wrap.querySelector('.folder-item');
-        const extra = wrap.querySelector('.folder-extra');
-        const colors = row.querySelectorAll('input[type=color]');
-        return {
-          name:      row.querySelector('.fi-name').value.trim() || '폴더',
-          colorTab:  colors[0].value,
-          colorBody: colors[1].value,
-          type:      row.querySelector('.fi-type').value,
-          url:       extra ? extra.querySelector('.fi-url').value.trim() : '',
-        };
-      });
-      saveS();
-      showToast('폴더 설정 저장 완료! 위젯 새로고침 시 반영됩니다.');
+    /* ===== Clock ===== */
+    if (S.clock.format === '24h') document.getElementById('fmt-24').checked = true;
+    document.getElementById('clock-date').checked = S.clock.showDate !== false;
+    document.getElementById('clock-day').checked  = S.clock.showDay  !== false;
+    document.getElementById('btn-apply-clock').addEventListener('click', () => {
+      S.clock = { format:document.querySelector('input[name=clock-fmt]:checked').value, showDate:document.getElementById('clock-date').checked, showDay:document.getElementById('clock-day').checked };
+      saveS(); showToast('Clock 설정 저장 완료!');
+    });
+
+    /* ===== Memo ===== */
+    document.getElementById('memo-src-db').value = S.memo.srcDbId || '';
+    document.getElementById('memo-max').value     = S.memo.maxItems || 60;
+    document.querySelectorAll('.memo-route').forEach(cb => {
+      cb.checked = (S.memo.routes || []).includes(cb.value);
+    });
+    document.getElementById('btn-apply-memo').addEventListener('click', () => {
+      S.memo = {
+        srcDbId:  document.getElementById('memo-src-db').value.trim(),
+        maxItems: +document.getElementById('memo-max').value,
+        routes:   Array.from(document.querySelectorAll('.memo-route:checked')).map(c=>c.value),
+      };
+      saveS(); showToast('Memo 설정 저장됨 (코드 반영은 Claude 탭에서 요청하세요)');
+    });
+
+    /* ===== Ask Claude ===== */
+    function buildContext() {
+      const t = S.theme, tb = S.titlebar;
+      return `[프로젝트 개요]
+GitHub 레포: 45w4s2g96w-ship-it/widget-generator
+배포: Vercel — https://widget-generator-theta.vercel.app
+브랜치: main (직접 배포)
+
+[디렉토리 구조]
+widgets/
+  clock/        — 플립 시계 (index.html, config.json)
+  flipclock/    — 플립 시계 변형
+  habittracker/ — 습관 트래커
+  log/          — 메모/채팅 위젯 (Notion DB 연동, 폴더 라우팅)
+  folders/      — 폴더 바로가기 (localStorage로 동적 구성)
+shared/
+  tokens.css        — CSS 변수: --win-color, --accent, --window-bg, --ink, --font, --tb-fontsize, --tb-min-height
+  config-loader.js  — config.json → Notion live override → localStorage 순서로 CSS 변수 주입
+  fonts/ChosunGu.TTF
+api/
+  diary-today.js       — 오늘 날짜 Notion 다이어리 페이지 URL 반환 (GET)
+  memo-route.js        — 메모를 Notion DB로 라우팅 (POST)
+  migrate-todo-icons.js — 일회성 아이콘 마이그레이션
+  suggest-colors.js    — Claude Haiku로 색상 팔레트 추천 (GET ?color=#hex)
+settings/
+  index.html — 위젯 설정 컨트롤 패널
+
+[설정 시스템 (localStorage 'wg_settings')]
+현재 저장값:
+  theme    : winColor=${t.winColor}, accent=${t.accent}, windowBg=${t.windowBg}, ink=${t.ink}
+  titlebar : height=${tb.height}px, fontSize=${tb.fontSize}px, showGear=${tb.showGear}, showTime=${tb.showTime}, showDate=${tb.showDate}
+  folders  : ${JSON.stringify(S.folders)}
+  clock    : format=${S.clock.format}, showDate=${S.clock.showDate}, showDay=${S.clock.showDay}
+  memo     : srcDbId=${S.memo.srcDbId}, maxItems=${S.memo.maxItems}, routes=${S.memo.routes.join(',')}
+
+[디자인 규칙]
+- 폰트: ChosunGu ('../../shared/fonts/ChosunGu.TTF')
+- 타이틀바 우측: ⚙ 이모지만 (×□_ 금지)
+- 버튼: background var(--accent), color #fff, border 1px solid var(--accent)
+- hover: filter brightness(1.1) / active: brightness(0.9) / disabled: opacity 0.45
+- 색상 하드코딩 금지 — 항상 CSS 변수 사용
+- body padding: 24px, background: transparent
+
+[Notion 연동]
+- NOTION_TOKEN: process.env.NOTION_TOKEN (서버사이드 전용)
+- API 버전: 2022-06-28
+- 날짜 기준: Asia/Seoul, 오전 5시 컷오프
+  const now = new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
+  if(now.getHours()<5) now.setDate(now.getDate()-1);
+- Vercel serverless: export default async function handler(req,res)
+
+[Notion DB ID]
+다이어리  : 37451f4140c5808e9141c8804e892661
+투두       : 37651f4140c5805e875cdc92a5715d21
+장바구니   : 37751f4140c580598f09f7903db2248f
+아이디어   : 37a51f4140c580e4bcf9f6279769ae26
+북마크     : 638c790c1ad7406ca8bfbe87d965e687
+북         : 37851f4140c580c995d6f55451f2c1f7
+메모소스   : 37751f4140c580e4b680c979ee1d0f2a
+
+[배포 방법]
+mcp__github__push_files 로 main 브랜치에 직접 커밋 → Vercel 자동 배포
+파일 삭제: mcp__github__delete_file`;
+    }
+
+    const ctxBox = document.getElementById('ctx-preview');
+    document.getElementById('btn-ctx-toggle').addEventListener('click', function() {
+      ctxBox.classList.toggle('open');
+      this.textContent = ctxBox.classList.contains('open') ? '▼ 컨텍스트 숨기기' : '▶ 자동 첨부되는 컨텍스트 미리보기';
+      if (ctxBox.classList.contains('open') && !ctxBox.textContent) ctxBox.textContent = buildContext();
+    });
+
+    document.getElementById('btn-send-claude').addEventListener('click', async () => {
+      const userText = document.getElementById('ask-text').value.trim();
+      if (!userText) { showToast('변경 내용을 입력해주세요', 3000); return; }
+
+      const selected = Array.from(document.querySelectorAll('.widget-chip input:checked')).map(c => c.value);
+      const widgetNote = selected.length ? `\n관련 위젯: ${selected.join(', ')}` : '';
+
+      const prompt = `아래는 위젯 생성기 프로젝트의 전체 구성입니다. 이를 바탕으로 요청을 처리해주세요.\n\n${buildContext()}\n\n${'='.repeat(60)}\n[사용자 요청]${widgetNote}\n${userText}\n${'='.repeat(60)}\n\n위 요청을 구현하는 코드를 작성해주세요. 변경이 필요한 파일과 전체 코드를 제공해주세요.`;
+
+      try {
+        await navigator.clipboard.writeText(prompt);
+        window.open('https://claude.ai/new', '_blank');
+        showToast('✓ 프롬프트 복사됨! 새 탭에서 Ctrl+V로 붙여넣기 하세요', 5000);
+      } catch(e) {
+        /* clipboard 실패 시 textarea로 fallback */
+        const ta = document.createElement('textarea');
+        ta.value = prompt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        window.open('https://claude.ai/new', '_blank');
+        showToast('✓ 프롬프트 복사됨! 새 탭에서 붙여넣기 하세요', 5000);
+      }
     });
 
     /* ===== toast ===== */
     function showToast(msg, ms) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), ms || 3500);
+      const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), ms || 3500);
     }
   </script>
 </body>

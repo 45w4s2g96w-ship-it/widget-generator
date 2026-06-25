@@ -9,141 +9,87 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #ffffff;
-      display: flex;
-      justify-content: center;
-      padding: 12px;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    .widget {
-      width: 100%;
-      max-width: 300px;
-    }
-
-    .date-str {
-      font-size: 11px;
-      letter-spacing: 0.3px;
-      color: #888;
-      margin-bottom: 7px;
-      display: block;
-    }
-    .date-str span {
-      color: #9b8fc7;
-      font-weight: 700;
-    }
-
-    .cards-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .flip-card {
-      flex: 1;
-      background: #111111;
-      border-radius: 14px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .flip-card::after {
-      content: '';
-      position: absolute;
-      left: 0; right: 0;
-      top: 50%;
-      height: 1.5px;
-      background: rgba(0,0,0,0.5);
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    .num-wrap {
-      padding: 18px 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .num {
-      font-size: 61px;
-      font-weight: 800;
-      line-height: 1;
-      color: #9b8fc7;
-      letter-spacing: -3px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    @keyframes flipOut {
-      0%   { transform: rotateX(0deg);   opacity: 1; }
-      100% { transform: rotateX(-90deg); opacity: 0; }
-    }
-    @keyframes flipIn {
-      0%   { transform: rotateX(90deg);  opacity: 0; }
-      100% { transform: rotateX(0deg);   opacity: 1; }
-    }
+    body { background: #ffffff; display: flex; justify-content: center; padding: 24px; font-family: 'Montserrat', sans-serif; }
+    .widget { width: 100%; max-width: 300px; }
+    .date-str { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #9b8fc7; margin-bottom: 14px; display: block; }
+    .cards-row { display: flex; gap: 10px; }
+    .flip-card { flex: 1; background: #111111; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+    .flip-card::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: rgba(0,0,0,0.5); z-index: 10; pointer-events: none; }
+    .num-wrap { padding: 18px 10px 12px; display: flex; justify-content: center; align-items: center; }
+    .num { font-size: 76px; font-weight: 800; line-height: 1; color: #9b8fc7; letter-spacing: -3px; font-variant-numeric: tabular-nums; }
+    .card-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: #9b8fc7; opacity: 0.5; text-align: right; padding: 0 12px 12px; }
+    @keyframes flipOut { 0%{transform:rotateX(0deg);opacity:1} 100%{transform:rotateX(-90deg);opacity:0} }
+    @keyframes flipIn  { 0%{transform:rotateX(90deg);opacity:0}  100%{transform:rotateX(0deg);opacity:1}  }
     .flip-out { animation: flipOut 0.18s ease-in  forwards; }
     .flip-in  { animation: flipIn  0.18s ease-out forwards; }
   </style>
 </head>
 <body>
   <div class="widget">
-    <span class="date-str" id="date-str">date: <span id="date-val">---- -- --</span></span>
-
+    <span class="date-str" id="date-str">---- -- --</span>
     <div class="cards-row">
-      <div class="flip-card">
-        <div class="num-wrap"><span class="num" id="hours">00</span></div>
-      </div>
-      <div class="flip-card">
-        <div class="num-wrap"><span class="num" id="minutes">00</span></div>
-      </div>
+      <div class="flip-card"><div class="num-wrap"><span class="num" id="hours">00</span></div><div class="card-label" id="ampm">AM</div></div>
+      <div class="flip-card"><div class="num-wrap"><span class="num" id="minutes">00</span></div><div class="card-label" id="dayofweek">MON</div></div>
     </div>
   </div>
 
   <script>
-    function pad(n) { return String(n).padStart(2, '0'); }
+    /* localStorage 설정 읽기 */
+    function getClock() {
+      try { const s = JSON.parse(localStorage.getItem('wg_settings')||'null'); return s?.clock || {}; }
+      catch(e) { return {}; }
+    }
+    const cfg = getClock();
+    const use24h    = cfg.format === '24h';
+    const showDate  = cfg.showDate  !== false;
+    const showDay   = cfg.showDay   !== false;
 
+    const DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+    function pad(n) { return String(n).padStart(2,'0'); }
     let prevH = null, prevM = null;
 
     function flipNum(el, newVal) {
-      el.classList.remove('flip-in', 'flip-out');
-      void el.offsetWidth;
+      el.classList.remove('flip-in','flip-out'); void el.offsetWidth;
       el.classList.add('flip-out');
       el.addEventListener('animationend', () => {
-        el.textContent = newVal;
-        el.classList.remove('flip-out');
-        void el.offsetWidth;
+        el.textContent = newVal; el.classList.remove('flip-out'); void el.offsetWidth;
         el.classList.add('flip-in');
-        el.addEventListener('animationend', () => el.classList.remove('flip-in'), { once: true });
-      }, { once: true });
+        el.addEventListener('animationend', () => el.classList.remove('flip-in'), {once:true});
+      }, {once:true});
     }
 
     function tick() {
       const now = new Date();
-      const h = now.getHours();
-      const m = now.getMinutes();
-      const hStr = pad(h);
+      const h = now.getHours(), m = now.getMinutes();
+      const hDisplay = use24h ? pad(h) : pad(h % 12 || 12);
       const mStr = pad(m);
 
-      const y = now.getFullYear(), mo = pad(now.getMonth()+1), d = pad(now.getDate());
-      document.getElementById('date-val').textContent = `${y}-${mo}-${d}`;
+      if (showDate) {
+        const y = now.getFullYear(), mo = pad(now.getMonth()+1), d = pad(now.getDate());
+        document.getElementById('date-str').textContent = `${y}.${mo}.${d}`;
+      } else {
+        document.getElementById('date-str').style.display = 'none';
+      }
 
-      if (hStr !== prevH) {
+      const ampmEl = document.getElementById('ampm');
+      if (use24h) { ampmEl.textContent = 'HR'; }
+      else { ampmEl.textContent = h < 12 ? 'AM' : 'PM'; }
+
+      const dayEl = document.getElementById('dayofweek');
+      if (showDay) { dayEl.textContent = DAYS[now.getDay()]; }
+      else { dayEl.style.display = 'none'; }
+
+      if (hDisplay !== prevH) {
         const el = document.getElementById('hours');
-        if (prevH === null) { el.textContent = hStr; } else { flipNum(el, hStr); }
-        prevH = hStr;
+        if (prevH === null) el.textContent = hDisplay; else flipNum(el, hDisplay);
+        prevH = hDisplay;
       }
       if (mStr !== prevM) {
         const el = document.getElementById('minutes');
-        if (prevM === null) { el.textContent = mStr; } else { flipNum(el, mStr); }
+        if (prevM === null) el.textContent = mStr; else flipNum(el, mStr);
         prevM = mStr;
       }
     }
-
     tick();
     setInterval(tick, 1000);
   </script>
