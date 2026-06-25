@@ -93,15 +93,25 @@
     .folder-extra label { font-size: 10px; color: #888; display: block; margin-bottom: 3px; }
     .fi-url { font-family: 'ChosunGu', monospace; font-size: 10.5px; border: 1px solid #ccc; padding: 4px 7px; width: 100%; outline: none; }
     .fi-url:focus { border-color: #9b8fc7; }
-    .ask-textarea { font-family: 'ChosunGu', sans-serif; font-size: 12px; line-height: 1.7; border: 1.5px solid #ddd; padding: 10px 12px; width: 100%; min-height: 130px; resize: vertical; outline: none; color: #111; }
+    /* Ask Claude - step flow */
+    .ask-step-header { display: flex; align-items: center; gap: 10px; padding: 0 0 16px; margin-bottom: 16px; border-bottom: 1px solid #eee; }
+    .ask-step-dots { display: flex; align-items: center; gap: 0; }
+    .ask-dot { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #ddd; background: #fff; color: #bbb; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+    .ask-dot.active { border-color: #9b8fc7; background: #9b8fc7; color: #fff; }
+    .ask-dot.done { border-color: #4caf7d; background: #4caf7d; color: #fff; }
+    .ask-dot-line { width: 18px; height: 1.5px; background: #eee; }
+    .ask-step-title { font-size: 10px; color: #999; letter-spacing: 0.5px; }
+    .ask-widget-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-bottom: 6px; }
+    .ask-wcard { border: 1.5px solid #ddd; padding: 10px 6px 8px; text-align: center; cursor: pointer; font-size: 11px; color: #555; transition: all 0.12s; line-height: 1.5; user-select: none; }
+    .ask-wcard .wc-icon { font-size: 22px; display: block; margin-bottom: 5px; }
+    .ask-wcard.sel { border-color: #9b8fc7; background: #f5f0ff; color: #7b6fb7; font-weight: 700; }
+    .ask-part-list { margin-bottom: 14px; }
+    .ask-part-item { margin-bottom: 8px; }
+    .ask-part-item label { font-size: 12px; color: #333; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; line-height: 1.6; }
+    .ask-summary { background: #f4f4f2; border: 1px solid #ddd; padding: 8px 12px; margin-bottom: 12px; font-size: 10.5px; color: #555; line-height: 1.9; }
+    .ask-summary strong { color: #9b8fc7; }
+    .ask-textarea { font-family: 'ChosunGu', sans-serif; font-size: 12px; line-height: 1.7; border: 1.5px solid #ddd; padding: 10px 12px; width: 100%; min-height: 120px; resize: vertical; outline: none; color: #111; }
     .ask-textarea:focus { border-color: #9b8fc7; }
-    .context-box { background: #f4f4f2; border: 1px solid #ddd; padding: 10px 12px; font-size: 10px; color: #666; line-height: 1.6; max-height: 0; overflow: hidden; transition: max-height 0.3s; font-family: monospace; white-space: pre-wrap; }
-    .context-box.open { max-height: 320px; overflow-y: auto; }
-    .toggle-ctx { font-size: 10.5px; color: #9b8fc7; background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 6px; }
-    .widget-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 16px; }
-    .widget-chip input { display: none; }
-    .widget-chip label { font-size: 11px; padding: 4px 12px; border: 1.5px solid #ddd; cursor: pointer; color: #555; display: block; transition: all 0.1s; }
-    .widget-chip input:checked + label { border-color: #9b8fc7; background: #f5f0ff; color: #9b8fc7; font-weight: 700; }
     .btn-row { display: flex; gap: 8px; margin-top: 14px; }
     .btn { font-family: 'ChosunGu', sans-serif; font-size: 11.5px; border: 1.5px solid #9b8fc7; background: #9b8fc7; color: #fff; padding: 7px 16px; cursor: pointer; letter-spacing: 0.2px; }
     .btn:hover { filter: brightness(1.1); }
@@ -110,7 +120,7 @@
     .btn.ghost { background: #fff; color: #9b8fc7; }
     .btn.full { width: 100%; text-align: center; }
     .btn.dark { background: #1a1a1a; border-color: #1a1a1a; }
-    #sync-status { font-size: 10px; color: #aaa; margin-top: 6px; min-height: 14px; }
+    #sync-status { font-size: 10px; color: #aaa; margin-top: 6px; min-height: 14px; padding: 0 16px 8px; }
     #sync-status.ok  { color: #4caf7d; }
     #sync-status.err { color: #e05c5c; }
     #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; font-family: 'ChosunGu', sans-serif; font-size: 11px; padding: 8px 18px; border: 1px solid #444; opacity: 0; transition: opacity 0.18s; pointer-events: none; white-space: nowrap; z-index: 999; }
@@ -122,7 +132,7 @@
   <div class="window">
     <div class="titlebar">
       <span>C:// SETTINGS</span>
-      <span id="sync-indicator" style="font-size:10px;opacity:0.6">⚙</span>
+      <span style="opacity:0.75;cursor:default">⚙</span>
     </div>
     <div class="tabs">
       <button class="tab-btn active" data-tab="theme">테마</button>
@@ -210,7 +220,6 @@
       </div>
       <div class="section">
         <h3>📝 Memo 위젯</h3>
-        <p class="info" style="margin-bottom:10px">DB ID 변경은 ✦ Claude 탭에서 요청하세요.</p>
         <label class="field-label">소스 DB ID</label>
         <input type="text" class="text-input" id="memo-src-db" />
         <label class="field-label">최대 표시 메모 수</label>
@@ -227,28 +236,51 @@
       </div>
     </div>
 
-    <!-- Ask Claude -->
+    <!-- Ask Claude - 3-step flow -->
     <div class="tab-pane" id="tab-ask">
-      <div class="section">
-        <h3>어떤 변경을 원하시나요?</h3>
-        <textarea class="ask-textarea" id="ask-text" placeholder="예시:
-- 시계 위젯을 디지털 세그먼트 스타일로 바꿔줘
-- 메모 위젯에 태그 기능 추가해줘
-- 타이틀바에 현재 시각 추가해줘"></textarea>
-        <label class="field-label">관련 위젯</label>
-        <div class="widget-chips">
-          <div class="widget-chip"><input type="checkbox" id="wc-clock" value="clock" /><label for="wc-clock">🕐 Clock</label></div>
-          <div class="widget-chip"><input type="checkbox" id="wc-memo" value="memo" /><label for="wc-memo">📝 Memo</label></div>
-          <div class="widget-chip"><input type="checkbox" id="wc-folder" value="folder" /><label for="wc-folder">📁 Folders</label></div>
-          <div class="widget-chip"><input type="checkbox" id="wc-habit" value="habit" /><label for="wc-habit">📋 Habit</label></div>
-          <div class="widget-chip"><input type="checkbox" id="wc-new" value="new" /><label for="wc-new">✦ 새 위젯</label></div>
-          <div class="widget-chip"><input type="checkbox" id="wc-settings" value="settings" /><label for="wc-settings">⚙ Settings</label></div>
+      <!-- Step indicator -->
+      <div class="ask-step-header">
+        <div class="ask-step-dots">
+          <div class="ask-dot active" id="dot1">1</div>
+          <div class="ask-dot-line"></div>
+          <div class="ask-dot" id="dot2">2</div>
+          <div class="ask-dot-line"></div>
+          <div class="ask-dot" id="dot3">3</div>
         </div>
-        <button class="toggle-ctx" id="btn-ctx-toggle">▶ 자동 첨부 컨텍스트 미리보기</button>
-        <div class="context-box" id="ctx-preview"></div>
+        <div class="ask-step-title" id="ask-step-title">위젯 선택</div>
       </div>
-      <button class="btn dark full" id="btn-send-claude">✦ Claude에게 전달하기</button>
-      <p class="info" style="margin-top:10px">클릭 → 프롬프트 클립보드 복사 + claude.ai 새 탭 → 붙여넣기(Ctrl+V)</p>
+
+      <!-- Step 1: 위젯 선택 -->
+      <div id="ask-s1">
+        <h3>어떤 위젯을 수정할까요?</h3>
+        <div class="ask-widget-grid" id="ask-widget-grid"></div>
+        <p class="info">여러 개 선택 가능</p>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn" id="ask-next1">다음 →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: 변경 부분 선택 -->
+      <div id="ask-s2" style="display:none">
+        <h3>어떤 부분을 바꾸고 싶나요?</h3>
+        <div class="ask-part-list" id="ask-parts-list"></div>
+        <div class="btn-row">
+          <button class="btn ghost" id="ask-back2">← 이전</button>
+          <button class="btn" id="ask-next2">다음 →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: 변경 내용 입력 + 전송 -->
+      <div id="ask-s3" style="display:none">
+        <h3>어떻게 바꾸고 싶나요?</h3>
+        <div class="ask-summary" id="ask-summary"></div>
+        <textarea class="ask-textarea" id="ask-text" placeholder="구체적으로 설명해주세요..."></textarea>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn ghost" id="ask-back3">← 이전</button>
+          <button class="btn dark" id="btn-send-claude">✦ Claude에게 전달</button>
+        </div>
+        <p class="info">클릭 → 프롬프트 복사 + claude.ai 새 탭 오픈</p>
+      </div>
     </div>
   </div>
 
@@ -282,7 +314,7 @@
 
     /* Notion에서 설정 로드 */
     async function loadFromNotion() {
-      setSyncStatus('loading', '포션에서 세팅 읽는 중...');
+      setSyncStatus('loading', 'Notion에서 설정 읽는 중...');
       try {
         const res = await fetch('/api/settings');
         if (!res.ok) throw new Error('HTTP '+res.status);
@@ -291,13 +323,13 @@
         populateUI();
         setSyncStatus('ok', '✓ Notion 연동됨');
       } catch(e) {
-        /* 폴백: localStorage */
         try {
           const local = JSON.parse(localStorage.getItem('wg_settings')||'null');
           if (local) { S = Object.assign(deep(DEFAULTS), local); populateUI(); }
         } catch(_){}
-        setSyncStatus('err', '⚠️ Notion 연동 실패 (로컈 설정 사용중)');
+        setSyncStatus('err', '⚠️ Notion 연동 실패 (로컬 설정 사용중)');
       }
+      buildWidgetCards();
     }
 
     /* Notion에 저장 */
@@ -312,8 +344,10 @@
         });
         if (!res.ok) throw new Error('HTTP '+res.status);
         setSyncStatus('ok', '✓ Notion 저장 완료 — 모든 디바이스에 적용됩니다');
+        showToast('저장 완료');
       } catch(e) {
-        setSyncStatus('err', '⚠️ Notion 저장 실패 (로컈에만 저장됨): '+e.message);
+        setSyncStatus('err', '⚠️ Notion 저장 실패 (로컬에만 저장됨): '+e.message);
+        showToast('로컬에만 저장됨', 4000);
       }
     }
 
@@ -344,6 +378,7 @@
       document.getElementById('memo-max').value     = S.memo.maxItems||60;
       document.querySelectorAll('.memo-route').forEach(cb => cb.checked=(S.memo.routes||[]).includes(cb.value));
       renderFolders();
+      buildWidgetCards();
     }
 
     /* 색상 */
@@ -447,6 +482,7 @@
         return{name:row.querySelector('.fi-name').value.trim()||'폴더',colorTab:colors[0].value,colorBody:colors[1].value,type:row.querySelector('.fi-type').value,url:extra?extra.querySelector('.fi-url').value.trim():''};
       });
       await saveToNotion();
+      buildWidgetCards();
     });
 
     /* Clock */
@@ -461,30 +497,145 @@
       await saveToNotion();
     });
 
-    /* Ask Claude */
-    function buildContext(){
-      const t=S.theme,tb=S.titlebar;
-      return `[프로젝트 개요]\nGitHub 레포: 45w4s2g96w-ship-it/widget-generator\n배포: Vercel — https://widget-generator-theta.vercel.app\n브랜치: main (직접 배포)\n\n[디렉토리]\nwidgets/clock, flipclock, habittracker, log, folders\nshared/tokens.css, config-loader.js, fonts/ChosunGu.TTF\napi/diary-today.js, memo-route.js, suggest-colors.js, settings.js\nsettings/index.html\n\n[설정 시스템]\n/api/settings (GET/POST) → Notion 페이지 38551f4140c5801cac73fd07c2f25b4c\nconfig-loader.js: /api/settings 읽기 → localStorage 폴백\n\n[현재 저장값]\ntheme: winColor=${t.winColor}, accent=${t.accent}, windowBg=${t.windowBg}, ink=${t.ink}\ntitlebar: height=${tb.height}px, fontSize=${tb.fontSize}px\nfolders: ${JSON.stringify(S.folders)}\nclock: format=${S.clock.format}\nmemo: srcDbId=${S.memo.srcDbId}\n\n[디자인 규칙]\n- 폰트: ChosunGu (shared/fonts/ChosunGu.TTF)\n- 타이틀바 우측: ⚙ 이모지만\n- 버튼: background var(--accent), color #fff\n- hover: brightness(1.1) / active: brightness(0.9)\n- 색상 하드코딩 금지\n\n[Notion DB ID]\n다이어리: 37451f4140c5808e9141c8804e892661\n투두: 37651f4140c5805e875cdc92a5715d21\n장바구니: 37751f4140c580598f09f7903db2248f\n아이디어: 37a51f4140c580e4bcf9f6279769ae26\n북마크: 638c790c1ad7406ca8bfbe87d965e687\n노: 37851f4140c580c995d6f55451f2c1f7\n메모소스: 37751f4140c580e4b680c979ee1d0f2a\n\n[배포]\nmcp__github__push_files → main 브랜치 → Vercel 자동 배포`;
+    /* ============================================================
+       Ask Claude — 3-step flow
+       ============================================================ */
+
+    /* 위젯 카탈로그 (고정 + 폴더에서 동적 생성) */
+    const FIXED_WIDGETS = [
+      { id:'clock',    icon:'🕐', label:'Clock',    file:'widgets/clock/index.html',      parts:['디자인 변경','숫자/폰트 스타일','12h/24h 형식','날짜·요일 표시','애니메이션','기타'] },
+      { id:'memo',     icon:'📝', label:'Memo',     file:'widgets/log/index.html',         parts:['라우팅 로직','DB 구성','UI/디자인','새 기능 추가','기타'] },
+      { id:'folders',  icon:'📁', label:'Folders',  file:'widgets/folders/index.html',     parts:['폴더 디자인','연결 대상 변경','폴더 추가/삭제','애니메이션','기타'] },
+      { id:'habit',    icon:'📋', label:'Habit',    file:'widgets/habittracker/index.html',parts:['트래커 항목','디자인 변경','DB 연동','기타'] },
+      { id:'settings', icon:'⚙',  label:'Settings', file:'settings/index.html',            parts:['UI 개선','새 설정 항목 추가','Claude 탭 개선','기타'] },
+      { id:'new',      icon:'✦',  label:'새 위젯',  file:'',                               parts:['어떤 위젯인지 설명해주세요'] },
+    ];
+
+    let askSelectedWidgets = [];
+    let askSelectedParts   = [];
+    let askCurrentStep     = 1;
+
+    function getWidgetCatalog() {
+      const catalog = [...FIXED_WIDGETS];
+      /* 폴더 설정에서 각 폴더도 추가 (diary-api 같은 경우) */
+      S.folders.forEach(f => {
+        catalog.splice(2, 0, {
+          id: 'folder-'+f.name,
+          icon: '📂',
+          label: f.name+' 폴더',
+          file: 'widgets/folders/index.html',
+          parts: ['연결 대상 변경','색상 변경','아이콘 변경','기타'],
+        });
+      });
+      return catalog;
     }
-    const ctxBox=document.getElementById('ctx-preview');
-    document.getElementById('btn-ctx-toggle').addEventListener('click',function(){
-      ctxBox.classList.toggle('open');
-      this.textContent=ctxBox.classList.contains('open')?'▼ 컨텍스트 숨기기':'▶ 자동 첨부 컨텍스트 미리보기';
-      if(ctxBox.classList.contains('open')&&!ctxBox.textContent) ctxBox.textContent=buildContext();
+
+    function buildWidgetCards() {
+      const grid = document.getElementById('ask-widget-grid');
+      grid.innerHTML = '';
+      getWidgetCatalog().forEach(w => {
+        const el = document.createElement('div');
+        el.className = 'ask-wcard';
+        el.dataset.id = w.id;
+        el.innerHTML = `<span class="wc-icon">${w.icon}</span>${w.label}`;
+        el.addEventListener('click', () => el.classList.toggle('sel'));
+        grid.appendChild(el);
+      });
+    }
+
+    function setAskStep(n) {
+      askCurrentStep = n;
+      ['ask-s1','ask-s2','ask-s3'].forEach((id,i) => {
+        document.getElementById(id).style.display = (i+1===n) ? '' : 'none';
+      });
+      const titles = ['위젯 선택','변경 부분 선택','변경 내용 입력'];
+      document.getElementById('ask-step-title').textContent = titles[n-1];
+      [1,2,3].forEach(i => {
+        const dot = document.getElementById('dot'+i);
+        dot.className = 'ask-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+      });
+    }
+
+    /* Step 1 → 2 */
+    document.getElementById('ask-next1').addEventListener('click', () => {
+      askSelectedWidgets = Array.from(document.querySelectorAll('.ask-wcard.sel')).map(el => {
+        return getWidgetCatalog().find(w => w.id === el.dataset.id);
+      }).filter(Boolean);
+      if (!askSelectedWidgets.length) { showToast('위젯을 하나 이상 선택해주세요', 2500); return; }
+
+      /* 선택된 위젯들의 parts 합집합 */
+      const allParts = [...new Set(askSelectedWidgets.flatMap(w => w.parts))];
+      const list = document.getElementById('ask-parts-list');
+      list.innerHTML = '';
+      allParts.forEach((p, i) => {
+        const item = document.createElement('div'); item.className = 'ask-part-item';
+        const uid = 'part-'+i;
+        item.innerHTML = `<label><input type="checkbox" id="${uid}" value="${p}" style="accent-color:#9b8fc7" /> ${p}</label>`;
+        list.appendChild(item);
+      });
+      setAskStep(2);
     });
-    document.getElementById('btn-send-claude').addEventListener('click',async()=>{
-      const userText=document.getElementById('ask-text').value.trim();
-      if(!userText){showToast('변경 내용을 입력해주세요',3000);return;}
-      const selected=Array.from(document.querySelectorAll('.widget-chip input:checked')).map(c=>c.value);
-      const widgetNote=selected.length?`\n관련 위젯: ${selected.join(', ')}`:\';
-      const prompt=`아래는 위젯 생성기 프로젝트의 전체 구성입니다. 이를 바탕으로 요청을 처리해주세요.\n\n${buildContext()}\n\n${'='.repeat(60)}\n[사용자 요청]${widgetNote}\n${userText}\n${'='.repeat(60)}\n\n위 요청을 구현하는 코드를 작성해주세요.`;
+
+    /* Step 2 → 1 */
+    document.getElementById('ask-back2').addEventListener('click', () => setAskStep(1));
+
+    /* Step 2 → 3 */
+    document.getElementById('ask-next2').addEventListener('click', () => {
+      askSelectedParts = Array.from(document.querySelectorAll('#ask-parts-list input:checked')).map(cb => cb.value);
+
+      const widgetNames = askSelectedWidgets.map(w => w.label).join(', ');
+      const partNames   = askSelectedParts.length ? askSelectedParts.join(', ') : '(미선택)';
+      const summary = document.getElementById('ask-summary');
+      summary.innerHTML = `<strong>위젯:</strong> ${widgetNames}<br><strong>변경 부분:</strong> ${partNames}`;
+
+      const ta = document.getElementById('ask-text');
+      ta.value = '';
+      ta.placeholder = askSelectedWidgets[0]?.id === 'new'
+        ? '만들고 싶은 위젯을 설명해주세요...'
+        : `${widgetNames}에서 ${partNames}를 어떻게 바꾸고 싶은지 적어주세요...`;
+      setAskStep(3);
+    });
+
+    /* Step 3 → 2 */
+    document.getElementById('ask-back3').addEventListener('click', () => setAskStep(2));
+
+    /* 전송 */
+    document.getElementById('btn-send-claude').addEventListener('click', async () => {
+      const userText = document.getElementById('ask-text').value.trim();
+      if (!userText) { showToast('변경 내용을 입력해주세요', 2500); return; }
+
+      const widgetLines = askSelectedWidgets.map(w => {
+        const filePart = w.file ? `  파일: ${w.file}` : '';
+        return `- ${w.label}${filePart ? '\n'+filePart : ''}`;
+      }).join('\n');
+      const partLine = askSelectedParts.length ? askSelectedParts.join(', ') : '미지정';
+
+      const prompt =
+`[프로젝트]
+GitHub: 45w4s2g96w-ship-it/widget-generator
+Vercel: https://widget-generator-theta.vercel.app
+브랜치: main (push → Vercel 자동 배포)
+
+[수정 대상]
+${widgetLines}
+
+[변경 부분]
+${partLine}
+
+[요청]
+${userText}
+
+[지시]
+레포를 직접 읽고 관련 파일을 파악한 뒤 변경을 구현해주세요.
+구현 완료 후 main 브랜치에 push해주세요.`;
+
       try { await navigator.clipboard.writeText(prompt); }
-      catch(e){
+      catch(e) {
         const ta=document.createElement('textarea'); ta.value=prompt; ta.style.cssText='position:fixed;opacity:0';
         document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
       }
       window.open('https://claude.ai/new','_blank');
-      showToast('✓ 프롬프트 복사됨! 새 탭에서 Ctrl+V',5000);
+      showToast('✓ 프롬프트 복사됨! 새 탭에서 붙여넣기', 5000);
     });
 
     function showToast(msg,ms){
@@ -492,7 +643,8 @@
       clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),ms||3500);
     }
 
-    /* 시작 시 Notion에서 로드 */
+    /* 초기화 */
+    buildWidgetCards();
     loadFromNotion();
   </script>
 </body>
