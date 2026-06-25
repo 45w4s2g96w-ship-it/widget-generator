@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .folder-wrap {
+      position: relative;
+      width: 160px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .folder-tab {
+      width: 56px;
+      height: 16px;
+      background: #a0a0a0;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .folder-body {
+      background: #c0c0c0;
+      border-radius: 0 8px 8px 8px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4);
+      transition: filter 0.12s;
+    }
+
+    .folder-wrap:hover .folder-body { filter: brightness(1.06); }
+    .folder-wrap:active .folder-body { filter: brightness(0.93); }
+
+    .folder-icon {
+      font-size: 32px;
+      line-height: 1;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .folder-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #2a2a2a;
+      letter-spacing: 0.3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="folder-wrap" id="folder">
+    <div class="folder-tab"></div>
+    <div class="folder-body">
+      <span class="folder-icon">📚</span>
+      <div class="folder-name">Book</div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('folder').addEventListener('click', () => {
+      window.open('https://www.notion.so/37851f4140c580c995d6f55451f2c1f7', '_blank');
+    });
+  </script>
+</body>
+</html>
