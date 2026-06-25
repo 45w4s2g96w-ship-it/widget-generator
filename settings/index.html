@@ -9,50 +9,88 @@
     *{box-sizing:border-box;margin:0;padding:0;}
     body{background:#e8e8e6;font-family:'ChosunGu',sans-serif;display:flex;justify-content:center;padding:24px 16px 56px;min-height:100vh;}
     .window{width:100%;max-width:520px;background:#fff;border:1.5px solid #111;box-shadow:4px 4px 0 #111;}
-    .titlebar{background:#1a1a1a;color:#fff;font-size:12px;font-weight:700;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;letter-spacing:.3px;user-select:none;}
+    .titlebar{background:#1a1a1a;color:#fff;font-size:12px;font-weight:700;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;letter-spacing:.3px;}
     .body{padding:20px 16px 28px;}
-    .step-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-    .step-dots{display:flex;align-items:center;}
-    .sdot{width:24px;height:24px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#bbb;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
-    .sdot.active{border-color:#9b8fc7;background:#9b8fc7;color:#fff;}
-    .sdot.done{border-color:#4caf7d;background:#4caf7d;color:#fff;}
-    .sdot-line{width:16px;height:1.5px;background:#eee;}
-    .step-label{font-size:10px;color:#aaa;letter-spacing:.5px;flex:1;}
-    h3{font-size:10.5px;color:#999;letter-spacing:.8px;text-transform:uppercase;margin:0 0 12px;padding-bottom:5px;border-bottom:1px solid #eee;}
-    .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:8px;}
-    .wcard{border:1.5px solid #ddd;padding:10px 6px 8px;text-align:center;cursor:pointer;font-size:11px;color:#555;transition:all .12s;line-height:1.5;user-select:none;}
-    .wcard .wc-icon{font-size:20px;display:block;margin-bottom:4px;}
-    .wcard.sel{border-color:#9b8fc7;background:#f5f0ff;color:#7b6fb7;font-weight:700;}
-    .wcard.cat{border-style:dashed;}
-    .wcard.cat.sel{border-style:solid;}
-    .mode-cards{display:flex;gap:10px;margin-bottom:16px;}
-    .mcard{flex:1;border:1.5px solid #ddd;padding:12px 10px;cursor:pointer;text-align:center;transition:all .12s;}
-    .mcard:hover{border-color:#9b8fc7;}
-    .mcard.sel{border-color:#9b8fc7;background:#f5f0ff;}
-    .mcard .mc-icon{font-size:18px;display:block;margin-bottom:4px;}
-    .mcard .mc-title{font-size:11.5px;font-weight:700;color:#333;margin-bottom:2px;}
-    .mcard .mc-desc{font-size:10px;color:#aaa;line-height:1.4;}
-    .part-list{margin-bottom:14px;}
-    .part-item{margin-bottom:8px;}
-    .part-item label{font-size:12px;color:#333;display:flex;align-items:flex-start;gap:8px;cursor:pointer;line-height:1.6;}
-    input[type=checkbox],input[type=radio]{accent-color:#9b8fc7;cursor:pointer;}
-    .wsec{border:1px solid #ddd;margin-bottom:10px;}
-    .wsec-head{background:#f4f4f2;padding:7px 12px;font-size:11px;font-weight:700;color:#555;display:flex;align-items:center;gap:6px;}
-    .wsec-body{padding:10px 12px 12px;}
-    .summary{background:#f4f4f2;border:1px solid #ddd;padding:8px 12px;margin-bottom:12px;font-size:10.5px;color:#555;line-height:1.9;}
-    .summary strong{color:#9b8fc7;}
-    .ask-ta{font-family:'ChosunGu',sans-serif;font-size:12px;line-height:1.7;border:1.5px solid #ddd;padding:10px 12px;width:100%;min-height:100px;resize:vertical;outline:none;color:#111;}
-    .ask-ta:focus{border-color:#9b8fc7;}
-    .ask-ta.sm{min-height:70px;}
-    .btn-row{display:flex;gap:8px;margin-top:14px;}
-    .btn{font-family:'ChosunGu',sans-serif;font-size:11.5px;border:1.5px solid #9b8fc7;background:#9b8fc7;color:#fff;padding:7px 16px;cursor:pointer;letter-spacing:.2px;}
+
+    /* Section header */
+    .sec-head{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#aaa;padding:0 0 6px;border-bottom:1px solid #eee;margin:24px 0 12px;display:flex;align-items:center;gap:6px;}
+    .sec-head:first-child{margin-top:0;}
+    .sec-icon{font-size:13px;}
+
+    /* Field */
+    .field{margin-bottom:10px;}
+    .field label{display:block;font-size:10px;color:#999;margin-bottom:3px;letter-spacing:.3px;}
+    .field input[type=text],.field input[type=number],.field select{
+      width:100%;border:1px solid #ddd;padding:5px 7px;font-size:11.5px;
+      font-family:'ChosunGu',sans-serif;color:#111;outline:none;background:#fff;
+    }
+    .field input:focus,.field select:focus{border-color:#9b8fc7;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+    /* Color row */
+    .color-row{display:flex;gap:7px;align-items:center;}
+    .color-row input[type=color]{width:32px;height:28px;padding:1px;border:1px solid #ddd;cursor:pointer;flex-shrink:0;}
+    .color-row input[type=text]{flex:1;}
+
+    /* Toggle */
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;}
+    .toggle-row span{font-size:11.5px;color:#333;}
+    .toggle{position:relative;width:32px;height:18px;flex-shrink:0;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;inset:0;background:#ddd;border-radius:9px;cursor:pointer;transition:background .18s;}
+    .toggle input:checked+.toggle-slider{background:#9b8fc7;}
+    .toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .18s;}
+    .toggle input:checked+.toggle-slider:before{transform:translateX(14px);}
+
+    /* Folder cards */
+    .folder-list{display:flex;flex-direction:column;gap:10px;}
+    .folder-card{border:1px solid #ddd;padding:10px 10px 8px;}
+    .folder-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .folder-card-label{font-size:10px;font-weight:700;color:#888;letter-spacing:.5px;text-transform:uppercase;}
+    .del-btn{background:none;border:none;font-size:13px;color:#ccc;cursor:pointer;padding:0;line-height:1;}
+    .del-btn:hover{color:#e05c5c;}
+    .add-folder-btn{border:1.5px dashed #ccc;background:none;width:100%;padding:8px;font-family:'ChosunGu',sans-serif;font-size:11px;color:#aaa;cursor:pointer;letter-spacing:.5px;margin-top:6px;}
+    .add-folder-btn:hover{border-color:#9b8fc7;color:#9b8fc7;}
+
+    /* Route tags */
+    .tag-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px;min-height:22px;}
+    .tag{display:flex;align-items:center;gap:3px;background:#f0edf8;border:1px solid #d0c8e8;padding:2px 6px 2px 7px;font-size:10.5px;color:#7b6fb7;}
+    .tag-del{background:none;border:none;font-size:11px;color:#b0a0d0;cursor:pointer;padding:0;line-height:1;}
+    .tag-del:hover{color:#e05c5c;}
+    .tag-input-row{display:flex;gap:5px;margin-top:5px;}
+    .tag-input-row input{flex:1;border:1px solid #ddd;padding:4px 6px;font-size:11px;font-family:'ChosunGu',sans-serif;outline:none;}
+    .tag-input-row input:focus{border-color:#9b8fc7;}
+    .tag-add-btn{border:1px solid #ddd;background:#fff;padding:4px 9px;font-size:10px;font-family:'ChosunGu',sans-serif;cursor:pointer;color:#888;white-space:nowrap;}
+    .tag-add-btn:hover{border-color:#9b8fc7;color:#9b8fc7;}
+
+    /* Save row */
+    .save-row{margin-top:18px;display:flex;align-items:center;gap:10px;}
+    #save-status{font-size:10.5px;color:#aaa;}
+    #save-status.ok{color:#4caf7d;} #save-status.err{color:#e05c5c;}
+    #sync-status{font-size:10px;color:#aaa;text-align:right;margin-top:5px;}
+    #sync-status.ok{color:#4caf7d;} #sync-status.err{color:#e05c5c;}
+
+    /* Buttons */
+    .btn{font-family:'ChosunGu',sans-serif;font-size:11.5px;border:1.5px solid #9b8fc7;background:#9b8fc7;color:#fff;padding:7px 20px;cursor:pointer;letter-spacing:.2px;}
     .btn:hover{filter:brightness(1.1);} .btn:active{filter:brightness(.9);} .btn:disabled{opacity:.45;cursor:default;filter:none;}
-    .btn.ghost{background:#fff;color:#9b8fc7;}
     .btn.dark{background:#1a1a1a;border-color:#1a1a1a;}
     .btn.full{width:100%;text-align:center;padding:9px 16px;font-size:12px;}
-    .info{font-size:10.5px;color:#aaa;margin-top:8px;line-height:1.6;text-align:center;}
-    #sync-status{font-size:10px;color:#aaa;margin-top:4px;text-align:center;}
-    #sync-status.ok{color:#4caf7d;} #sync-status.err{color:#e05c5c;}
+
+    /* Divider */
+    .divider{border:none;border-top:2px solid #111;margin:32px 0 26px;}
+
+    /* Claude section */
+    .claude-title{font-size:13px;font-weight:700;color:#111;margin-bottom:16px;letter-spacing:-.2px;}
+    .chips{display:flex;gap:5px;flex-wrap:wrap;}
+    .chip{border:1.5px solid #ddd;background:#fff;padding:4px 10px;font-family:'ChosunGu',sans-serif;font-size:10.5px;color:#888;cursor:pointer;user-select:none;}
+    .chip.sel{border-color:#9b8fc7;background:#f5f0ff;color:#7b6fb7;font-weight:700;}
+    .type-btns{display:flex;gap:6px;flex-wrap:wrap;}
+    .type-btn{border:1.5px solid #ddd;background:#fff;padding:5px 13px;font-family:'ChosunGu',sans-serif;font-size:11px;color:#888;cursor:pointer;}
+    .type-btn.sel{border-color:#9b8fc7;background:#f5f0ff;color:#7b6fb7;font-weight:700;}
+    .ask-ta{font-family:'ChosunGu',sans-serif;font-size:12px;line-height:1.7;border:1.5px solid #ddd;padding:10px 12px;width:100%;min-height:88px;resize:vertical;outline:none;color:#111;}
+    .ask-ta:focus{border-color:#9b8fc7;}
+    .info{font-size:10px;color:#aaa;text-align:center;margin-top:8px;line-height:1.6;}
+
     #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font-family:'ChosunGu',sans-serif;font-size:11px;padding:8px 18px;border:1px solid #444;opacity:0;transition:opacity .18s;pointer-events:none;white-space:nowrap;z-index:999;}
     #toast.show{opacity:1;}
   </style>
@@ -60,253 +98,519 @@
 <body>
 <div class="window">
   <div class="titlebar">
-    <span>C:// SETTINGS &rarr; Claude Code</span>
+    <span>C:// SETTINGS</span>
     <span style="opacity:.75;cursor:default">&#9881;</span>
   </div>
   <div class="body">
-    <div class="step-header">
-      <div class="step-dots">
-        <div class="sdot active" id="dot1">1</div>
-        <div class="sdot-line"></div>
-        <div class="sdot" id="dot2">2</div>
-        <div class="sdot-line"></div>
-        <div class="sdot" id="dot3">3</div>
-      </div>
-      <div class="step-label" id="step-label">무엇을 바꾸고 싶으세요?</div>
-    </div>
 
-    <!-- Step 1 -->
-    <div id="s1">
-      <h3>커테고리</h3>
-      <div class="card-grid" id="cat-grid">
-        <div class="wcard cat" data-id="theme"><span class="wc-icon">🎨</span>테마</div>
-        <div class="wcard cat" data-id="titlebar"><span class="wc-icon">🛠</span>타이틀바</div>
-        <div class="wcard cat" data-id="new"><span class="wc-icon">✦</span>새 위젯</div>
-      </div>
-      <h3 style="margin-top:16px">위젯</h3>
-      <div class="card-grid" id="widget-grid"></div>
-      <p class="info" style="text-align:left;margin-top:4px">여러 개 선택 가능</p>
-      <div class="btn-row" style="margin-top:16px">
-        <button class="btn" id="next1">다음 →</button>
-      </div>
-    </div>
+    <!-- ──────────────────────────────
+         직접 설정
+    ────────────────────────────── -->
 
-    <!-- Step 2 -->
-    <div id="s2" style="display:none">
-      <div id="s2-mode" style="display:none;margin-bottom:16px">
-        <h3>적용 방식</h3>
-        <div class="mode-cards">
-          <div class="mcard sel" id="mc-bulk"><span class="mc-icon">⚡</span><div class="mc-title">일괄 적용</div><div class="mc-desc">선택한 모든 항목에<br>같은 변경</div></div>
-          <div class="mcard" id="mc-each"><span class="mc-icon">🎯</span><div class="mc-title">각각 커스텀</div><div class="mc-desc">항목마다 다른<br>변경 내용</div></div>
+    <div class="sec-head"><span class="sec-icon">🎨</span> THEME</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>타이틀바 색상</label>
+        <div class="color-row">
+          <input type="color" id="t-winColor" value="#1a1a1a">
+          <input type="text" id="t-winColor-hex" placeholder="#1a1a1a">
         </div>
       </div>
-      <h3>어떤 부분을 바꾸고 싶나요?</h3>
-      <div class="part-list" id="parts-bulk"></div>
-      <div class="btn-row">
-        <button class="btn ghost" id="back2">← 이전</button>
-        <button class="btn" id="next2">다음 →</button>
+      <div class="field">
+        <label>강조 색상 (accent)</label>
+        <div class="color-row">
+          <input type="color" id="t-accent" value="#9b8fc7">
+          <input type="text" id="t-accent-hex" placeholder="#9b8fc7">
+        </div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>배경 색상</label>
+        <div class="color-row">
+          <input type="color" id="t-windowBg" value="#ffffff">
+          <input type="text" id="t-windowBg-hex" placeholder="#ffffff">
+        </div>
+      </div>
+      <div class="field">
+        <label>텍스트 색상</label>
+        <div class="color-row">
+          <input type="color" id="t-ink" value="#111111">
+          <input type="text" id="t-ink-hex" placeholder="#111111">
+        </div>
       </div>
     </div>
 
-    <!-- Step 3 -->
-    <div id="s3" style="display:none">
-      <div class="summary" id="summary"></div>
-      <div id="s3-bulk"><textarea class="ask-ta" id="ta-bulk" placeholder="구체적으로 설명해주세요..."></textarea></div>
-      <div id="s3-each" style="display:none"><div id="each-secs"></div></div>
-      <div class="btn-row" style="margin-top:14px">
-        <button class="btn ghost" id="back3">← 이전</button>
-        <button class="btn dark full" id="btn-send">✦ Claude Code에 보내기</button>
+    <div class="sec-head"><span class="sec-icon">🛠</span> TITLEBAR</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>높이 (px)</label>
+        <input type="number" id="tb-height" min="20" max="60" value="24">
       </div>
-      <p class="info">프롬프트 복사 + claude.ai/code 오픈 &rarr; Ctrl+V</p>
+      <div class="field">
+        <label>폰트 크기 (px)</label>
+        <input type="number" id="tb-fontSize" min="8" max="20" value="11">
+      </div>
     </div>
+    <div class="toggle-row">
+      <span>시계 표시</span>
+      <label class="toggle"><input type="checkbox" id="tb-showTime"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <span>날짜 표시</span>
+      <label class="toggle"><input type="checkbox" id="tb-showDate"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="field" style="margin-top:8px">
+      <label>커스텀 텍스트 (선택)</label>
+      <input type="text" id="tb-customText" placeholder="비워두면 표시 안 함">
+    </div>
+
+    <div class="sec-head"><span class="sec-icon">📁</span> FOLDERS</div>
+
+    <div class="folder-list" id="folder-list"></div>
+    <button class="add-folder-btn" id="add-folder-btn">+ 폴더 추가</button>
+
+    <div class="sec-head"><span class="sec-icon">🕐</span> CLOCK</div>
+
+    <div class="field">
+      <label>시간 형식</label>
+      <select id="cl-format">
+        <option value="12h">12시간 (AM/PM)</option>
+        <option value="24h">24시간</option>
+      </select>
+    </div>
+    <div class="toggle-row">
+      <span>날짜 표시</span>
+      <label class="toggle"><input type="checkbox" id="cl-showDate"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <span>요일 표시</span>
+      <label class="toggle"><input type="checkbox" id="cl-showDay"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="sec-head"><span class="sec-icon">📝</span> MEMO</div>
+
+    <div class="field">
+      <label>Notion DB ID</label>
+      <input type="text" id="memo-dbId" placeholder="37751f4140c580e4b680c979ee1d0f2a">
+    </div>
+    <div class="field">
+      <label>최대 항목 수</label>
+      <input type="number" id="memo-maxItems" min="1" max="200" value="60">
+    </div>
+    <div class="field">
+      <label>라우트 목록</label>
+      <div class="tag-list" id="memo-routes-tags"></div>
+      <div class="tag-input-row">
+        <input type="text" id="memo-route-input" placeholder="새 라우트 이름 입력 후 추가">
+        <button class="tag-add-btn" id="memo-route-add">+ 추가</button>
+      </div>
+    </div>
+
+    <div class="sec-head"><span class="sec-icon">✅</span> TODO</div>
+
+    <div class="field">
+      <label>Notion DB ID</label>
+      <input type="text" id="todo-dbId" placeholder="37651f4140c5805e875cdc92a5715d21">
+    </div>
+
+    <div class="save-row">
+      <button class="btn" id="save-btn">저장</button>
+      <span id="save-status"></span>
+    </div>
+    <div id="sync-status"></div>
+
+    <!-- ──────────────────────────────
+         Claude Code 요청
+    ────────────────────────────── -->
+
+    <hr class="divider">
+
+    <div class="claude-title">✦ Claude Code에 요청하기</div>
+
+    <div class="field">
+      <label>대상 위젯 (복수 선택 가능)</label>
+      <div class="chips" id="widget-chips">
+        <div class="chip" data-id="theme">🎨 테마</div>
+        <div class="chip" data-id="clock">🕐 Clock</div>
+        <div class="chip" data-id="memo">📝 Memo</div>
+        <div class="chip" data-id="todo">✅ Todo</div>
+        <div class="chip" data-id="folders">📁 Folders</div>
+        <div class="chip" data-id="habit">📋 Habit</div>
+        <div class="chip" data-id="settings">⚙ Settings</div>
+        <div class="chip" data-id="new">✦ 새 위젯</div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:12px">
+      <label>변경 종류</label>
+      <div class="type-btns">
+        <button class="type-btn sel" data-type="디자인">디자인</button>
+        <button class="type-btn" data-type="기능">기능</button>
+        <button class="type-btn" data-type="로직/DB">로직/DB</button>
+        <button class="type-btn" data-type="새로 만들기">새로 만들기</button>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:12px">
+      <label>요청 내용</label>
+      <textarea class="ask-ta" id="ask-ta" placeholder="어떻게 바꾸고 싶은지 구체적으로 설명해주세요..."></textarea>
+    </div>
+
+    <button class="btn dark full" id="btn-send">✦ Claude Code에 보내기</button>
+    <p class="info">프롬프트 복사 + claude.ai/code 오픈 → Ctrl+V</p>
+
   </div>
 </div>
-<div id="sync-status"></div>
 <div id="toast"></div>
 
 <script>
-const DEFAULTS={
-  theme:{winColor:'#1a1a1a',accent:'#9b8fc7',windowBg:'#ffffff',ink:'#111111'},
-  titlebar:{height:24,fontSize:11,showGear:true,showTime:false,showDate:false,customText:''},
-  folders:[
-    {name:'Diary',colorBody:'#d8ccf0',colorTab:'#b8a8d8',type:'diary-api',url:''},
-    {name:'Book', colorBody:'#c8c8c8',colorTab:'#a0a0a0',type:'url',url:'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7'},
+const DEFAULTS = {
+  theme:   { winColor:'#1a1a1a', accent:'#9b8fc7', windowBg:'#ffffff', ink:'#111111' },
+  titlebar:{ height:24, fontSize:11, showGear:true, showTime:false, showDate:false, customText:'' },
+  folders: [
+    { name:'Diary', colorBody:'#d8ccf0', colorTab:'#b8a8d8', type:'diary-api', url:'' },
+    { name:'Book',  colorBody:'#c8c8c8', colorTab:'#a0a0a0', type:'url', url:'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7' },
   ],
-  clock:{format:'12h',showDate:true,showDay:true},
-  memo:{srcDbId:'37751f4140c580e4b680c979ee1d0f2a',maxItems:60,routes:['diary','todo','cart','idea','bookmark']},
-  todo:{dbId:'37651f4140c5805e875cdc92a5715d21'},
+  clock:   { format:'12h', showDate:true, showDay:true },
+  memo:    { srcDbId:'37751f4140c580e4b680c979ee1d0f2a', maxItems:60, routes:['diary','todo','cart','idea','bookmark'] },
+  todo:    { dbId:'37651f4140c5805e875cdc92a5715d21' },
 };
-function deep(o){return JSON.parse(JSON.stringify(o));}
-let S=deep(DEFAULTS);
+function deep(o){ return JSON.parse(JSON.stringify(o)); }
 
-const SYSTEM_CATS=[
-  {id:'theme',   icon:'🎨',label:'테마',    cat:true, parts:['위도우 색상','강조색','배경색','텍스트 색상','전체 팔레트']},
-  {id:'titlebar',icon:'🛠',label:'타이틀바', cat:true, file:'shared/tokens.css', parts:['높이/폰트 크기','우측 요소','시각/날짜','커스텀 텍스트']},
-  {id:'new',     icon:'✦', label:'새 위젯',cat:true, parts:['어떤 위젯인지 설명해주세요']},
-];
-const FIXED_WIDGETS=[
-  {id:'clock',   icon:'🕐',label:'Clock',   file:'widgets/clock/index.html',        parts:['디자인 전체','숫자/폰트','12h/24h 형식','날짜·요일','애니메이션','기타']},
-  {id:'memo',    icon:'📝',label:'Memo',    file:'widgets/log/index.html',           parts:['라우팅 로직','DB 구성','UI/디자인','새 기능','기타']},
-  {id:'todo',    icon:'✅',label:'Todo',    file:'widgets/todo/index.html',          parts:['항목 표시','체크/완료 로직','DB 구성','디자인','필터/정렬','기타'], dbId:'37651f4140c5805e875cdc92a5715d21'},
-  {id:'folders', icon:'📁',label:'Folders', file:'widgets/folders/index.html',      parts:['폴더 디자인','연결 대상','폴더 추가/삭제','애니메이션','기타']},
-  {id:'habit',   icon:'📋',label:'Habit',   file:'widgets/habittracker/index.html', parts:['항목 목록','디자인','DB 연동','기타']},
-  {id:'settings',icon:'⚙', label:'Settings',file:'settings/index.html',             parts:['UI 개선','새 항목 추가','Claude 탭 개선','기타']},
-];
+let S = deep(DEFAULTS);
+let folders = deep(DEFAULTS.folders);
+let memoRoutes = [...DEFAULTS.memo.routes];
 
-function getAllItems(){
-  const fi=(S.folders||[]).map(f=>({
-    id:'f-'+f.name,icon:'📂',label:f.name+' 폴더',file:'widgets/folders/index.html',
-    parts:['연결 대상','색상','아이콘','애니메이션','기타'],
-  }));
-  return [...SYSTEM_CATS,...FIXED_WIDGETS,...fi];
-}
-
-/* 위젯 카드만 동적 생성 (카테고리는 HTML 고정) */
-function buildWidgetCards(){
-  const grid=document.getElementById('widget-grid');
-  grid.innerHTML='';
-  getAllItems().filter(i=>!i.cat).forEach(w=>{
-    const el=document.createElement('div');
-    el.className='wcard';el.dataset.id=w.id;
-    el.innerHTML=`<span class="wc-icon">${w.icon}</span>${w.label}`;
-    el.addEventListener('click',()=>el.classList.toggle('sel'));
-    grid.appendChild(el);
-  });
-}
-
-/* 카테고리 카드: 리스너 한 번만 등록 (HTML 고정 요소) */
-document.querySelectorAll('#cat-grid .wcard').forEach(el=>{
-  el.addEventListener('click',()=>el.classList.toggle('sel'));
-});
-
-async function loadFromNotion(){
-  try{
-    const res=await fetch('/api/settings');
-    if(!res.ok) throw new Error();
-    S=Object.assign(deep(DEFAULTS),await res.json());
-    document.getElementById('sync-status').textContent='✓ Notion 연동';
-    document.getElementById('sync-status').className='ok';
-  }catch{
-    try{const l=JSON.parse(localStorage.getItem('wg_settings')||'null');if(l)S=Object.assign(deep(DEFAULTS),l);}catch{}
-    document.getElementById('sync-status').textContent='⚠️ 로컈 설정 사용중';
-    document.getElementById('sync-status').className='err';
+// ── 초기 로드 ──
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    S = Object.assign(deep(DEFAULTS), data);
+    setSyncStatus('✓ Notion 연동', 'ok');
+    localStorage.setItem('wg_settings', JSON.stringify(S));
+  } catch {
+    try {
+      const l = JSON.parse(localStorage.getItem('wg_settings') || 'null');
+      if (l) S = Object.assign(deep(DEFAULTS), l);
+    } catch {}
+    setSyncStatus('⚠️ 로컬 설정 사용중', 'err');
   }
-  buildWidgetCards();
+  populateForm();
 }
 
-let selItems=[],mode='bulk',selParts=[];
-
-function setStep(n){
-  ['s1','s2','s3'].forEach((id,i)=>document.getElementById(id).style.display=(i+1===n)?'':'none');
-  const labels=['무엇을 바꾸고 싶으세요?','어떤 부분을?','어떻게 바꾸치?'];
-  document.getElementById('step-label').textContent=labels[n-1];
-  [1,2,3].forEach(i=>{
-    const d=document.getElementById('dot'+i);
-    d.className='sdot'+(i<n?' done':i===n?' active':'');
-  });
+function setSyncStatus(msg, cls) {
+  const el = document.getElementById('sync-status');
+  el.textContent = msg; el.className = cls || '';
 }
 
-document.getElementById('next1').addEventListener('click',()=>{
-  const all=getAllItems();
-  selItems=Array.from(document.querySelectorAll('.wcard.sel')).map(el=>all.find(w=>w.id===el.dataset.id)).filter(Boolean);
-  if(!selItems.length){showToast('항목을 하나 이상 선택해주세요',2500);return;}
-  const multi=selItems.length>1;
-  document.getElementById('s2-mode').style.display=multi?'':'none';
-  if(!multi)mode='bulk';
-  const allParts=[...new Set(selItems.flatMap(w=>w.parts))];
-  const list=document.getElementById('parts-bulk');list.innerHTML='';
-  allParts.forEach((p,i)=>{
-    const item=document.createElement('div');item.className='part-item';
-    item.innerHTML=`<label><input type="checkbox" id="bp${i}" value="${p}"> ${p}</label>`;
-    list.appendChild(item);
+// ── 폼 채우기 ──
+function populateForm() {
+  const t = S.theme || {};
+  setColor('t-winColor',  t.winColor  || DEFAULTS.theme.winColor);
+  setColor('t-accent',    t.accent    || DEFAULTS.theme.accent);
+  setColor('t-windowBg',  t.windowBg  || DEFAULTS.theme.windowBg);
+  setColor('t-ink',       t.ink       || DEFAULTS.theme.ink);
+
+  const tb = S.titlebar || {};
+  document.getElementById('tb-height').value    = tb.height   || DEFAULTS.titlebar.height;
+  document.getElementById('tb-fontSize').value  = tb.fontSize || DEFAULTS.titlebar.fontSize;
+  document.getElementById('tb-showTime').checked = !!tb.showTime;
+  document.getElementById('tb-showDate').checked = !!tb.showDate;
+  document.getElementById('tb-customText').value = tb.customText || '';
+
+  folders = deep(S.folders || DEFAULTS.folders);
+  renderFolders();
+
+  const cl = S.clock || {};
+  document.getElementById('cl-format').value       = cl.format || '12h';
+  document.getElementById('cl-showDate').checked   = cl.showDate !== false;
+  document.getElementById('cl-showDay').checked    = cl.showDay !== false;
+
+  const memo = S.memo || {};
+  document.getElementById('memo-dbId').value      = memo.srcDbId || '';
+  document.getElementById('memo-maxItems').value  = memo.maxItems || 60;
+  memoRoutes = [...(memo.routes || DEFAULTS.memo.routes)];
+  renderRoutes();
+
+  document.getElementById('todo-dbId').value = (S.todo || {}).dbId || '';
+}
+
+function setColor(id, val) {
+  const picker = document.getElementById(id);
+  const hex    = document.getElementById(id + '-hex');
+  if (picker) picker.value = val;
+  if (hex)    hex.value    = val;
+}
+
+// ── 컬러 피커 ↔ hex 동기화 ──
+['t-winColor','t-accent','t-windowBg','t-ink'].forEach(id => {
+  document.getElementById(id).addEventListener('input', e => {
+    document.getElementById(id + '-hex').value = e.target.value;
   });
-  setStep(2);
+  document.getElementById(id + '-hex').addEventListener('input', e => {
+    const v = e.target.value.trim();
+    if (/^#[0-9a-f]{6}$/i.test(v)) document.getElementById(id).value = v;
+  });
 });
 
-['mc-bulk','mc-each'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',()=>{
-    mode=id==='mc-bulk'?'bulk':'each';
-    document.getElementById('mc-bulk').classList.toggle('sel',mode==='bulk');
-    document.getElementById('mc-each').classList.toggle('sel',mode==='each');
+// ── 폴더 렌더링 ──
+function renderFolders() {
+  const container = document.getElementById('folder-list');
+  container.innerHTML = '';
+  folders.forEach((f, i) => {
+    const isUrl = f.type === 'url';
+    const card = document.createElement('div');
+    card.className = 'folder-card';
+    card.innerHTML = `
+      <div class="folder-card-head">
+        <span class="folder-card-label">폴더 ${i + 1}</span>
+        <button class="del-btn" data-i="${i}" title="삭제">✕</button>
+      </div>
+      <div class="field-row" style="margin-bottom:7px">
+        <div class="field" style="margin-bottom:0">
+          <label>이름</label>
+          <input type="text" class="f-name" data-i="${i}" value="${escHtml(f.name || '')}">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>유형</label>
+          <select class="f-type" data-i="${i}">
+            <option value="diary-api"${f.type === 'diary-api' ? ' selected' : ''}>Diary API</option>
+            <option value="url"${isUrl ? ' selected' : ''}>외부 URL</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row" style="margin-bottom:7px">
+        <div class="field" style="margin-bottom:0">
+          <label>바디 색상</label>
+          <div class="color-row">
+            <input type="color" class="f-colorBody" data-i="${i}" value="${f.colorBody || '#cccccc'}">
+            <input type="text"  class="f-colorBody-hex" data-i="${i}" value="${f.colorBody || '#cccccc'}">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>탭 색상</label>
+          <div class="color-row">
+            <input type="color" class="f-colorTab" data-i="${i}" value="${f.colorTab || '#aaaaaa'}">
+            <input type="text"  class="f-colorTab-hex" data-i="${i}" value="${f.colorTab || '#aaaaaa'}">
+          </div>
+        </div>
+      </div>
+      <div class="field f-url-row" style="margin-bottom:0${isUrl ? '' : ';display:none'}">
+        <label>URL</label>
+        <input type="text" class="f-url" data-i="${i}" value="${escHtml(f.url || '')}">
+      </div>
+    `;
+    container.appendChild(card);
   });
-});
 
-document.getElementById('back2').addEventListener('click',()=>setStep(1));
+  container.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', () => { folders.splice(+btn.dataset.i, 1); renderFolders(); });
+  });
 
-document.getElementById('next2').addEventListener('click',()=>{
-  selParts=Array.from(document.querySelectorAll('#parts-bulk input:checked')).map(cb=>cb.value);
-  const names=selItems.map(w=>w.label).join(', ');
-  const parts=selParts.length?selParts.join(', '):'(미선택)';
-  document.getElementById('summary').innerHTML=`<strong>대상:</strong> ${names}<br><strong>부분:</strong> ${parts}`;
-  if(mode==='each'){
-    document.getElementById('s3-bulk').style.display='none';
-    document.getElementById('s3-each').style.display='';
-    const secs=document.getElementById('each-secs');secs.innerHTML='';
-    selItems.forEach(w=>{
-      const sec=document.createElement('div');sec.className='wsec';
-      sec.innerHTML=`<div class="wsec-head">${w.icon} ${w.label}</div><div class="wsec-body"><div class="part-list" id="ep-${w.id}"></div><textarea class="ask-ta sm" id="et-${w.id}" placeholder="${w.label}에서 어떻게 바꾸고 싶은지..."></textarea></div>`;
-      secs.appendChild(sec);
-      const pl=sec.querySelector(`#ep-${w.id}`);
-      w.parts.forEach((p,i)=>{
-        const it=document.createElement('div');it.className='part-item';
-        it.innerHTML=`<label><input type="checkbox" id="ep-${w.id}-${i}" value="${p}"> ${p}</label>`;
-        pl.appendChild(it);
+  // 컬러 sync
+  function syncColor(pickerCls, hexCls, prop) {
+    container.querySelectorAll(pickerCls).forEach(el => {
+      el.addEventListener('input', e => {
+        const i = +e.target.dataset.i;
+        folders[i][prop] = e.target.value;
+        container.querySelector(`${hexCls}[data-i="${i}"]`).value = e.target.value;
       });
     });
-  } else {
-    document.getElementById('s3-bulk').style.display='';
-    document.getElementById('s3-each').style.display='none';
-    const ta=document.getElementById('ta-bulk');
-    ta.value='';
-    ta.placeholder=selItems[0]?.id==='new'?'만들고 싶은 위젯을 설명해주세요...':`${names}에서 ${parts}를 어떻게 바꾸고 싶은지 설명해주세요...`;
+    container.querySelectorAll(hexCls).forEach(el => {
+      el.addEventListener('input', e => {
+        const i = +e.target.dataset.i, v = e.target.value.trim();
+        if (/^#[0-9a-f]{6}$/i.test(v)) {
+          folders[i][prop] = v;
+          container.querySelector(`${pickerCls}[data-i="${i}"]`).value = v;
+        }
+      });
+    });
   }
-  setStep(3);
+  syncColor('.f-colorBody', '.f-colorBody-hex', 'colorBody');
+  syncColor('.f-colorTab',  '.f-colorTab-hex',  'colorTab');
+
+  // 유형 변경 → URL 행 토글
+  container.querySelectorAll('.f-type').forEach(el => {
+    el.addEventListener('change', e => {
+      const i = +e.target.dataset.i;
+      folders[i].type = e.target.value;
+      const card = container.querySelectorAll('.folder-card')[i];
+      card.querySelector('.f-url-row').style.display = e.target.value === 'url' ? '' : 'none';
+    });
+  });
+}
+
+document.getElementById('add-folder-btn').addEventListener('click', () => {
+  folders.push({ name:'새 폴더', colorBody:'#cccccc', colorTab:'#aaaaaa', type:'url', url:'' });
+  renderFolders();
 });
 
-document.getElementById('back3').addEventListener('click',()=>setStep(2));
+// ── 라우트 태그 ──
+function renderRoutes() {
+  const container = document.getElementById('memo-routes-tags');
+  container.innerHTML = '';
+  memoRoutes.forEach((r, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = `${escHtml(r)} <button class="tag-del" data-i="${i}">✕</button>`;
+    container.appendChild(tag);
+  });
+  container.querySelectorAll('.tag-del').forEach(btn => {
+    btn.addEventListener('click', () => { memoRoutes.splice(+btn.dataset.i, 1); renderRoutes(); });
+  });
+}
 
-document.getElementById('btn-send').addEventListener('click',async()=>{
-  let sections=[];
-  if(mode==='each'){
-    let empty=false;
-    selItems.forEach(w=>{
-      const parts=Array.from(document.querySelectorAll(`#ep-${w.id} input:checked`)).map(cb=>cb.value);
-      const text=document.getElementById(`et-${w.id}`)?.value.trim();
-      if(!text)empty=true;
-      sections.push({w,parts,text});
+function addRoute() {
+  const inp = document.getElementById('memo-route-input');
+  const val = inp.value.trim();
+  if (val && !memoRoutes.includes(val)) { memoRoutes.push(val); renderRoutes(); }
+  inp.value = '';
+  inp.focus();
+}
+document.getElementById('memo-route-add').addEventListener('click', addRoute);
+document.getElementById('memo-route-input').addEventListener('keydown', e => { if (e.key === 'Enter') addRoute(); });
+
+// ── 폼 수집 ──
+function collectForm() {
+  // 폴더 이름·URL은 input에서 직접 읽음
+  document.querySelectorAll('#folder-list .folder-card').forEach((card, i) => {
+    if (!folders[i]) return;
+    const nm  = card.querySelector('.f-name');  if (nm)  folders[i].name = nm.value.trim();
+    const url = card.querySelector('.f-url');   if (url) folders[i].url  = url.value.trim();
+  });
+
+  const hexVal = id => {
+    const hex = document.getElementById(id + '-hex').value.trim();
+    return /^#[0-9a-f]{6}$/i.test(hex) ? hex : document.getElementById(id).value;
+  };
+
+  return {
+    theme: {
+      winColor:  hexVal('t-winColor'),
+      accent:    hexVal('t-accent'),
+      windowBg:  hexVal('t-windowBg'),
+      ink:       hexVal('t-ink'),
+    },
+    titlebar: {
+      height:     +document.getElementById('tb-height').value    || 24,
+      fontSize:   +document.getElementById('tb-fontSize').value  || 11,
+      showGear:   true,
+      showTime:   document.getElementById('tb-showTime').checked,
+      showDate:   document.getElementById('tb-showDate').checked,
+      customText: document.getElementById('tb-customText').value.trim(),
+    },
+    folders: deep(folders),
+    clock: {
+      format:   document.getElementById('cl-format').value,
+      showDate: document.getElementById('cl-showDate').checked,
+      showDay:  document.getElementById('cl-showDay').checked,
+    },
+    memo: {
+      srcDbId:  document.getElementById('memo-dbId').value.trim(),
+      maxItems: +document.getElementById('memo-maxItems').value || 60,
+      routes:   [...memoRoutes],
+    },
+    todo: {
+      dbId: document.getElementById('todo-dbId').value.trim(),
+    },
+  };
+}
+
+// ── 저장 ──
+document.getElementById('save-btn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('save-status');
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  statusEl.textContent = '저장 중...'; statusEl.className = '';
+  try {
+    const body = collectForm();
+    const res = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     });
-    if(empty){showToast('각 항목의 변경 내용을 입력해주세요',2500);return;}
-  } else {
-    const text=document.getElementById('ta-bulk').value.trim();
-    if(!text){showToast('변경 내용을 입력해주세요',2500);return;}
-    sections=selItems.map(w=>({w,parts:selParts,text}));
+    if (!res.ok) throw new Error('저장 실패');
+    localStorage.setItem('wg_settings', JSON.stringify(body));
+    statusEl.textContent = '저장 완료 — 위젯에 즉시 반영 ✓'; statusEl.className = 'ok';
+  } catch (e) {
+    statusEl.textContent = e.message; statusEl.className = 'err';
+  } finally {
+    btn.disabled = false;
   }
-  const body=sections.map(({w,parts,text})=>{
-    const lines=[`[${w.label}]`];
-    if(w.file) lines.push(`  파일: ${w.file}`);
-    if(w.dbId) lines.push(`  DB ID: ${w.dbId}`);
-    lines.push(`  변경 부분: ${parts.length?parts.join(', '):'자유'}`);
+});
+
+// ── Claude Code 요청 ──
+const WIDGET_META = {
+  theme:    { label:'테마',      file:null },
+  clock:    { label:'Clock',     file:'widgets/clock/index.html' },
+  memo:     { label:'Memo',      file:'widgets/log/index.html' },
+  todo:     { label:'Todo',      file:'widgets/to-do/index.html', dbId:'37651f4140c5805e875cdc92a5715d21' },
+  folders:  { label:'Folders',   file:'widgets/folders/index.html' },
+  habit:    { label:'Habit',     file:'widgets/habittracker/index.html' },
+  settings: { label:'Settings',  file:'settings/index.html' },
+  new:      { label:'새 위젯',    file:null },
+};
+
+const selWidgets = new Set();
+let selType = '디자인';
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('sel');
+    if (chip.classList.contains('sel')) selWidgets.add(chip.dataset.id);
+    else selWidgets.delete(chip.dataset.id);
+  });
+});
+
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    selType = btn.dataset.type;
+  });
+});
+
+document.getElementById('btn-send').addEventListener('click', async () => {
+  if (!selWidgets.size) { showToast('대상 위젯을 하나 이상 선택해주세요', 2500); return; }
+  const text = document.getElementById('ask-ta').value.trim();
+  if (!text) { showToast('요청 내용을 입력해주세요', 2500); return; }
+
+  const body = [...selWidgets].map(id => {
+    const m = WIDGET_META[id] || { label: id };
+    const lines = [`[${m.label}]`];
+    if (m.file) lines.push(`  파일: ${m.file}`);
+    if (m.dbId) lines.push(`  DB ID: ${m.dbId}`);
+    lines.push(`  변경 부분: ${selType}`);
     lines.push(`  요청: ${text}`);
     return lines.join('\n');
   }).join('\n\n');
-  const prompt=`[프로젝트]\nGitHub: 45w4s2g96w-ship-it/widget-generator\nVercel: https://widget-generator-theta.vercel.app\n브랜치: main (push → Vercel 자동 배포)\n\n${body}\n\n[지시]\n레포를 직접 읽고 관련 파일을 파악한 뒤 변경을 구현해주세요.\n완료 후 main 브랜치에 push해주세요.`;
-  try{await navigator.clipboard.writeText(prompt);}
-  catch{
-    const ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';
-    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+
+  const prompt = `[프로젝트]\nGitHub: 45w4s2g96w-ship-it/widget-generator\nVercel: https://widget-generator-theta.vercel.app\n브랜치: main (push → Vercel 자동 배포)\n\n${body}\n\n[지시]\n레포를 직접 읽고 관련 파일을 파악한 뒤 변경을 구현해주세요.\n완료 후 main 브랜치에 push해주세요.`;
+
+  try { await navigator.clipboard.writeText(prompt); }
+  catch {
+    const ta = document.createElement('textarea'); ta.value = prompt;
+    ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
   }
-  window.open('https://claude.ai/code','_blank');
-  showToast('✓ 프롬프트 복사됨! 새 탭에서 Ctrl+V',5000);
+  window.open('https://claude.ai/code', '_blank');
+  showToast('✓ 프롬프트 복사됨! 새 탭에서 Ctrl+V', 5000);
 });
 
-function showToast(msg,ms){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms||3500);
+function showToast(msg, ms) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), ms || 3500);
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/* 카테고리 리스너는 위에서 한 번만 등록됨 */
-buildWidgetCards();
-loadFromNotion();
+loadSettings();
 </script>
 </body>
 </html>
