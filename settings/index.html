@@ -10,292 +10,151 @@
     body{background:#e8e8e6;font-family:'ChosunGu',sans-serif;display:flex;justify-content:center;padding:24px 16px 56px;min-height:100vh;}
     .window{width:100%;max-width:520px;background:#fff;border:1.5px solid #111;box-shadow:4px 4px 0 #111;}
     .titlebar{background:#1a1a1a;color:#fff;font-size:12px;font-weight:700;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;letter-spacing:.3px;user-select:none;}
-    .tabs{display:flex;border-bottom:1.5px solid #111;background:#ebebea;overflow-x:auto;}
-    .tab-btn{font-family:'ChosunGu',sans-serif;font-size:11.5px;padding:7px 16px;border:none;border-right:1px solid #ccc;background:transparent;cursor:pointer;color:#666;white-space:nowrap;flex-shrink:0;}
-    .tab-btn.active{background:#fff;color:#111;font-weight:700;border-bottom:2px solid #fff;margin-bottom:-1.5px;}
-    .tab-pane{display:none;padding:18px 16px 22px;}
-    .tab-pane.active{display:block;}
-    h3{font-size:10.5px;color:#999;letter-spacing:.8px;text-transform:uppercase;margin:0 0 11px;padding-bottom:5px;border-bottom:1px solid #eee;}
-    .section{margin-bottom:22px;}
-    .color-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-    .c-label{font-size:11.5px;width:76px;flex-shrink:0;color:#333;}
-    .color-row input[type=color]{width:30px;height:30px;border:1.5px solid #111;padding:1px;cursor:pointer;background:none;flex-shrink:0;}
-    .hex-input{font-family:'ChosunGu',monospace;font-size:11px;border:1px solid #ccc;padding:4px 7px;width:86px;color:#111;outline:none;}
-    .hex-input:focus{border-color:#9b8fc7;}
-    .preview-wrap{margin-top:14px;padding:12px;background:#f4f4f2;border:1px solid #ddd;}
-    .preview-label{font-size:10px;color:#999;margin-bottom:8px;}
-    .preview-win{max-width:180px;border:1.5px solid var(--p-ink,#111);box-shadow:3px 3px 0 var(--p-ink,#111);}
-    .preview-tb{background:var(--p-win,#1a1a1a);color:#fff;font-size:10px;font-weight:700;padding:5px 8px;display:flex;justify-content:space-between;align-items:center;}
-    .preview-body{background:var(--p-bg,#fff);color:var(--p-ink,#111);padding:10px 10px 8px;font-size:10.5px;line-height:1.6;}
-    .preview-btn{display:inline-block;background:var(--p-accent,#9b8fc7);color:#fff;font-size:9.5px;padding:3px 10px;margin-top:5px;}
-    .tb-preview-wrap{margin-top:16px;padding:14px;background:#f4f4f2;border:1px solid #ddd;}
-    .tb-preview-label{font-size:10px;color:#999;margin-bottom:10px;}
-    .tb-preview-win{border:1.5px solid #111;box-shadow:3px 3px 0 #111;overflow:hidden;}
-    #tb-preview-bar{background:var(--p-win,#1a1a1a);color:#fff;font-family:'ChosunGu',sans-serif;font-weight:700;display:flex;justify-content:space-between;align-items:center;padding:0 8px;transition:min-height .1s,font-size .1s;}
-    .tb-preview-body{background:#fff;padding:10px;}
-    .tb-preview-body div{height:8px;background:#eee;margin-bottom:6px;border-radius:2px;}
-    .tb-preview-body div:nth-child(2){width:70%;}
-    .tb-preview-body div:nth-child(3){width:85%;}
-    .suggest-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-    .suggest-card{flex:1;min-width:130px;border:1.5px solid #ddd;padding:10px;cursor:pointer;background:#fafafa;transition:border-color .1s;}
-    .suggest-card:hover{border-color:#9b8fc7;}
-    .suggest-card.selected{border-color:#9b8fc7;background:#f5f0ff;}
-    .swatch-row{display:flex;gap:4px;margin-bottom:6px;}
-    .swatch{width:20px;height:20px;border:1px solid rgba(0,0,0,.12);}
-    .suggest-name{font-size:10.5px;color:#444;}
-    .slider-row{margin-bottom:14px;}
-    .s-label{font-size:11.5px;display:flex;justify-content:space-between;margin-bottom:5px;color:#333;}
-    .s-label span{color:#9b8fc7;font-weight:700;}
-    input[type=range]{width:100%;accent-color:#9b8fc7;}
-    .option-row{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px;}
-    .option-row label{font-size:11.5px;color:#333;display:flex;align-items:center;gap:5px;cursor:pointer;}
-    .cb-row{margin-bottom:8px;}
-    .cb-row label{font-size:11.5px;color:#333;display:flex;align-items:center;gap:6px;cursor:pointer;}
-    input[type=checkbox],input[type=radio]{accent-color:#9b8fc7;cursor:pointer;}
-    .text-input{font-family:'ChosunGu',monospace;font-size:11px;border:1px solid #ccc;padding:6px 8px;width:100%;outline:none;color:#111;}
-    .text-input:focus{border-color:#9b8fc7;}
-    .field-label{font-size:10.5px;color:#888;display:block;margin-bottom:4px;margin-top:10px;}
-    .folder-item-wrap{margin-bottom:6px;}
-    .folder-item{display:flex;align-items:center;gap:6px;padding:7px 8px;border:1px solid #ddd;background:#fafafa;}
-    .folder-item input[type=color]{width:26px;height:26px;border:1px solid #111;padding:1px;cursor:pointer;flex-shrink:0;}
-    .fi-name{font-family:'ChosunGu',sans-serif;font-size:11.5px;border:1px solid #ccc;padding:4px 6px;flex:1;min-width:0;outline:none;}
-    .fi-name:focus{border-color:#9b8fc7;}
-    .fi-type{font-family:'ChosunGu',sans-serif;font-size:11px;border:1px solid #ccc;padding:4px 5px;background:#fff;cursor:pointer;}
-    .icon-btn{background:none;border:none;cursor:pointer;font-size:13px;color:#aaa;padding:2px 3px;flex-shrink:0;line-height:1;}
-    .icon-btn:hover{color:#333;}
-    .folder-extra{padding:6px 8px;border:1px solid #ddd;border-top:none;background:#f4f4f4;}
-    .folder-extra label{font-size:10px;color:#888;display:block;margin-bottom:3px;}
-    .fi-url{font-family:'ChosunGu',monospace;font-size:10.5px;border:1px solid #ccc;padding:4px 7px;width:100%;outline:none;}
-    .fi-url:focus{border-color:#9b8fc7;}
-    /* Ask Claude */
-    .ask-step-header{display:flex;align-items:center;gap:10px;padding:0 0 16px;margin-bottom:16px;border-bottom:1px solid #eee;}
-    .ask-step-dots{display:flex;align-items:center;}
-    .ask-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#bbb;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
-    .ask-dot.active{border-color:#9b8fc7;background:#9b8fc7;color:#fff;}
-    .ask-dot.done{border-color:#4caf7d;background:#4caf7d;color:#fff;}
-    .ask-dot-line{width:16px;height:1.5px;background:#eee;}
-    .ask-step-title{font-size:10px;color:#999;letter-spacing:.5px;}
-    .ask-widget-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:6px;}
-    .ask-wcard{border:1.5px solid #ddd;padding:10px 6px 8px;text-align:center;cursor:pointer;font-size:11px;color:#555;transition:all .12s;line-height:1.5;user-select:none;}
-    .ask-wcard .wc-icon{font-size:20px;display:block;margin-bottom:4px;}
-    .ask-wcard.sel{border-color:#9b8fc7;background:#f5f0ff;color:#7b6fb7;font-weight:700;}
-    /* Step 2 mode picker */
+    .body{padding:20px 16px 28px;}
+
+    /* Step indicator */
+    .step-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+    .step-dots{display:flex;align-items:center;}
+    .sdot{width:24px;height:24px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#bbb;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+    .sdot.active{border-color:#9b8fc7;background:#9b8fc7;color:#fff;}
+    .sdot.done{border-color:#4caf7d;background:#4caf7d;color:#fff;}
+    .sdot-line{width:16px;height:1.5px;background:#eee;}
+    .step-label{font-size:10px;color:#aaa;letter-spacing:.5px;flex:1;}
+
+    h3{font-size:10.5px;color:#999;letter-spacing:.8px;text-transform:uppercase;margin:0 0 12px;padding-bottom:5px;border-bottom:1px solid #eee;}
+
+    /* Card grid */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:8px;}
+    .wcard{border:1.5px solid #ddd;padding:10px 6px 8px;text-align:center;cursor:pointer;font-size:11px;color:#555;transition:all .12s;line-height:1.5;user-select:none;}
+    .wcard .wc-icon{font-size:20px;display:block;margin-bottom:4px;}
+    .wcard.sel{border-color:#9b8fc7;background:#f5f0ff;color:#7b6fb7;font-weight:700;}
+    .wcard.cat{border-style:dashed;}
+    .wcard.cat.sel{border-style:solid;}
+
+    /* Mode picker */
     .mode-cards{display:flex;gap:10px;margin-bottom:16px;}
-    .mode-card{flex:1;border:1.5px solid #ddd;padding:12px 10px;cursor:pointer;text-align:center;transition:all .12s;}
-    .mode-card:hover{border-color:#9b8fc7;}
-    .mode-card.sel{border-color:#9b8fc7;background:#f5f0ff;}
-    .mode-card .mc-icon{font-size:20px;display:block;margin-bottom:5px;}
-    .mode-card .mc-title{font-size:12px;font-weight:700;color:#333;margin-bottom:3px;}
-    .mode-card .mc-desc{font-size:10px;color:#999;line-height:1.5;}
-    /* Parts / per-widget sections */
-    .ask-part-list{margin-bottom:14px;}
-    .ask-part-item{margin-bottom:8px;}
-    .ask-part-item label{font-size:12px;color:#333;display:flex;align-items:flex-start;gap:8px;cursor:pointer;line-height:1.6;}
-    .widget-section{border:1px solid #ddd;margin-bottom:12px;}
-    .widget-section-head{background:#f4f4f2;padding:8px 12px;font-size:11px;font-weight:700;color:#555;display:flex;align-items:center;gap:6px;}
-    .widget-section-body{padding:10px 12px 12px;}
-    .ask-summary{background:#f4f4f2;border:1px solid #ddd;padding:8px 12px;margin-bottom:12px;font-size:10.5px;color:#555;line-height:1.9;}
-    .ask-summary strong{color:#9b8fc7;}
-    .ask-textarea{font-family:'ChosunGu',sans-serif;font-size:12px;line-height:1.7;border:1.5px solid #ddd;padding:10px 12px;width:100%;min-height:100px;resize:vertical;outline:none;color:#111;}
-    .ask-textarea:focus{border-color:#9b8fc7;}
-    .ask-textarea.sm{min-height:72px;}
+    .mcard{flex:1;border:1.5px solid #ddd;padding:12px 10px;cursor:pointer;text-align:center;transition:all .12s;}
+    .mcard:hover{border-color:#9b8fc7;}
+    .mcard.sel{border-color:#9b8fc7;background:#f5f0ff;}
+    .mcard .mc-icon{font-size:18px;display:block;margin-bottom:4px;}
+    .mcard .mc-title{font-size:11.5px;font-weight:700;color:#333;margin-bottom:2px;}
+    .mcard .mc-desc{font-size:10px;color:#aaa;line-height:1.4;}
+
+    /* Part list */
+    .part-list{margin-bottom:14px;}
+    .part-item{margin-bottom:8px;}
+    .part-item label{font-size:12px;color:#333;display:flex;align-items:flex-start;gap:8px;cursor:pointer;line-height:1.6;}
+    input[type=checkbox],input[type=radio]{accent-color:#9b8fc7;cursor:pointer;}
+
+    /* Per-widget section */
+    .wsec{border:1px solid #ddd;margin-bottom:10px;}
+    .wsec-head{background:#f4f4f2;padding:7px 12px;font-size:11px;font-weight:700;color:#555;display:flex;align-items:center;gap:6px;}
+    .wsec-body{padding:10px 12px 12px;}
+
+    /* Summary */
+    .summary{background:#f4f4f2;border:1px solid #ddd;padding:8px 12px;margin-bottom:12px;font-size:10.5px;color:#555;line-height:1.9;}
+    .summary strong{color:#9b8fc7;}
+
+    /* Textarea */
+    .ask-ta{font-family:'ChosunGu',sans-serif;font-size:12px;line-height:1.7;border:1.5px solid #ddd;padding:10px 12px;width:100%;min-height:100px;resize:vertical;outline:none;color:#111;}
+    .ask-ta:focus{border-color:#9b8fc7;}
+    .ask-ta.sm{min-height:70px;}
+
+    /* Buttons */
     .btn-row{display:flex;gap:8px;margin-top:14px;}
     .btn{font-family:'ChosunGu',sans-serif;font-size:11.5px;border:1.5px solid #9b8fc7;background:#9b8fc7;color:#fff;padding:7px 16px;cursor:pointer;letter-spacing:.2px;}
-    .btn:hover{filter:brightness(1.1);}
-    .btn:active{filter:brightness(.9);}
-    .btn:disabled{opacity:.45;cursor:default;filter:none;}
+    .btn:hover{filter:brightness(1.1);} .btn:active{filter:brightness(.9);} .btn:disabled{opacity:.45;cursor:default;filter:none;}
     .btn.ghost{background:#fff;color:#9b8fc7;}
-    .btn.full{width:100%;text-align:center;}
     .btn.dark{background:#1a1a1a;border-color:#1a1a1a;}
-    #sync-status{font-size:10px;color:#aaa;margin-top:6px;min-height:14px;padding:0 16px 8px;}
-    #sync-status.ok{color:#4caf7d;}
-    #sync-status.err{color:#e05c5c;}
+    .btn.full{width:100%;text-align:center;padding:9px 16px;font-size:12px;}
+
+    .info{font-size:10.5px;color:#aaa;margin-top:8px;line-height:1.6;text-align:center;}
+    #sync-status{font-size:10px;color:#aaa;margin-top:4px;text-align:center;}
+    #sync-status.ok{color:#4caf7d;} #sync-status.err{color:#e05c5c;}
     #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font-family:'ChosunGu',sans-serif;font-size:11px;padding:8px 18px;border:1px solid #444;opacity:0;transition:opacity .18s;pointer-events:none;white-space:nowrap;z-index:999;}
     #toast.show{opacity:1;}
-    .info{font-size:10.5px;color:#999;margin-top:8px;line-height:1.6;}
   </style>
 </head>
 <body>
 <div class="window">
   <div class="titlebar">
-    <span>C:// SETTINGS</span>
-    <span style="opacity:.75;cursor:default">⚙</span>
+    <span>C:// SETTINGS &rarr; Claude Code</span>
+    <span style="opacity:.75;cursor:default">&#9881;</span>
   </div>
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="ask">✦ Claude</button>
-    <button class="tab-btn" data-tab="theme">테마</button>
-    <button class="tab-btn" data-tab="titlebar">타이틀바</button>
-    <button class="tab-btn" data-tab="widgets">위젯</button>
-  </div>
+  <div class="body">
 
-  <!-- ✦ Claude -->
-  <div class="tab-pane active" id="tab-ask">
-    <div class="ask-step-header">
-      <div class="ask-step-dots">
-        <div class="ask-dot active" id="dot1">1</div>
-        <div class="ask-dot-line"></div>
-        <div class="ask-dot" id="dot2">2</div>
-        <div class="ask-dot-line"></div>
-        <div class="ask-dot" id="dot3">3</div>
+    <!-- Step indicator -->
+    <div class="step-header">
+      <div class="step-dots">
+        <div class="sdot active" id="dot1">1</div>
+        <div class="sdot-line"></div>
+        <div class="sdot" id="dot2">2</div>
+        <div class="sdot-line"></div>
+        <div class="sdot" id="dot3">3</div>
       </div>
-      <div class="ask-step-title" id="ask-step-title">위젯 선택</div>
+      <div class="step-label" id="step-label">무엇을 바꾸고 싶으세요?</div>
     </div>
 
-    <!-- Step 1: 위젯 선택 -->
-    <div id="ask-s1">
-      <h3>어떤 위젯을 수정할까요?</h3>
-      <div class="ask-widget-grid" id="ask-widget-grid"></div>
-      <p class="info">여러 개 선택 가능</p>
-      <div class="btn-row" style="margin-top:14px">
-        <button class="btn" id="ask-next1">다음 →</button>
+    <!-- Step 1: 내용 선택 -->
+    <div id="s1">
+      <h3>커테고리</h3>
+      <div class="card-grid" id="cat-grid">
+        <!-- 시스템 커테고리 -->
+        <div class="wcard cat" data-id="theme"><span class="wc-icon">🎨</span>테마</div>
+        <div class="wcard cat" data-id="titlebar"><span class="wc-icon">🛠</span>타이틀바</div>
+        <div class="wcard cat" data-id="new"><span class="wc-icon">✦</span>새 위젯</div>
+      </div>
+      <h3 style="margin-top:16px">위젯</h3>
+      <div class="card-grid" id="widget-grid"></div>
+      <p class="info" style="text-align:left;margin-top:4px">여러 개 선택 가능</p>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn" id="next1">다음 →</button>
       </div>
     </div>
 
-    <!-- Step 2: 방식 선택 + 파트 선택 -->
-    <div id="ask-s2" style="display:none">
-      <!-- 2a: 일괄 vs 각각 (다중 선택 시만 표시) -->
-      <div id="ask-s2-mode" style="display:none">
+    <!-- Step 2: 방식 + 부분 선택 -->
+    <div id="s2" style="display:none">
+      <div id="s2-mode" style="display:none;margin-bottom:16px">
         <h3>적용 방식</h3>
         <div class="mode-cards">
-          <div class="mode-card sel" data-mode="bulk" id="mc-bulk">
+          <div class="mcard sel" id="mc-bulk">
             <span class="mc-icon">⚡</span>
             <div class="mc-title">일괄 적용</div>
-            <div class="mc-desc">선택한 모든 위젯에<br>같은 변경 적용</div>
+            <div class="mc-desc">선택한 모든 항목에<br>같은 변경</div>
           </div>
-          <div class="mode-card" data-mode="each" id="mc-each">
+          <div class="mcard" id="mc-each">
             <span class="mc-icon">🎯</span>
             <div class="mc-title">각각 커스텀</div>
-            <div class="mc-desc">위젯마다 다른<br>변경 내용 입력</div>
+            <div class="mc-desc">항목마다 다른<br>변경 내용 입력</div>
           </div>
         </div>
       </div>
-      <!-- 2b: 파트 선택 (일괄 모드) -->
-      <div id="ask-s2-bulk">
-        <h3>어떤 부분을 바꾸고 싶나요?</h3>
-        <div class="ask-part-list" id="ask-parts-bulk"></div>
-      </div>
+      <h3>어떤 부분을 바꾸고 싶나요?</h3>
+      <div class="part-list" id="parts-bulk"></div>
       <div class="btn-row">
-        <button class="btn ghost" id="ask-back2">← 이전</button>
-        <button class="btn" id="ask-next2">다음 →</button>
+        <button class="btn ghost" id="back2">← 이전</button>
+        <button class="btn" id="next2">다음 →</button>
       </div>
     </div>
 
-    <!-- Step 3: 내용 입력 -->
-    <div id="ask-s3" style="display:none">
-      <h3>어떻게 바꾸고 싶나요?</h3>
-      <div class="ask-summary" id="ask-summary"></div>
-      <!-- 일괄: 단일 textarea -->
-      <div id="ask-s3-bulk">
-        <textarea class="ask-textarea" id="ask-text-bulk" placeholder="구체적으로 설명해주세요..."></textarea>
+    <!-- Step 3: 내용 입력 + 전송 -->
+    <div id="s3" style="display:none">
+      <div class="summary" id="summary"></div>
+      <div id="s3-bulk">
+        <textarea class="ask-ta" id="ta-bulk" placeholder="구체적으로 설명해주세요..."></textarea>
       </div>
-      <!-- 각각: 위젯별 섹션 -->
-      <div id="ask-s3-each" style="display:none">
-        <div id="ask-each-sections"></div>
+      <div id="s3-each" style="display:none">
+        <div id="each-secs"></div>
       </div>
-      <div class="btn-row" style="margin-top:12px">
-        <button class="btn ghost" id="ask-back3">← 이전</button>
-        <button class="btn dark" id="btn-send-claude">✦ Claude에게 전달</button>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn ghost" id="back3">← 이전</button>
+        <button class="btn dark full" id="btn-send">✦ Claude Code에 보내기</button>
       </div>
-      <p class="info">프롬프트 복사 + claude.ai 새 탭 오픈</p>
+      <p class="info">프롬프트 복사 + claude.ai/code 오픈 &rarr; 붙여넣기(Ctrl+V)</p>
     </div>
-  </div>
 
-  <!-- 테마 -->
-  <div class="tab-pane" id="tab-theme">
-    <div class="section">
-      <h3>색상 팔레트 (4색)</h3>
-      <div class="color-row"><span class="c-label">타이틀바</span><input type="color" id="c-win"/><input type="text" class="hex-input" id="c-win-hex" maxlength="7"/></div>
-      <div class="color-row"><span class="c-label">강조색</span><input type="color" id="c-accent"/><input type="text" class="hex-input" id="c-accent-hex" maxlength="7"/></div>
-      <div class="color-row"><span class="c-label">배경</span><input type="color" id="c-bg"/><input type="text" class="hex-input" id="c-bg-hex" maxlength="7"/></div>
-      <div class="color-row"><span class="c-label">텍스트</span><input type="color" id="c-ink"/><input type="text" class="hex-input" id="c-ink-hex" maxlength="7"/></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn ghost" id="btn-suggest">✨ Claude 팔레트 추천</button>
-      <button class="btn" id="btn-apply-theme">저장</button>
-    </div>
-    <div id="suggest-area" style="display:none;margin-top:14px">
-      <h3>추천 팔레트 <span style="font-size:10px;text-transform:none;letter-spacing:0;color:#bbb">클릭해서 적용</span></h3>
-      <div class="suggest-grid" id="suggest-grid"></div>
-    </div>
-    <div class="preview-wrap">
-      <div class="preview-label">미리보기</div>
-      <div class="preview-win">
-        <div class="preview-tb"><span>C:// WIDGET</span><span>⚙</span></div>
-        <div class="preview-body">위젯 내용 샘플<br/><div class="preview-btn">버튼</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 타이틀바 -->
-  <div class="tab-pane" id="tab-titlebar">
-    <div class="section">
-      <h3>크기</h3>
-      <div class="slider-row">
-        <div class="s-label">최소 높이 <span id="tb-h-val">24px</span></div>
-        <input type="range" id="tb-height" min="18" max="48" value="24"/>
-      </div>
-      <div class="slider-row">
-        <div class="s-label">폰트 크기 <span id="tb-fs-val">11px</span></div>
-        <input type="range" id="tb-fontsize" min="9" max="16" value="11"/>
-      </div>
-    </div>
-    <div class="section">
-      <h3>구성 요소</h3>
-      <div class="cb-row"><label><input type="checkbox" id="tb-gear" checked/> ⚙ 설정 아이콘</label></div>
-      <div class="cb-row"><label><input type="checkbox" id="tb-time"/> 🕐 현재 시각</label></div>
-      <div class="cb-row"><label><input type="checkbox" id="tb-date"/> 📅 오늘 날짜</label></div>
-      <label class="field-label">우측 커스텀 텍스트</label>
-      <input type="text" class="text-input" id="tb-custom" placeholder="비워두면 표시 안 함"/>
-    </div>
-    <div class="tb-preview-wrap">
-      <div class="tb-preview-label">미리보기</div>
-      <div class="tb-preview-win">
-        <div id="tb-preview-bar"><span>C:// WIDGET</span><span id="tb-preview-right">⚙</span></div>
-        <div class="tb-preview-body"><div></div><div></div><div></div></div>
-      </div>
-    </div>
-    <div class="btn-row" style="margin-top:16px">
-      <button class="btn" id="btn-apply-titlebar">저장</button>
-    </div>
-  </div>
-
-  <!-- 위젯 -->
-  <div class="tab-pane" id="tab-widgets">
-    <div class="section">
-      <h3>📁 Folders 위젯</h3>
-      <div id="folder-list"></div>
-      <button class="btn ghost" id="btn-add-folder" style="margin-top:6px;padding:5px 12px;font-size:11px">+ 폴더 추가</button>
-      <div class="btn-row"><button class="btn" id="btn-apply-folders">저장</button></div>
-    </div>
-    <div class="section">
-      <h3>🕐 Clock 위젯</h3>
-      <div class="option-row">
-        <label><input type="radio" name="clock-fmt" value="12h" id="fmt-12" checked/> 12시간 (AM/PM)</label>
-        <label><input type="radio" name="clock-fmt" value="24h" id="fmt-24"/> 24시간</label>
-      </div>
-      <div class="cb-row"><label><input type="checkbox" id="clock-date" checked/> 날짜 표시</label></div>
-      <div class="cb-row"><label><input type="checkbox" id="clock-day" checked/> 요일 표시</label></div>
-      <div class="btn-row"><button class="btn" id="btn-apply-clock">저장</button></div>
-    </div>
-    <div class="section">
-      <h3>📝 Memo 위젯</h3>
-      <label class="field-label">소스 DB ID</label>
-      <input type="text" class="text-input" id="memo-src-db"/>
-      <label class="field-label">최대 표시 메모 수</label>
-      <input type="number" class="text-input" id="memo-max" min="10" max="200" style="width:80px"/>
-      <div class="section" style="margin-top:14px;margin-bottom:0">
-        <h3>라우팅 대상</h3>
-        <div class="cb-row"><label><input type="checkbox" class="memo-route" value="diary" checked/> 📔 다이어리</label></div>
-        <div class="cb-row"><label><input type="checkbox" class="memo-route" value="todo" checked/> ✅ TO-DO</label></div>
-        <div class="cb-row"><label><input type="checkbox" class="memo-route" value="cart" checked/> 🛒 장바구니</label></div>
-        <div class="cb-row"><label><input type="checkbox" class="memo-route" value="idea" checked/> 💡 아이디어</label></div>
-        <div class="cb-row"><label><input type="checkbox" class="memo-route" value="bookmark" checked/> 🔖 북마크</label></div>
-      </div>
-      <div class="btn-row"><button class="btn" id="btn-apply-memo">저장</button></div>
-    </div>
   </div>
 </div>
-
 <div id="sync-status"></div>
 <div id="toast"></div>
 
@@ -314,341 +173,170 @@ const DEFAULTS={
 function deep(o){return JSON.parse(JSON.stringify(o));}
 let S=deep(DEFAULTS);
 
-/* 탭 */
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
-  });
-});
-
 /* Notion 로드 */
 async function loadFromNotion(){
-  setSyncStatus('loading','Notion에서 설정 읽는 중...');
   try{
     const res=await fetch('/api/settings');
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    if(!res.ok) throw new Error();
     const remote=await res.json();
     S=Object.assign(deep(DEFAULTS),remote);
-    populateUI();
-    setSyncStatus('ok','✓ Notion 연동됨');
-  }catch(e){
-    try{const local=JSON.parse(localStorage.getItem('wg_settings')||'null');if(local){S=Object.assign(deep(DEFAULTS),local);populateUI();}}catch(_){}
-    setSyncStatus('err','⚠️ Notion 연동 실패 (로컬 사용중)');
+    document.getElementById('sync-status').textContent='✓ Notion 연동';
+    document.getElementById('sync-status').className='ok';
+  }catch{
+    try{const l=JSON.parse(localStorage.getItem('wg_settings')||'null');if(l)S=Object.assign(deep(DEFAULTS),l);}catch{}
+    document.getElementById('sync-status').textContent='⚠️ 로컬 설정 사용중';
+    document.getElementById('sync-status').className='err';
   }
   buildWidgetCards();
 }
 
-async function saveToNotion(){
-  setSyncStatus('loading','Notion에 저장 중...');
-  localStorage.setItem('wg_settings',JSON.stringify(S));
-  try{
-    const res=await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    setSyncStatus('ok','✓ 저장 완료 — 모든 디바이스 적용');
-    showToast('저장 완료');
-  }catch(e){
-    setSyncStatus('err','⚠️ Notion 저장 실패: '+e.message);
-    showToast('로컬에만 저장됨',4000);
-  }
-}
-
-function setSyncStatus(type,msg){
-  const el=document.getElementById('sync-status');
-  el.textContent=msg;
-  el.className=type==='ok'?'ok':type==='err'?'err':'';
-}
-
-function populateUI(){
-  applyThemeInputs(S.theme);
-  document.getElementById('tb-height').value=S.titlebar.height;
-  document.getElementById('tb-fontsize').value=S.titlebar.fontSize;
-  document.getElementById('tb-h-val').textContent=S.titlebar.height+'px';
-  document.getElementById('tb-fs-val').textContent=S.titlebar.fontSize+'px';
-  document.getElementById('tb-gear').checked=S.titlebar.showGear!==false;
-  document.getElementById('tb-time').checked=!!S.titlebar.showTime;
-  document.getElementById('tb-date').checked=!!S.titlebar.showDate;
-  document.getElementById('tb-custom').value=S.titlebar.customText||'';
-  updateTbPreview();
-  if(S.clock.format==='24h') document.getElementById('fmt-24').checked=true;
-  else document.getElementById('fmt-12').checked=true;
-  document.getElementById('clock-date').checked=S.clock.showDate!==false;
-  document.getElementById('clock-day').checked=S.clock.showDay!==false;
-  document.getElementById('memo-src-db').value=S.memo.srcDbId||'';
-  document.getElementById('memo-max').value=S.memo.maxItems||60;
-  document.querySelectorAll('.memo-route').forEach(cb=>cb.checked=(S.memo.routes||[]).includes(cb.value));
-  renderFolders();
-  buildWidgetCards();
-}
-
-/* 색상 */
-function bindColor(pid,hid,cssVar){
-  const p=document.getElementById(pid),h=document.getElementById(hid);
-  p.addEventListener('input',()=>{h.value=p.value;document.documentElement.style.setProperty(cssVar,p.value);});
-  h.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(h.value)){p.value=h.value;document.documentElement.style.setProperty(cssVar,h.value);}});
-}
-bindColor('c-win','c-win-hex','--p-win');
-bindColor('c-accent','c-accent-hex','--p-accent');
-bindColor('c-bg','c-bg-hex','--p-bg');
-bindColor('c-ink','c-ink-hex','--p-ink');
-function applyThemeInputs(t){
-  [['c-win',t.winColor],['c-accent',t.accent],['c-bg',t.windowBg],['c-ink',t.ink]].forEach(([id,val])=>{
-    document.getElementById(id).value=val;
-    document.getElementById(id+'-hex').value=val;
-  });
-  document.documentElement.style.setProperty('--p-win',t.winColor);
-  document.documentElement.style.setProperty('--p-accent',t.accent);
-  document.documentElement.style.setProperty('--p-bg',t.windowBg);
-  document.documentElement.style.setProperty('--p-ink',t.ink);
-}
-applyThemeInputs(S.theme);
-document.getElementById('btn-apply-theme').addEventListener('click',async()=>{
-  S.theme={winColor:document.getElementById('c-win').value,accent:document.getElementById('c-accent').value,windowBg:document.getElementById('c-bg').value,ink:document.getElementById('c-ink').value};
-  await saveToNotion();
-});
-
-/* Claude 팔레트 */
-document.getElementById('btn-suggest').addEventListener('click',async()=>{
-  const btn=document.getElementById('btn-suggest'),grid=document.getElementById('suggest-grid');
-  btn.disabled=true;btn.textContent='분석 중...';
-  document.getElementById('suggest-area').style.display='none';
-  try{
-    const res=await fetch('/api/suggest-colors?color='+encodeURIComponent(document.getElementById('c-win').value));
-    const data=await res.json();
-    if(!data.palettes) throw new Error(data.error||'응답 오류');
-    grid.innerHTML='';
-    data.palettes.forEach(p=>{
-      const card=document.createElement('div');card.className='suggest-card';
-      card.innerHTML=`<div class="swatch-row"><div class="swatch" style="background:${p.winColor}"></div><div class="swatch" style="background:${p.accent}"></div><div class="swatch" style="background:${p.windowBg}"></div><div class="swatch" style="background:${p.ink}"></div></div><div class="suggest-name">${p.description}</div>`;
-      card.addEventListener('click',()=>{document.querySelectorAll('.suggest-card').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');applyThemeInputs(p);});
-      grid.appendChild(card);
-    });
-    document.getElementById('suggest-area').style.display='block';
-  }catch(e){showToast('추천 실패: '+e.message,4000);}
-  btn.disabled=false;btn.textContent='✨ Claude 팔레트 추천';
-});
-
-/* 타이틀바 */
-const slH=document.getElementById('tb-height'),slFs=document.getElementById('tb-fontsize');
-const prevBar=document.getElementById('tb-preview-bar'),prevRight=document.getElementById('tb-preview-right');
-function updateTbPreview(){
-  prevBar.style.minHeight=slH.value+'px';
-  prevBar.style.fontSize=slFs.value+'px';
-  const right=[];
-  if(document.getElementById('tb-time').checked) right.push(new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
-  if(document.getElementById('tb-date').checked) right.push(new Date().toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'}));
-  const custom=document.getElementById('tb-custom').value.trim();
-  if(custom) right.push(custom);
-  if(document.getElementById('tb-gear').checked) right.push('⚙');
-  prevRight.textContent=right.join('  ')||'';
-}
-slH.addEventListener('input',()=>{document.getElementById('tb-h-val').textContent=slH.value+'px';updateTbPreview();});
-slFs.addEventListener('input',()=>{document.getElementById('tb-fs-val').textContent=slFs.value+'px';updateTbPreview();});
-['tb-gear','tb-time','tb-date'].forEach(id=>document.getElementById(id).addEventListener('change',updateTbPreview));
-document.getElementById('tb-custom').addEventListener('input',updateTbPreview);
-document.getElementById('btn-apply-titlebar').addEventListener('click',async()=>{
-  S.titlebar={height:+slH.value,fontSize:+slFs.value,showGear:document.getElementById('tb-gear').checked,showTime:document.getElementById('tb-time').checked,showDate:document.getElementById('tb-date').checked,customText:document.getElementById('tb-custom').value.trim()};
-  await saveToNotion();
-});
-
-/* 폴더 */
-function renderFolders(){
-  const list=document.getElementById('folder-list');list.innerHTML='';
-  S.folders.forEach((f,i)=>{
-    const wrap=document.createElement('div');wrap.className='folder-item-wrap';
-    const row=document.createElement('div');row.className='folder-item';
-    row.innerHTML=`<input type="color" value="${f.colorTab}" title="탭색"/><input type="color" value="${f.colorBody}" title="본문색"/><input type="text" class="fi-name" value="${f.name}"/><select class="fi-type"><option value="diary-api" ${f.type==='diary-api'?'selected':''}>다이어리 API</option><option value="url" ${f.type==='url'?'selected':''}>직접 URL</option></select><button class="icon-btn" data-a="up">↑</button><button class="icon-btn" data-a="dn">↓</button><button class="icon-btn" data-a="del">✕</button>`;
-    const extra=document.createElement('div');extra.className='folder-extra';
-    extra.style.display=f.type==='url'?'block':'none';
-    extra.innerHTML=`<label>URL</label><input class="fi-url" type="text" value="${f.url||''}" placeholder="https://www.notion.so/..."/>`;
-    row.querySelector('.fi-type').addEventListener('change',e=>extra.style.display=e.target.value==='url'?'block':'none');
-    row.querySelector('[data-a=del]').addEventListener('click',()=>{S.folders.splice(i,1);renderFolders();});
-    row.querySelector('[data-a=up]').addEventListener('click',()=>{if(i>0){[S.folders[i-1],S.folders[i]]=[S.folders[i],S.folders[i-1]];renderFolders();}});
-    row.querySelector('[data-a=dn]').addEventListener('click',()=>{if(i<S.folders.length-1){[S.folders[i],S.folders[i+1]]=[S.folders[i+1],S.folders[i]];renderFolders();}});
-    wrap.appendChild(row);wrap.appendChild(extra);list.appendChild(wrap);
-  });
-}
-document.getElementById('btn-add-folder').addEventListener('click',()=>{
-  S.folders.push({name:'새 폴더',colorBody:'#e0e0e0',colorTab:'#c8c8c8',type:'url',url:''});
-  renderFolders();
-  document.getElementById('folder-list').lastElementChild.querySelector('.fi-name').focus();
-});
-document.getElementById('btn-apply-folders').addEventListener('click',async()=>{
-  S.folders=Array.from(document.getElementById('folder-list').children).map(wrap=>{
-    const row=wrap.querySelector('.folder-item'),extra=wrap.querySelector('.folder-extra');
-    const colors=row.querySelectorAll('input[type=color]');
-    return{name:row.querySelector('.fi-name').value.trim()||'폴더',colorTab:colors[0].value,colorBody:colors[1].value,type:row.querySelector('.fi-type').value,url:extra?extra.querySelector('.fi-url').value.trim():''};
-  });
-  await saveToNotion();
-  buildWidgetCards();
-});
-
-/* Clock */
-document.getElementById('btn-apply-clock').addEventListener('click',async()=>{
-  S.clock={format:document.querySelector('input[name=clock-fmt]:checked').value,showDate:document.getElementById('clock-date').checked,showDay:document.getElementById('clock-day').checked};
-  await saveToNotion();
-});
-
-/* Memo */
-document.getElementById('btn-apply-memo').addEventListener('click',async()=>{
-  S.memo={srcDbId:document.getElementById('memo-src-db').value.trim(),maxItems:+document.getElementById('memo-max').value,routes:Array.from(document.querySelectorAll('.memo-route:checked')).map(c=>c.value)};
-  await saveToNotion();
-});
-
-/* ============================================================
-   Ask Claude — 3-step flow
-   ============================================================ */
+/* 위젯 카탈로그 */
+const SYSTEM_CATS=[
+  {id:'theme',   icon:'🎨',label:'테마',     cat:true, parts:['위도우 색상','강조색','배경색','텍스트 색상','전체 팔레트 변경']},
+  {id:'titlebar',icon:'🛠',label:'타이틀바',  cat:true, file:'shared/tokens.css', parts:['높이/폰트 크기','우측 표시 요소','시각/날짜 표시','커스텀 텍스트','진체조 효과 추가']},
+  {id:'new',     icon:'✦', label:'새 위젯', cat:true, file:'',parts:['어떤 위젯인지 설명해주세요']},
+];
 const FIXED_WIDGETS=[
-  {id:'clock',   icon:'🕐',label:'Clock',   file:'widgets/clock/index.html',        parts:['디자인 변경','숫자/폰트 스타일','12h/24h 형식','날짜·요일 표시','애니메이션','기타']},
-  {id:'memo',    icon:'📝',label:'Memo',    file:'widgets/log/index.html',           parts:['라우팅 로직','DB 구성','UI/디자인','새 기능 추가','기타']},
+  {id:'clock',   icon:'🕐',label:'Clock',   file:'widgets/clock/index.html',        parts:['디자인 전체 변경','숫자/폰트 스타일','12h/24h 형식','날짜·요일 표시','애니메이션 변경','기타']},
+  {id:'memo',    icon:'📝',label:'Memo',    file:'widgets/log/index.html',           parts:['라우팅 로직 변경','DB 구성','UI/디자인','새 기능 추가','기타']},
   {id:'todo',    icon:'✅',label:'Todo',    file:'widgets/todo/index.html',          parts:['항목 표시 방식','체크/완료 로직','DB 구성','디자인 변경','필터/정렬','기타'], dbId:'37651f4140c5805e875cdc92a5715d21'},
   {id:'folders', icon:'📁',label:'Folders', file:'widgets/folders/index.html',      parts:['폴더 디자인','연결 대상 변경','폴더 추가/삭제','애니메이션','기타']},
   {id:'habit',   icon:'📋',label:'Habit',   file:'widgets/habittracker/index.html', parts:['트래커 항목','디자인 변경','DB 연동','기타']},
   {id:'settings',icon:'⚙', label:'Settings',file:'settings/index.html',             parts:['UI 개선','새 설정 항목 추가','Claude 탭 개선','기타']},
-  {id:'new',     icon:'✦', label:'새 위젯', file:'',                                parts:['어떤 위젯인지 설명해주세요']},
 ];
 
-let askSelected=[];
-let askMode='bulk';
-let askSelectedParts=[];
-
-function getWidgetCatalog(){
-  const catalog=[...FIXED_WIDGETS];
-  S.folders.forEach(f=>{
-    catalog.splice(3,0,{
-      id:'folder-'+f.name,icon:'📂',label:f.name+' 폴더',file:'widgets/folders/index.html',
-      parts:['연결 대상 변경','색상 변경','아이콘 변경','기타'],
-    });
-  });
-  return catalog;
+function getAllItems(){
+  const folderItems=(S.folders||[]).map(f=>({
+    id:'folder-'+f.name,icon:'📂',label:f.name+' 폴더',file:'widgets/folders/index.html',
+    parts:['연결 대상 변경','색상 변경','아이콘 변경','애니메이션','기타'],
+  }));
+  return [...SYSTEM_CATS,...FIXED_WIDGETS,...folderItems];
 }
 
 function buildWidgetCards(){
-  const grid=document.getElementById('ask-widget-grid');
+  /* 카탈로그 세 카드는 HTML에 고정, 위젯만 동적 */
+  const grid=document.getElementById('widget-grid');
   grid.innerHTML='';
-  getWidgetCatalog().forEach(w=>{
-    const el=document.createElement('div');el.className='ask-wcard';el.dataset.id=w.id;
+  const items=getAllItems().filter(i=>!i.cat);
+  items.forEach(w=>{
+    const el=document.createElement('div');
+    el.className='wcard';el.dataset.id=w.id;
     el.innerHTML=`<span class="wc-icon">${w.icon}</span>${w.label}`;
     el.addEventListener('click',()=>el.classList.toggle('sel'));
     grid.appendChild(el);
   });
+  /* 카탈로그 카드에도 클릭 이벤트 */
+  document.querySelectorAll('#cat-grid .wcard').forEach(el=>{
+    el.addEventListener('click',()=>el.classList.toggle('sel'));
+  });
 }
 
-function setAskStep(n){
-  ['ask-s1','ask-s2','ask-s3'].forEach((id,i)=>document.getElementById(id).style.display=(i+1===n)?'':'none');
-  const titles=['위젯 선택','변경 부분 선택','변경 내용 입력'];
-  document.getElementById('ask-step-title').textContent=titles[n-1];
+/* Step 상태 */
+let selItems=[];
+let mode='bulk';
+let selParts=[];
+
+function setStep(n){
+  ['s1','s2','s3'].forEach((id,i)=>document.getElementById(id).style.display=(i+1===n)?'':'none');
+  const labels=['무엇을 바꾸고 싶으세요?','어떤 부분을?','어떻게 바꾸치?'];
+  document.getElementById('step-label').textContent=labels[n-1];
   [1,2,3].forEach(i=>{
-    const dot=document.getElementById('dot'+i);
-    dot.className='ask-dot'+(i<n?' done':i===n?' active':'');
+    const d=document.getElementById('dot'+i);
+    d.className='sdot'+(i<n?' done':i===n?' active':'');
   });
 }
-
-/* Mode card toggle */
-['mc-bulk','mc-each'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',()=>{
-    askMode=id==='mc-bulk'?'bulk':'each';
-    document.getElementById('mc-bulk').classList.toggle('sel',askMode==='bulk');
-    document.getElementById('mc-each').classList.toggle('sel',askMode==='each');
-    document.getElementById('ask-s2-bulk').style.display=askMode==='bulk'?'':'none';
-  });
-});
 
 /* Step 1 → 2 */
-document.getElementById('ask-next1').addEventListener('click',()=>{
-  askSelected=Array.from(document.querySelectorAll('.ask-wcard.sel')).map(el=>getWidgetCatalog().find(w=>w.id===el.dataset.id)).filter(Boolean);
-  if(!askSelected.length){showToast('위젯을 하나 이상 선택해주세요',2500);return;}
+document.getElementById('next1').addEventListener('click',()=>{
+  const allItems=getAllItems();
+  selItems=Array.from(document.querySelectorAll('.wcard.sel')).map(el=>allItems.find(w=>w.id===el.dataset.id)).filter(Boolean);
+  if(!selItems.length){showToast('항목을 하나 이상 선택해주세요',2500);return;}
 
-  const multi=askSelected.length>1;
-  document.getElementById('ask-s2-mode').style.display=multi?'':'none';
+  const multi=selItems.length>1;
+  document.getElementById('s2-mode').style.display=multi?'':'none';
+  if(!multi)mode='bulk';
 
-  /* 기본 모드: 단일이면 bulk 고정 */
-  if(!multi){askMode='bulk';document.getElementById('mc-bulk').classList.add('sel');document.getElementById('mc-each').classList.remove('sel');}
-
-  /* 일괄 파트 목록 (union) */
-  const allParts=[...new Set(askSelected.flatMap(w=>w.parts))];
-  const list=document.getElementById('ask-parts-bulk');list.innerHTML='';
+  /* 파트 목록 (union) */
+  const allParts=[...new Set(selItems.flatMap(w=>w.parts))];
+  const list=document.getElementById('parts-bulk');list.innerHTML='';
   allParts.forEach((p,i)=>{
-    const item=document.createElement('div');item.className='ask-part-item';
-    item.innerHTML=`<label><input type="checkbox" id="bp${i}" value="${p}" style="accent-color:#9b8fc7"/> ${p}</label>`;
+    const item=document.createElement('div');item.className='part-item';
+    item.innerHTML=`<label><input type="checkbox" id="bp${i}" value="${p}"> ${p}</label>`;
     list.appendChild(item);
   });
-  document.getElementById('ask-s2-bulk').style.display='';
-
-  setAskStep(2);
+  setStep(2);
 });
 
-/* Step 2 → 1 */
-document.getElementById('ask-back2').addEventListener('click',()=>setAskStep(1));
+/* Mode 토글 */
+['mc-bulk','mc-each'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',()=>{
+    mode=id==='mc-bulk'?'bulk':'each';
+    document.getElementById('mc-bulk').classList.toggle('sel',mode==='bulk');
+    document.getElementById('mc-each').classList.toggle('sel',mode==='each');
+  });
+});
+
+document.getElementById('back2').addEventListener('click',()=>setStep(1));
 
 /* Step 2 → 3 */
-document.getElementById('ask-next2').addEventListener('click',()=>{
-  askSelectedParts=Array.from(document.querySelectorAll('#ask-parts-bulk input:checked')).map(cb=>cb.value);
+document.getElementById('next2').addEventListener('click',()=>{
+  selParts=Array.from(document.querySelectorAll('#parts-bulk input:checked')).map(cb=>cb.value);
+  const names=selItems.map(w=>w.label).join(', ');
+  const parts=selParts.length?selParts.join(', '):'(미선택)';
+  document.getElementById('summary').innerHTML=`<strong>대상:</strong> ${names}<br><strong>부분:</strong> ${parts}`;
 
-  const widgetNames=askSelected.map(w=>w.label).join(', ');
-  const partNames=askSelectedParts.length?askSelectedParts.join(', '):'(미선택)';
-  document.getElementById('ask-summary').innerHTML=
-    `<strong>위젯:</strong> ${widgetNames}<br><strong>변경 부분:</strong> ${partNames}`;
-
-  if(askMode==='each'){
-    /* 각각: 위젯별 섹션 생성 */
-    document.getElementById('ask-s3-bulk').style.display='none';
-    document.getElementById('ask-s3-each').style.display='';
-    const secs=document.getElementById('ask-each-sections');secs.innerHTML='';
-    askSelected.forEach(w=>{
-      const sec=document.createElement('div');sec.className='widget-section';
-      sec.innerHTML=`<div class="widget-section-head">${w.icon} ${w.label}</div>
-        <div class="widget-section-body">
-          <div class="ask-part-list" id="ep-parts-${w.id}"></div>
-          <textarea class="ask-textarea sm" id="ep-text-${w.id}" placeholder="${w.label}에서 어떻게 바꾸고 싶은지 입력하세요..."></textarea>
-        </div>`;
+  if(mode==='each'){
+    document.getElementById('s3-bulk').style.display='none';
+    document.getElementById('s3-each').style.display='';
+    const secs=document.getElementById('each-secs');secs.innerHTML='';
+    selItems.forEach(w=>{
+      const sec=document.createElement('div');sec.className='wsec';
+      sec.innerHTML=`<div class="wsec-head">${w.icon} ${w.label}</div><div class="wsec-body"><div class="part-list" id="ep-${w.id}"></div><textarea class="ask-ta sm" id="et-${w.id}" placeholder="${w.label}에서 어떻게 바꾸고 싶은지..."></textarea></div>`;
       secs.appendChild(sec);
-      /* 파트 체크박스 (위젯별) */
-      const pl=sec.querySelector(`#ep-parts-${w.id}`);
+      const pl=sec.querySelector(`#ep-${w.id}`);
       w.parts.forEach((p,i)=>{
-        const item=document.createElement('div');item.className='ask-part-item';
-        item.innerHTML=`<label><input type="checkbox" id="ep-${w.id}-${i}" value="${p}" style="accent-color:#9b8fc7"/> ${p}</label>`;
-        pl.appendChild(item);
+        const it=document.createElement('div');it.className='part-item';
+        it.innerHTML=`<label><input type="checkbox" id="ep-${w.id}-${i}" value="${p}"> ${p}</label>`;
+        pl.appendChild(it);
       });
     });
   } else {
-    document.getElementById('ask-s3-bulk').style.display='';
-    document.getElementById('ask-s3-each').style.display='none';
-    const ta=document.getElementById('ask-text-bulk');
+    document.getElementById('s3-bulk').style.display='';
+    document.getElementById('s3-each').style.display='none';
+    const ta=document.getElementById('ta-bulk');
     ta.value='';
-    ta.placeholder=askSelected[0]?.id==='new'?'만들고 싶은 위젯을 설명해주세요...':widgetNames+'에서 '+partNames+'를 어떻게 바꾸고 싶은지 입력하세요...';
+    ta.placeholder=selItems[0]?.id==='new'?'만들고 싶은 위젯을 설명해주세요...':`${names}에서 ${parts}를 어떻게 바꾸고 싶은지 설명해주세요...`;
   }
-  setAskStep(3);
+  setStep(3);
 });
 
-/* Step 3 → 2 */
-document.getElementById('ask-back3').addEventListener('click',()=>setAskStep(2));
+document.getElementById('back3').addEventListener('click',()=>setStep(2));
 
 /* 전송 */
-document.getElementById('btn-send-claude').addEventListener('click',async()=>{
+document.getElementById('btn-send').addEventListener('click',async()=>{
   let sections=[];
-
-  if(askMode==='each'){
+  if(mode==='each'){
     let empty=false;
-    askSelected.forEach(w=>{
-      const parts=Array.from(document.querySelectorAll(`#ep-parts-${w.id} input:checked`)).map(cb=>cb.value);
-      const text=document.getElementById(`ep-text-${w.id}`)?.value.trim();
-      if(!text) empty=true;
-      sections.push({widget:w,parts,text});
+    selItems.forEach(w=>{
+      const parts=Array.from(document.querySelectorAll(`#ep-${w.id} input:checked`)).map(cb=>cb.value);
+      const text=document.getElementById(`et-${w.id}`)?.value.trim();
+      if(!text)empty=true;
+      sections.push({w,parts,text});
     });
-    if(empty){showToast('각 위젯의 변경 내용을 입력해주세요',2500);return;}
+    if(empty){showToast('각 항목의 변경 내용을 입력해주세요',2500);return;}
   } else {
-    const text=document.getElementById('ask-text-bulk').value.trim();
+    const text=document.getElementById('ta-bulk').value.trim();
     if(!text){showToast('변경 내용을 입력해주세요',2500);return;}
-    sections=askSelected.map(w=>({widget:w,parts:askSelectedParts,text}));
+    sections=selItems.map(w=>({w,parts:selParts,text}));
   }
 
-  const body=sections.map(({widget:w,parts,text})=>{
-    const fileLine=w.file?`\n  파일: ${w.file}`:''
-    const dbLine=w.dbId?`\n  DB ID: ${w.dbId}`:'';
-    return `[${w.label}]${fileLine}${dbLine}\n  변경 부분: ${parts.length?parts.join(', '):'미지정'}\n  요청: ${text}`;
+  const body=sections.map(({w,parts,text})=>{
+    const lines=[`[${w.label}]`];
+    if(w.file) lines.push(`  파일: ${w.file}`);
+    if(w.dbId) lines.push(`  DB ID: ${w.dbId}`);
+    lines.push(`  변경 부분: ${parts.length?parts.join(', '):'자유 변경'}`);
+    lines.push(`  요청: ${text}`);
+    return lines.join('\n');
   }).join('\n\n');
 
   const prompt=`[프로젝트]
@@ -663,12 +351,12 @@ ${body}
 완료 후 main 브랜치에 push해주세요.`;
 
   try{await navigator.clipboard.writeText(prompt);}
-  catch(e){
+  catch{
     const ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';
     document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
   }
-  window.open('https://claude.ai/new','_blank');
-  showToast('✓ 프롬프트 복사됨! 새 탭에서 붙여넣기',5000);
+  window.open('https://claude.ai/code','_blank');
+  showToast('✓ 프롬프트 복사됨! 새 탭에서 Ctrl+V',5000);
 });
 
 function showToast(msg,ms){
