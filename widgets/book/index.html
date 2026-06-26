@@ -13,11 +13,13 @@
     }
     body { display:flex; justify-content:center; font-family:'ChosunGu',sans-serif; background:transparent; margin:0; padding:6px; }
 
-    .folder {
+    a.folder-link {
+      display: block;
+      width: 130px;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
       cursor: pointer;
       user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      width: 130px;
     }
 
     .folder-tab {
@@ -47,8 +49,8 @@
       border-radius: 0 4px 4px 4px;
       z-index: -1;
     }
-    .folder:hover  .folder-body { filter: brightness(0.94); }
-    .folder:active .folder-body { filter: brightness(0.82); }
+    .folder-link:hover  .folder-body { filter: brightness(0.94); }
+    .folder-link:active .folder-body { filter: brightness(0.82); }
 
     .folder-lines { width:100%; display:flex; flex-direction:column; gap:4px; margin-bottom:1px; }
     .folder-line  { height:2px; border-radius:1px; background:rgba(0,0,0,0.18); }
@@ -71,7 +73,9 @@
   </style>
 </head>
 <body>
-  <div class="folder" id="book-folder">
+  <!-- native <a> tag — browser's own tap navigation -->
+  <a id="book-link" class="folder-link" target="_blank"
+     href="https://www.notion.so/37851f4140c580c995d6f55451f2c1f7">
     <div class="folder-tab"></div>
     <div class="folder-body">
       <div class="folder-lines">
@@ -82,24 +86,15 @@
       <div class="folder-label">Book</div>
       <div class="folder-sub">↗</div>
     </div>
-  </div>
+  </a>
 
   <script>
-    function getBookUrl() {
-      try {
-        const s = JSON.parse(localStorage.getItem('wg_settings') || 'null');
-        const bookFolder = s?.folders?.find(f => f.type === 'url');
-        return bookFolder?.url || 'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7';
-      } catch { return 'https://www.notion.so/37851f4140c580c995d6f55451f2c1f7'; }
-    }
-
-    function openNotion(url) {
-      window.location.href = url.replace('https://', 'notion://');
-    }
-
-    document.getElementById('book-folder').addEventListener('click', () => {
-      openNotion(getBookUrl());
-    });
+    // settings에 URL이 있으면 덮어쓰기
+    try {
+      const s = JSON.parse(localStorage.getItem('wg_settings') || 'null');
+      const bookFolder = s?.folders?.find(f => f.type === 'url');
+      if (bookFolder?.url) document.getElementById('book-link').href = bookFolder.url;
+    } catch {}
   </script>
 </body>
 </html>
