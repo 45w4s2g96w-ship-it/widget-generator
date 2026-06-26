@@ -334,7 +334,6 @@
       <div class="tab" data-folder="DIARY">DIARY</div>
       <div class="tab" data-folder="TO-DO">TO-DO</div>
       <div class="tab" data-folder="IDEA">IDEA</div>
-      <div class="tab" data-folder="CART">CART</div>
       <div class="tab" data-folder="BOOKMARK">BOOKMARK</div>
       <div class="tab" data-folder="ETC">ETC</div>
       <div class="tab" data-folder="★">★</div>
@@ -345,7 +344,6 @@
         <div class="folder-target" data-target="DIARY"><div class="folder-shape"></div><span class="folder-label">DIARY</span></div>
         <div class="folder-target" data-target="TO-DO"><div class="folder-shape"></div><span class="folder-label">TO-DO</span></div>
         <div class="folder-target" data-target="IDEA"><div class="folder-shape"></div><span class="folder-label">IDEA</span></div>
-        <div class="folder-target" data-target="CART"><div class="folder-shape"></div><span class="folder-label">CART</span></div>
         <div class="folder-target" data-target="BOOKMARK"><div class="folder-shape"></div><span class="folder-label">BOOK
 MARK</span></div>
         <div class="folder-target" data-target="ETC"><div class="folder-shape"></div><span class="folder-label">ETC</span></div>
@@ -379,7 +377,6 @@ MARK</span></div>
       <option value="DIARY">DIARY</option>
       <option value="TO-DO">TO-DO</option>
       <option value="IDEA">IDEA</option>
-      <option value="CART">CART</option>
       <option value="BOOKMARK">BOOKMARK</option>
       <option value="ETC">ETC</option>
     </select>
@@ -397,15 +394,6 @@ MARK</span></div>
       <textarea id="drop-todo-memo" rows="2" placeholder="추가 메모..."></textarea>
       <label class="field-label">마감일 (선택)</label>
       <input type="date" id="drop-todo-due" />
-    </div>
-    <div id="drop-form-cart" style="display:none">
-      <label class="field-label">종류</label>
-      <select id="drop-cart-type">
-        <option value="Need &amp; Buy">Need &amp; Buy</option>
-        <option value="Need &amp; Want">Need &amp; Want</option>
-        <option value="Need Later">Need Later</option>
-        <option value="Just Want">Just Want</option>
-      </select>
     </div>
     <div id="drop-form-bookmark" style="display:none">
       <label class="field-label">제목 <span style="color:#e74c3c">*</span></label>
@@ -794,11 +782,10 @@ MARK</span></div>
     addTap(document.getElementById('drop-cancel'), closePopup);
 
     function updateDropForm(folder) {
-      const hasExtra = ['IDEA', 'TO-DO', 'CART', 'BOOKMARK'].includes(folder);
+      const hasExtra = ['IDEA', 'TO-DO', 'BOOKMARK'].includes(folder);
       document.getElementById('drop-divider').style.display    = hasExtra ? 'block' : 'none';
       document.getElementById('drop-form-idea').style.display     = folder === 'IDEA'     ? 'block' : 'none';
       document.getElementById('drop-form-todo').style.display     = folder === 'TO-DO'    ? 'block' : 'none';
-      document.getElementById('drop-form-cart').style.display     = folder === 'CART'     ? 'block' : 'none';
       document.getElementById('drop-form-bookmark').style.display = folder === 'BOOKMARK' ? 'block' : 'none';
     }
 
@@ -836,7 +823,6 @@ MARK</span></div>
         opts.todoMemo = document.getElementById('drop-todo-memo').value.trim() || null;
         opts.dueDate  = document.getElementById('drop-todo-due').value || null;
       }
-      if (target === 'CART')     opts.cartType  = document.getElementById('drop-cart-type').value;
       if (target === 'BOOKMARK') {
         const title = document.getElementById('drop-bookmark-title').value.trim();
         if (!title) {
