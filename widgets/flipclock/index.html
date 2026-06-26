@@ -18,7 +18,7 @@
     body {
       margin: 0;
       padding: 10px;
-      background: #111111;
+      background: transparent;
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -28,19 +28,6 @@
     .flip-widget {
       width: 100%;
       max-width: 300px;
-    }
-
-    .titlebar {
-      background: #111111;
-      color: var(--accent);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      padding: 0 1px 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: 'Montserrat', sans-serif;
     }
 
     .date-row {
@@ -120,11 +107,6 @@
 </head>
 <body>
   <div class="flip-widget">
-    <div class="titlebar">
-      <span data-widget-title>C:// FLIP CLOCK</span>
-      <span style="opacity:0.75;cursor:default">⚙</span>
-    </div>
-
     <div class="date-row">
       <span class="date-text" id="date-str">---- -- --</span>
     </div>
