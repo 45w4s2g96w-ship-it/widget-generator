@@ -40,6 +40,7 @@
     .todo-label:hover .todo-inner { text-decoration: underline; }
     .todo-inner { font-size: 11.5px; line-height: 1.55; color: var(--ink); word-break: break-all; }
     .todo-inner.done-text { text-decoration: line-through; color: #aaa; }
+    .todo-inner.overdue-text { color: #e53935; }
 
     .done-btn { width: 12px; height: 12px; border: 1px solid #bbb; background: #fff; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 9px; color: transparent; }
     .done-btn.checked { background: #bbb; color: #fff; }
@@ -178,8 +179,9 @@
 
         const labelDiv = document.createElement('div');
         labelDiv.className = 'todo-label';
+        const isOverdue = !page.done && dateOnly(page.dueStart) < todayStr;
         const inner = document.createElement('span');
-        inner.className = 'todo-inner' + (page.done ? ' done-text' : '');
+        inner.className = 'todo-inner' + (page.done ? ' done-text' : isOverdue ? ' overdue-text' : '');
         inner.textContent = pLabel ? `${page.title} ${pLabel}` : page.title;
         labelDiv.appendChild(inner);
 
@@ -213,7 +215,10 @@
     async function toggleDone(page, btn, textEl) {
       const newDone = !page.done;
       btn.classList.toggle('checked', newDone); btn.textContent = newDone ? '✓' : '';
-      textEl.classList.toggle('done-text', newDone); page.done = newDone;
+      const willBeOverdue = !newDone && dateOnly(page.dueStart) < todayStr;
+      textEl.classList.toggle('done-text', newDone);
+      textEl.classList.toggle('overdue-text', willBeOverdue);
+      page.done = newDone;
       try {
         await fetch('/api/get-todo', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: page.id, done: newDone, cfg }) });
       } catch { page.done = !newDone; btn.classList.toggle('checked', !newDone); textEl.classList.toggle('done-text', !newDone); }
