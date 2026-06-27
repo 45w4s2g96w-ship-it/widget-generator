@@ -328,19 +328,38 @@
       setStatus('');
 
       try {
-        const r = await fetch('/api/add-book?' + new URLSearchParams({ q }));
+        const params = new URLSearchParams({ q, maxResults: '12', printType: 'books' });
+        if (cfg.google_books_api_key) params.set('key', cfg.google_books_api_key);
+        const r = await fetch(`https://www.googleapis.com/books/v1/volumes?${params}`);
         const data = await r.json();
-        if (!r.ok) throw new Error(data.error);
+        if (!r.ok) throw new Error(data.error?.message || '검색 실패');
 
         area.innerHTML = '';
-        if (!data.books || !data.books.length) {
+        if (!data.items || !data.items.length) {
           area.innerHTML = '<div class="results-hint">검색 결과가 없어요.</div>';
           return;
         }
 
+        const books = data.items.map(item => {
+          const info = item.volumeInfo || {};
+          const thumb = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || null;
+          return {
+            id: item.id,
+            title: info.title || '',
+            subtitle: info.subtitle || '',
+            authors: info.authors || [],
+            publisher: info.publisher || '',
+            publishedDate: info.publishedDate || '',
+            description: (info.description || '').slice(0, 2000),
+            isbn: (info.industryIdentifiers || []).find(x => x.type === 'ISBN_13')?.identifier || '',
+            thumbnail: thumb ? thumb.replace(/^http:\/\//, 'https://') : null,
+            previewLink: info.previewLink || '',
+          };
+        });
+
         const grid = document.createElement('div');
         grid.className = 'results-grid';
-        data.books.forEach(book => grid.appendChild(buildCard(book)));
+        books.forEach(book => grid.appendChild(buildCard(book)));
         area.appendChild(grid);
       } catch (err) {
         area.innerHTML = `<div class="results-hint">${escHtml(err.message)}</div>`;
