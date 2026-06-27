@@ -1,0 +1,11 @@
+{
+  "id": "habit-today",
+  "title": "C:// HABIT",
+  "color": "#1a1a1a",
+  "accent": "#9b8fc7",
+  "font": "'ChosunGu'",
+  "type": "habit",
+  "habit_db_id": "fca51f4140c582eca013874a7f7d5540",
+  "daily_db_id": "85751f4140c5825bbacb87cf97230efd",
+  "mode": "live"
+}
