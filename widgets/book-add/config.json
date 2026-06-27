@@ -1,0 +1,10 @@
+{
+  "id": "book-add",
+  "title": "C:// BOOK",
+  "color": "#1a1a1a",
+  "accent": "#9b8fc7",
+  "font": "'ChosunGu'",
+  "type": "book",
+  "source_db_id": "37851f4140c580c995d6f55451f2c1f7",
+  "mode": "live"
+}
