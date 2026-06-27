@@ -11,14 +11,17 @@
       src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
       font-display: swap;
     }
+    html, body { height: 100%; margin: 0; }
     body { display: flex; justify-content: center; padding: 0; font-family: 'ChosunGu', 'Helvetica Neue', sans-serif; }
-    .window { max-width: none; }
+    .window { max-width: none; height: 100%; display: flex; flex-direction: column; }
 
     .titlebar-right { display: flex; align-items: center; gap: 6px; }
     #add-btn { background: none; border: none; color: #fff; font-size: 15px; line-height: 1; cursor: pointer; opacity: 0.75; padding: 0; }
     #add-btn:hover { opacity: 1; }
 
-    .content { padding: 5px 6px 7px; display: flex; flex-direction: column; }
+    .content { padding: 5px 6px 7px; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+    .content::-webkit-scrollbar { width: 3px; }
+    .content::-webkit-scrollbar-thumb { background: #ddd; }
 
     .todo-row { display: flex; align-items: center; gap: 5px; padding: 3px 4px 3px 2px; border-radius: 2px; }
     .todo-row.today { background: rgba(180, 155, 215, 0.28); }
