@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// DAILY</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'ChosunGu';
+      src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+      font-display: swap;
+    }
+
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex;
+      justify-content: center;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+    }
+
+    .window {
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .titlebar { flex-shrink: 0; }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 7px 8px 0;
+      overflow: hidden;
+    }
+
+    .widget-date {
+      font-size: 10.5px;
+      color: #888;
+      letter-spacing: 0.3px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+    #date-val { color: var(--accent); font-weight: 700; }
+
+    .chat-area {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      padding-bottom: 4px;
+    }
+    .chat-area::-webkit-scrollbar { width: 3px; }
+    .chat-area::-webkit-scrollbar-thumb { background: #ddd; }
+
+    .chat-empty {
+      font-size: 11px;
+      color: #ccc;
+      text-align: center;
+      padding: 24px 0;
+    }
+
+    .bubble-row {
+      display: flex;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    .bubble {
+      max-width: 93%;
+      background: rgba(155, 143, 199, 0.13);
+      border: 1px solid rgba(155, 143, 199, 0.28);
+      border-radius: 12px 12px 2px 12px;
+      padding: 5px 9px;
+      text-decoration: none;
+      display: block;
+      cursor: pointer;
+    }
+    .bubble:hover { background: rgba(155, 143, 199, 0.22); }
+
+    .bubble-time {
+      font-size: 9px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 2px;
+      letter-spacing: 0.4px;
+    }
+
+    .bubble-text {
+      font-size: 11.5px;
+      color: var(--ink);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .input-area {
+      flex-shrink: 0;
+      border-top: 1px solid #e0e0e0;
+      padding: 7px 0 7px;
+      display: flex;
+      gap: 5px;
+      align-items: flex-end;
+    }
+
+    #log-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+      font-size: 11.5px;
+      line-height: 1.5;
+      padding: 5px 7px;
+      resize: none;
+      outline: none;
+      color: var(--ink);
+      min-height: 36px;
+      max-height: 90px;
+    }
+    #log-input::placeholder { color: #ccc; }
+    #log-input:focus { border-color: var(--accent); }
+
+    #send-btn {
+      flex-shrink: 0;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 10.5px;
+      padding: 5px 8px;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+    #send-btn:hover { filter: brightness(1.1); }
+    #send-btn:active { filter: brightness(0.9); }
+    #send-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
+
+    #status {
+      font-size: 9.5px;
+      min-height: 13px;
+      color: #c0392b;
+      padding-bottom: 5px;
+      flex-shrink: 0;
+    }
+    #status.ok { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// DAILY</span>
+      <span style="opacity:0.75;cursor:default">⚙</span>
+    </div>
+    <div class="content">
+      <div class="widget-date">date: <span id="date-val">----.--.--</span></div>
+
+      <div class="chat-area" id="chat-area">
+        <div class="chat-empty">불러오는 중...</div>
+      </div>
+
+      <div class="input-area">
+        <textarea id="log-input" placeholder="오늘의 기록..." rows="2"></textarea>
+        <button id="send-btn">SEND</button>
+      </div>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    const isMobileOnly = !(/iPad/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
+      navigator.maxTouchPoints > 0;
+
+    let cfg = {};
+
+    (async () => {
+      cfg = await loadWidgetConfig();
+      initDate();
+      await loadEntries();
+    })();
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function getToday() {
+      const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+      if (now.getHours() < 5) now.setDate(now.getDate() - 1);
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    }
+
+    function getTime() {
+      const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+      return `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+
+    function initDate() {
+      document.getElementById('date-val').textContent = getToday();
+    }
+
+    function setStatus(msg, type = '') {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = type;
+    }
+
+    async function loadEntries() {
+      const area = document.getElementById('chat-area');
+      try {
+        const params = new URLSearchParams({
+          source_db_id: cfg.source_db_id,
+          source_property: cfg.source_property || '날짜',
+        });
+        const r = await fetch('/api/log-entry?' + params);
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error);
+
+        area.innerHTML = '';
+        if (!data.entries || !data.entries.length) {
+          area.innerHTML = '<div class="chat-empty">오늘의 기록이 없어요.</div>';
+          return;
+        }
+        data.entries.forEach(e => area.appendChild(buildBubble(e)));
+        scrollBottom();
+      } catch (err) {
+        area.innerHTML = `<div class="chat-empty">${escHtml(err.message)}</div>`;
+      }
+    }
+
+    function buildBubble({ time, text, pageId, blockId }) {
+      const row = document.createElement('div');
+      row.className = 'bubble-row';
+
+      const a = document.createElement('a');
+      a.className = 'bubble';
+      if (pageId && blockId) {
+        a.href = `https://www.notion.so/${pageId}#${blockId}`;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+
+      const timeEl = document.createElement('div');
+      timeEl.className = 'bubble-time';
+      timeEl.textContent = time;
+
+      const textEl = document.createElement('div');
+      textEl.className = 'bubble-text';
+      textEl.textContent = text;
+
+      a.appendChild(timeEl);
+      a.appendChild(textEl);
+      row.appendChild(a);
+      return row;
+    }
+
+    function scrollBottom() {
+      const area = document.getElementById('chat-area');
+      setTimeout(() => { area.scrollTop = area.scrollHeight; }, 30);
+    }
+
+    document.getElementById('send-btn').addEventListener('click', sendEntry);
+    document.getElementById('log-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        if (isMobileOnly) return;
+        e.preventDefault();
+        sendEntry();
+      }
+    });
+
+    async function sendEntry() {
+      const text = document.getElementById('log-input').value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('send-btn');
+      btn.disabled = true;
+      setStatus('저장 중...');
+
+      try {
+        const r = await fetch('/api/log-entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source_db_id: cfg.source_db_id,
+            source_property: cfg.source_property || '날짜',
+            time: getTime(),
+            text,
+          }),
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || '저장 실패');
+
+        document.getElementById('log-input').value = '';
+        setStatus('저장됨 ✓', 'ok');
+        setTimeout(() => setStatus(''), 2000);
+
+        const area = document.getElementById('chat-area');
+        const empty = area.querySelector('.chat-empty');
+        if (empty) empty.remove();
+        area.appendChild(buildBubble({ time: data.time, text: data.text }));
+        scrollBottom();
+      } catch (err) {
+        setStatus(err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>
