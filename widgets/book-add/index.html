@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C:// BOOK</title>
+  <link rel="stylesheet" href="../../shared/tokens.css" />
+  <style>
+    @font-face {
+      font-family: 'ChosunGu';
+      src: url('../../shared/fonts/ChosunGu.TTF') format('truetype');
+      font-display: swap;
+    }
+
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex;
+      justify-content: center;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+    }
+
+    .window {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .titlebar { flex-shrink: 0; }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 7px 8px 0;
+      overflow: hidden;
+    }
+
+    /* 검색 영역 */
+    .search-row {
+      flex-shrink: 0;
+      display: flex;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+
+    #search-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: 'ChosunGu', 'Helvetica Neue', sans-serif;
+      font-size: 11.5px;
+      padding: 5px 7px;
+      outline: none;
+      color: var(--ink);
+    }
+    #search-input::placeholder { color: #ccc; }
+    #search-input:focus { border-color: var(--accent); }
+
+    #search-btn {
+      flex-shrink: 0;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 10.5px;
+      padding: 5px 9px;
+      cursor: pointer;
+    }
+    #search-btn:hover { filter: brightness(1.1); }
+    #search-btn:active { filter: brightness(0.9); }
+    #search-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
+
+    /* 검색 결과 */
+    .results-area {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .results-area::-webkit-scrollbar { width: 3px; }
+    .results-area::-webkit-scrollbar-thumb { background: #ddd; }
+
+    .results-hint {
+      font-size: 11px;
+      color: #ccc;
+      text-align: center;
+      padding: 28px 0;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      padding-bottom: 4px;
+    }
+
+    .book-card {
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 2px;
+      padding: 2px;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .book-card:hover { background: rgba(155, 143, 199, 0.08); }
+    .book-card.selected {
+      border-color: var(--accent);
+      background: rgba(155, 143, 199, 0.12);
+    }
+
+    .book-cover {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      display: block;
+      background: #eee;
+    }
+
+    .book-cover-placeholder {
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: linear-gradient(160deg, #ece8f5, #ddd8ee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .book-card-title {
+      font-size: 9px;
+      color: var(--ink);
+      margin-top: 3px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .book-card-author {
+      font-size: 8px;
+      color: #bbb;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 선택된 책 정보 + 추가 버튼 */
+    .action-bar {
+      flex-shrink: 0;
+      border-top: 1px solid #e0e0e0;
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+    }
+
+    .selected-preview {
+      flex-shrink: 0;
+      width: 30px;
+      height: 44px;
+      object-fit: cover;
+      display: block;
+      background: #ece8f5;
+    }
+
+    .selected-preview-placeholder {
+      flex-shrink: 0;
+      width: 30px;
+      height: 44px;
+      background: #ece8f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .selected-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .selected-placeholder {
+      font-size: 10px;
+      color: #ccc;
+    }
+
+    .selected-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .selected-meta {
+      font-size: 9px;
+      color: #999;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    #add-btn {
+      flex-shrink: 0;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-family: 'ChosunGu', sans-serif;
+      font-size: 10.5px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    #add-btn:hover { filter: brightness(1.1); }
+    #add-btn:active { filter: brightness(0.9); }
+    #add-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
+
+    #status {
+      font-size: 9.5px;
+      min-height: 13px;
+      color: #c0392b;
+      padding-bottom: 5px;
+      flex-shrink: 0;
+    }
+    #status.ok { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span data-widget-title>C:// BOOK</span>
+      <span style="opacity:0.75;cursor:default">⚙</span>
+    </div>
+    <div class="content">
+      <div class="search-row">
+        <input type="text" id="search-input" placeholder="책 제목을 검색하세요..." />
+        <button id="search-btn">검색</button>
+      </div>
+
+      <div class="results-area" id="results-area">
+        <div class="results-hint">📚 책 제목을 검색하세요</div>
+      </div>
+
+      <div class="action-bar" id="action-bar">
+        <div class="selected-preview-placeholder" id="preview-placeholder">📖</div>
+        <img class="selected-preview" id="preview-img" src="" alt="" style="display:none" />
+        <div class="selected-info" id="selected-info">
+          <div class="selected-placeholder">책을 선택하세요</div>
+        </div>
+        <button id="add-btn" disabled>추가</button>
+      </div>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <script src="../../shared/config-loader.js"></script>
+  <script>
+    let cfg = {};
+    let selectedBook = null;
+
+    (async () => { cfg = await loadWidgetConfig(); })();
+
+    function setStatus(msg, type = '') {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = type;
+    }
+
+    function updateActionBar() {
+      const info = document.getElementById('selected-info');
+      const addBtn = document.getElementById('add-btn');
+      const previewImg = document.getElementById('preview-img');
+      const previewPlaceholder = document.getElementById('preview-placeholder');
+
+      if (!selectedBook) {
+        info.innerHTML = '<div class="selected-placeholder">책을 선택하세요</div>';
+        addBtn.disabled = true;
+        previewImg.style.display = 'none';
+        previewPlaceholder.style.display = 'flex';
+        return;
+      }
+
+      const authorStr = selectedBook.authors.join(', ');
+      const meta = [authorStr, selectedBook.publisher, selectedBook.publishedDate]
+        .filter(Boolean).join(' · ');
+
+      info.innerHTML = `
+        <div class="selected-title">${escHtml(selectedBook.title)}</div>
+        <div class="selected-meta">${escHtml(meta)}</div>
+      `;
+      addBtn.disabled = false;
+
+      if (selectedBook.thumbnail) {
+        previewImg.src = selectedBook.thumbnail;
+        previewImg.style.display = 'block';
+        previewPlaceholder.style.display = 'none';
+        previewImg.onerror = () => {
+          previewImg.style.display = 'none';
+          previewPlaceholder.style.display = 'flex';
+        };
+      } else {
+        previewImg.style.display = 'none';
+        previewPlaceholder.style.display = 'flex';
+      }
+    }
+
+    document.getElementById('search-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') searchBooks();
+    });
+    document.getElementById('search-btn').addEventListener('click', searchBooks);
+
+    async function searchBooks() {
+      const q = document.getElementById('search-input').value.trim();
+      if (!q) return;
+
+      const area = document.getElementById('results-area');
+      const btn = document.getElementById('search-btn');
+      btn.disabled = true;
+      area.innerHTML = '<div class="results-hint">검색 중...</div>';
+      selectedBook = null;
+      updateActionBar();
+      setStatus('');
+
+      try {
+        const r = await fetch('/api/add-book?' + new URLSearchParams({ q }));
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error);
+
+        area.innerHTML = '';
+        if (!data.books || !data.books.length) {
+          area.innerHTML = '<div class="results-hint">검색 결과가 없어요.</div>';
+          return;
+        }
+
+        const grid = document.createElement('div');
+        grid.className = 'results-grid';
+        data.books.forEach(book => grid.appendChild(buildCard(book)));
+        area.appendChild(grid);
+      } catch (err) {
+        area.innerHTML = `<div class="results-hint">${escHtml(err.message)}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function buildCard(book) {
+      const card = document.createElement('div');
+      card.className = 'book-card';
+
+      if (book.thumbnail) {
+        const img = document.createElement('img');
+        img.className = 'book-cover';
+        img.src = book.thumbnail;
+        img.alt = book.title;
+        img.loading = 'lazy';
+        img.onerror = () => img.replaceWith(makePlaceholder());
+        card.appendChild(img);
+      } else {
+        card.appendChild(makePlaceholder());
+      }
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'book-card-title';
+      titleEl.textContent = book.title;
+      card.appendChild(titleEl);
+
+      if (book.authors.length) {
+        const authorEl = document.createElement('div');
+        authorEl.className = 'book-card-author';
+        authorEl.textContent = book.authors.join(', ');
+        card.appendChild(authorEl);
+      }
+
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.book-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedBook = book;
+        updateActionBar();
+        setStatus('');
+      });
+
+      return card;
+    }
+
+    function makePlaceholder() {
+      const div = document.createElement('div');
+      div.className = 'book-cover-placeholder';
+      div.textContent = '📖';
+      return div;
+    }
+
+    document.getElementById('add-btn').addEventListener('click', addBook);
+
+    async function addBook() {
+      if (!selectedBook) return;
+      if (!cfg.source_db_id) { setStatus('config에 source_db_id가 없습니다.'); return; }
+
+      const btn = document.getElementById('add-btn');
+      btn.disabled = true;
+      setStatus('추가 중...');
+
+      try {
+        const r = await fetch('/api/add-book', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ source_db_id: cfg.source_db_id, book: selectedBook }),
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error);
+
+        setStatus('추가됨 ✓', 'ok');
+        setTimeout(() => setStatus(''), 2500);
+
+        document.querySelectorAll('.book-card').forEach(c => c.classList.remove('selected'));
+        selectedBook = null;
+        updateActionBar();
+      } catch (err) {
+        setStatus(err.message);
+        btn.disabled = false;
+      }
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>
